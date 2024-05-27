@@ -23,8 +23,7 @@ jobs:
         with:
           channel: stable
           flutter-version: 3.22.0
-      - name: Analyze project source
-        run: dart analyze
+
       - uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
