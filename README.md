@@ -1,6 +1,8 @@
-# drplanguageapp
+# DRP Language App
+Group 41's Designing For Real People (DRP) Project
 
-A new Flutter project.
+## Opportunity Statement
+How might we prevent the loss of language through a simple learning method with a small time commitment, available for languages with fewer resources?
 
 ## Getting Started
 
