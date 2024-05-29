@@ -1,5 +1,6 @@
 import 'package:drplanguageapp/pages/conversation.dart';
 import 'package:drplanguageapp/pages/dashboard_page.dart';
+import 'package:drplanguageapp/pages/dialogue_page.dart';
 import 'package:drplanguageapp/pages/highlights.dart';
 import 'package:drplanguageapp/pages/login_page.dart';
 import 'package:drplanguageapp/pages/reading_comp.dart';
@@ -23,7 +24,8 @@ class MyApp extends StatelessWidget {
         '/dashboard': (context) => const DashboardPage(),
         '/dashboard/conversation': (context) => const Conversation(),
         '/dashboard/readingcomp': (context) => const ReadingComp(),
-        '/dashboard/highlights': (context) => const Highlights()
+        '/dashboard/highlights': (context) => const Highlights(),
+        '/dialogue': (context) => const DialoguePage(),
       },
     );
   }
