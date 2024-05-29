@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 void main() {
   runApp(const MyApp());
@@ -28,10 +29,10 @@ class MyApp extends StatelessWidget {
         //
         // This works for code too, not just values: Most code changes can be
         // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.lightBlue[400]!),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'DRP Project'),
+      home: const MyHomePage(title: 'Bloom'),
     );
   }
 }
@@ -105,12 +106,33 @@ class _MyHomePageState extends State<MyHomePage> {
           // wireframe for each widget.
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            const CircleAvatar(
+                radius: 50,
+                backgroundImage: AssetImage('images/bloom.png'),
+                child: Text('logo', style: TextStyle(color: Colors.black))),
+            // App Name
             const Text(
-              'You have pushed the button this many times:',
+              'Bloom',
+              style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
             ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+            // Login Button
+            const SizedBox(height: 20),
+            const Padding(padding: EdgeInsets.symmetric(horizontal: 40)),
+            ElevatedButton(
+              onPressed: () {
+                // Navigate to login page
+              },
+              child: const Text('Login'),
+            ),
+            // Register Button
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                // Respond to button press
+              },
+              style: ElevatedButton.styleFrom(
+                  minimumSize: const Size(double.infinity, 50)),
+              child: const Text('Register'),
             ),
           ],
         ),
