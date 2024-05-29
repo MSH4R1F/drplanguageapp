@@ -16,39 +16,31 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.lightBlue[400]!),
-        useMaterial3: true,
-      ),
-      home: const MyHomePage(title: 'Bloom'),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: widget.title,
-      home: const LoginScreen(),
+      debugShowCheckedModeBanner: false,
+      home: const MyHomePage(),
       routes: {
         '/loginpage': (context) => const LoginScreen(),
         '/dashboard': (context) => const DashboardPage(),
         '/dashboard/conversation': (context) => const Conversation(),
         '/dashboard/readingcomp': (context) => const ReadingComp(),
         '/dashboard/highlights': (context) => const Highlights()
-      }
+      },
+    );
+  }
+}
+
+class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key});
+
+  @override
+  State<MyHomePage> createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(
+      body: LoginScreen(),
     );
   }
 }
