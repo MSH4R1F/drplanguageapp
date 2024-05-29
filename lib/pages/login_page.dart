@@ -31,7 +31,7 @@ class LoginScreen extends StatelessWidget {
             ElevatedButton(
               onPressed: () {
                 // Navigate to homepage
-                Navigator.pushNamed(context, '/dashboard');
+                Navigator.pushReplacementNamed(context, '/dashboard');
               },
               child: const Text('Login'),
             ),
