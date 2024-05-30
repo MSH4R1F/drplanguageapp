@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "946776847808",
+    "project_id": "drp-project-41",
+    "storage_bucket": "drp-project-41.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:946776847808:android:0d62b932840ef626bd4425",
+        "android_client_info": {
+          "package_name": "com.example.drplanguageapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDT6hlHdPLVL1ZCwnRZokqTFsnQWFoCJJg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

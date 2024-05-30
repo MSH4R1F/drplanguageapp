@@ -1,7 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-class DashboardPage extends StatelessWidget {
+class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
+
+  @override
+  _DashboardPageState createState() => _DashboardPageState();
+}
+
+class _DashboardPageState extends State<DashboardPage> {
+  final String userUID = 'Bmoy5vB0vYQQekDx7V87IqIZz043';
+
+  Future<String> fetchUserNameByUID(String userUID) async {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+    QuerySnapshot querySnapshot = await firestore
+        .collection('users')
+        .where('userUID', isEqualTo: userUID)
+        .get();
+
+    // log the querySnapshot using a logging framework but print in red
+    print(querySnapshot.docs);
+    
+    if (querySnapshot.docs.isNotEmpty) {
+      return querySnapshot.docs.first.get('Name');
+    } else {
+      return 'User not found';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -9,15 +34,27 @@ class DashboardPage extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Dashboard'),
       ),
-      body: const SingleChildScrollView(
+      body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Padding(
               padding: EdgeInsets.all(16.0),
-              child: Text(
-                'Welcome Back User!',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              child: FutureBuilder(
+                future: fetchUserNameByUID(userUID),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.done) {
+                    return Text(
+                      'Welcome Back ${snapshot.data}!',
+                      style: const TextStyle(
+                          fontSize: 24, fontWeight: FontWeight.bold),
+                    );
+                  } else if (snapshot.hasError) {
+                    return Text('Error: ${snapshot.error}');
+                  } else {
+                    return const CircularProgressIndicator();
+                  }
+                },
               ),
             ),
             Padding(
