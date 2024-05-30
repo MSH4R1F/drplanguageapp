@@ -9,18 +9,18 @@ class DashboardPage extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Dashboard'),
       ),
-      body: SingleChildScrollView(
+      body: const SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            const Padding(
+            Padding(
               padding: EdgeInsets.all(16.0),
               child: Text(
                 'Welcome Back User!',
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
             ),
-            const Padding(
+            Padding(
                 padding: EdgeInsets.all(8.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -69,7 +69,7 @@ class DashboardPage extends StatelessWidget {
 class FeatureCard extends StatelessWidget {
   final String title;
   final String link;
-  FeatureCard({required this.title, required this.link});
+  const FeatureCard({super.key, required this.title, required this.link});
 
   @override
   Widget build(BuildContext context) {
@@ -77,7 +77,7 @@ class FeatureCard extends StatelessWidget {
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       child: ListTile(
         title: Text(title),
-        trailing: Icon(Icons.arrow_forward),
+        trailing: const Icon(Icons.arrow_forward),
         onTap: () {
           Navigator.pushNamed(context, link);
         },

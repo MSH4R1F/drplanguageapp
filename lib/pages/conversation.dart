@@ -1,3 +1,4 @@
+
 import 'package:drplanguageapp/pages/chat_page.dart';
 import 'package:flutter/material.dart';
 
@@ -92,6 +93,14 @@ class _ConversationState extends State<Conversation> {
     Chat(sender: "Jaffer", content: "stihjtyjfgjfgjtyjhsthhjshghdhdfhfghdfhsfhdfhunkty stinky", timestamp: DateTime.parse("2012-02-27 13:28:00") , colour: Colors.blue, ai: false)
     ];
 
+  void addtoChat() {
+    var temp = _controller.text;
+    _controller.clear();
+    setState(() {
+      chatt = [Chat(sender: "Me", content: temp, timestamp: DateTime.now(), colour: Colors.blue, ai: false)];
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -121,7 +130,7 @@ class _ConversationState extends State<Conversation> {
                       ),
                     ),
                     IconButton(
-                      onPressed: printInput,
+                      onPressed: addtoChat,
                       icon: Icon(
                         Icons.send,
                         size: 30,
