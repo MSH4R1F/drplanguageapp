@@ -20,20 +20,9 @@ class _ChatPageState extends State<ChatPage> {
         title: Text(widget.chats.first.toString()),
       ),
       itemBuilder: (context, index) {
-        return Row(
-          children: [
-            widget.chats[index].ai ? const CircleAvatar(
-                radius: 20,
-                backgroundImage: NetworkImage("https://media.newyorker.com/photos/59095bb86552fa0be682d9d0/master/pass/Monkey-Selfie.jpg"),
-                ) : const SizedBox(width: 0, height: 0,),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Container(
-                width: double.infinity,
+        return Container(
                 constraints: const BoxConstraints(maxWidth: 300),
-                padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: Colors.amberAccent,
                   borderRadius: BorderRadius.circular(10)
                 ),
                 child: Column(
@@ -43,21 +32,11 @@ class _ChatPageState extends State<ChatPage> {
                         widget.chats[index].toString(),
                         textAlign: widget.chats[index].ai ? TextAlign.left : TextAlign.right
                         ),
-                        tileColor: widget.chats[index].ai ? Theme.of(context).primaryColorLight : Theme.of(context).secondaryHeaderColor,
-                    ), Text(
-                      widget.chats[index].timestamp.toLocal().toString(),
-                      style: const TextStyle(fontSize: 0.5),
-                      )
+                        tileColor: widget.chats[index].ai ? Colors.red : Colors.blue,
+                    )
                   ],
                 ),
-              ),
-            ),
-            !widget.chats[index].ai ? const CircleAvatar(
-                radius: 20,
-                backgroundImage: NetworkImage("https://www.newarab.com/sites/default/files/styles/large_16_9/public/2023-08/GettyImages-1258930731.jpg?h=e7c891e8&itok=9UVWR3Nt"),
-                ) : const SizedBox(width: 0, height: 0,),
-          ],
-        );
+              );
       },
     );
   }
