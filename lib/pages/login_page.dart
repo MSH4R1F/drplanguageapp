@@ -17,14 +17,19 @@ class LoginScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             const CircleAvatar(
-                radius: 50,
-                backgroundImage: AssetImage('assets/images/bloom.png'),
-                child: Text('logo', style: TextStyle(color: Colors.black))),
+              radius: 50,
+              backgroundImage: AssetImage('assets/images/bloom.png'),
+              child: Text(
+                'logo',
+                style: TextStyle(color: Colors.black),
+              ),
+            ),
             // App Name
             const Text(
               'Bloom',
               style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
             ),
+
             // Login Button
             const SizedBox(height: 20),
             const Padding(padding: EdgeInsets.symmetric(horizontal: 40)),
@@ -44,6 +49,15 @@ class LoginScreen extends StatelessWidget {
               style: ElevatedButton.styleFrom(
                   minimumSize: const Size(double.infinity, 50)),
               child: const Text('Register'),
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushReplacementNamed(context, '/dialogue');
+              },
+              child: const Text("Dialogue"),
             ),
           ],
         ),

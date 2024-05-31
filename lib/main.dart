@@ -1,5 +1,6 @@
 import 'package:drplanguageapp/pages/conversation.dart';
 import 'package:drplanguageapp/pages/dashboard_page.dart';
+import 'package:drplanguageapp/pages/dialogue_page.dart';
 import 'package:drplanguageapp/pages/highlights.dart';
 import 'package:drplanguageapp/pages/login_page.dart';
 import 'package:drplanguageapp/pages/reading_comp.dart';
@@ -22,20 +23,22 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.lightBlue[400]!),
-        useMaterial3: true,
-      ),
-      home: const MyHomePage(title: 'Bloom'),
+      debugShowCheckedModeBanner: false,
+      home: const MyHomePage(),
+      routes: {
+        '/loginpage': (context) => const LoginScreen(),
+        '/dashboard': (context) => const DashboardPage(),
+        '/dashboard/conversation': (context) => const Conversation(),
+        '/dashboard/readingcomp': (context) => const ReadingComp(),
+        '/dashboard/highlights': (context) => const Highlights(),
+        '/dialogue': (context) => const DialoguePage(),
+      },
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
+  const MyHomePage({super.key});
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
