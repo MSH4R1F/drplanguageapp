@@ -24,12 +24,12 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: const MyHomePage(),
+      home: const MyHomePage(title: 'Bloom'),
       routes: {
         '/loginpage': (context) => const LoginScreen(),
         '/dashboard': (context) => const DashboardPage(),
         '/dashboard/conversation': (context) => const Conversation(),
-        '/dashboard/readingcomp': (context) => const ReadingComp(),
+        '/dashboard/readingcomp': (context) => const DialoguePage(),
         '/dashboard/highlights': (context) => const Highlights(),
         '/dialogue': (context) => const DialoguePage(),
       },
@@ -38,7 +38,9 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key});
+  const MyHomePage({super.key, required this.title});
+
+  final String title;
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -51,7 +53,7 @@ class _MyHomePageState extends State<MyHomePage> {
       '/loginpage': (context) => const LoginScreen(),
       '/dashboard': (context) => const DashboardPage(),
       '/dashboard/conversation': (context) => const Conversation(),
-      '/dashboard/readingcomp': (context) => const ReadingComp(),
+      '/dashboard/readingcomp': (context) => const DialoguePage(),
       '/dashboard/highlights': (context) => const Highlights()
     });
   }
