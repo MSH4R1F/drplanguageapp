@@ -18,13 +18,12 @@ class LoginScreen extends StatelessWidget {
           children: <Widget>[
             const CircleAvatar(
               radius: 50,
-              backgroundImage: AssetImage('images/bloom.png'),
+              backgroundImage: AssetImage('assets/images/bloom.png'),
               child: Text(
                 'logo',
                 style: TextStyle(color: Colors.black),
               ),
             ),
-
             // App Name
             const Text(
               'Bloom',

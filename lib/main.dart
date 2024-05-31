@@ -5,9 +5,15 @@ import 'package:drplanguageapp/pages/highlights.dart';
 import 'package:drplanguageapp/pages/login_page.dart';
 import 'package:drplanguageapp/pages/reading_comp.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -41,8 +47,12 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: LoginScreen(),
-    );
+    return MaterialApp(title: widget.title, home: const LoginScreen(), routes: {
+      '/loginpage': (context) => const LoginScreen(),
+      '/dashboard': (context) => const DashboardPage(),
+      '/dashboard/conversation': (context) => const Conversation(),
+      '/dashboard/readingcomp': (context) => const ReadingComp(),
+      '/dashboard/highlights': (context) => const Highlights()
+    });
   }
 }
