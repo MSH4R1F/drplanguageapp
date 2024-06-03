@@ -31,22 +31,21 @@ class _DialoguePageState extends State<DialoguePage> {
     }
 
     List<Widget> splitSelectableText(String text) {
-      List<String> splitText = text.split(RegExp(r'(?<=[۔])\s*'));
+      //List<String> splitText = text.split(RegExp(r'(?<=[۔])\s*'));
+      List<String> splitText = text.split(RegExp(r' '));
       return splitText
-          .map((sentence) => Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
-                child: ElevatedButton(
-                  onPressed: () => showDialogueBox(),
-                  child: Text(
-                    sentence,
-                    style: const TextStyle(
-                      fontSize: 18,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
+          .map(
+            (word) => InkWell(
+              onTap: () => showDialogueBox(),
+              child: Text(
+                "$word ",
+                style: const TextStyle(
+                  fontSize: 20,
                 ),
-              ))
+                textAlign: TextAlign.center,
+              ),
+            ),
+          )
           .toList();
     }
 
@@ -99,8 +98,14 @@ class _DialoguePageState extends State<DialoguePage> {
         ),
       ),
       body: SingleChildScrollView(
-        child: Column(
-          children: splitSelectableText(text),
+        padding: const EdgeInsets.symmetric(
+          horizontal: 5,
+        ),
+        child: Directionality(
+          textDirection: TextDirection.rtl,
+          child: Wrap(
+            children: splitSelectableText(text),
+          ),
         ),
       ),
     );
