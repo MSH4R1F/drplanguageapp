@@ -3,7 +3,8 @@ import 'package:drplanguageapp/pages/chat_page.dart';
 import 'package:flutter/material.dart';
 
 class Conversation extends StatefulWidget {
-  const Conversation({super.key});
+  final String userID;
+  Conversation({super.key, required this.userID});
 
   @override
   State<Conversation> createState() => _ConversationState();
@@ -13,11 +14,13 @@ class _ConversationState extends State<Conversation> {
   final TextEditingController _controller = TextEditingController();
   // final FlutterSoundRecorder _recorder = FlutterSoundRecorder();
   // bool _isRecording = false;
-
+  final String chatID = "chat1";
+  String userID = "userID";
   @override
   void initState() {
     super.initState();
     // _initialiseRecorder();
+    userID = widget.userID;
   }
 
   // Future<void> _initialiseRecorder() async {
@@ -73,119 +76,23 @@ class _ConversationState extends State<Conversation> {
 
   var chatt = [
     Chat(
-        sender: "Bob",
-        content: "Hello boy",
-        timestamp: DateTime.parse("2012-02-27 13:27:00"),
+        sender: "AI",
+        content: "Hello! How can I help you today?",
+        timestamp: DateTime.now(),
         colour: Colors.green,
         ai: true),
-    Chat(
-        sender: "Jaffer",
-        content: "stiunkty stinky",
-        timestamp: DateTime.parse("2012-02-27 13:28:00"),
-        colour: Colors.blue,
-        ai: false),
-    Chat(
-        sender: "Bob",
-        content: "Hello boy",
-        timestamp: DateTime.parse("2012-02-27 13:27:00"),
-        colour: Colors.green,
-        ai: true),
-    Chat(
-        sender: "Jaffer",
-        content: "stiunkty stinky",
-        timestamp: DateTime.parse("2012-02-27 13:28:00"),
-        colour: Colors.blue,
-        ai: false),
-    Chat(
-        sender: "Bob",
-        content: "Hello boy",
-        timestamp: DateTime.parse("2012-02-27 13:27:00"),
-        colour: Colors.green,
-        ai: true),
-    Chat(
-        sender: "Jaffer",
-        content: "stiunkty stinky",
-        timestamp: DateTime.parse("2012-02-27 13:28:00"),
-        colour: Colors.blue,
-        ai: false),
-    Chat(
-        sender: "Bob",
-        content: "Hello boy",
-        timestamp: DateTime.parse("2012-02-27 13:27:00"),
-        colour: Colors.green,
-        ai: true),
-    Chat(
-        sender: "Jaffer",
-        content: "stiunkty stinky",
-        timestamp: DateTime.parse("2012-02-27 13:28:00"),
-        colour: Colors.blue,
-        ai: false),
-    Chat(
-        sender: "Bob",
-        content: "Hello boy",
-        timestamp: DateTime.parse("2012-02-27 13:27:00"),
-        colour: Colors.green,
-        ai: true),
-    Chat(
-        sender: "Jaffer",
-        content: "stiunkty stinky",
-        timestamp: DateTime.parse("2012-02-27 13:28:00"),
-        colour: Colors.blue,
-        ai: false),
-    Chat(
-        sender: "Bob",
-        content: "Hello boy",
-        timestamp: DateTime.parse("2012-02-27 13:27:00"),
-        colour: Colors.green,
-        ai: true),
-    Chat(
-        sender: "Jaffer",
-        content: "stiunkty stinky",
-        timestamp: DateTime.parse("2012-02-27 13:28:00"),
-        colour: Colors.blue,
-        ai: false),
-    Chat(
-        sender: "Bob",
-        content: "Hello boy",
-        timestamp: DateTime.parse("2012-02-27 13:27:00"),
-        colour: Colors.green,
-        ai: true),
-    Chat(
-        sender: "Jaffer",
-        content: "stiunkty stinky",
-        timestamp: DateTime.parse("2012-02-27 13:28:00"),
-        colour: Colors.blue,
-        ai: false),
-    Chat(
-        sender: "Bob",
-        content: "Hello boy",
-        timestamp: DateTime.parse("2012-02-27 13:27:00"),
-        colour: Colors.green,
-        ai: true),
-    Chat(
-        sender: "Jaffer",
-        content: "stiunkty stinky",
-        timestamp: DateTime.parse("2012-02-27 13:28:00"),
-        colour: Colors.blue,
-        ai: false),
-    Chat(
-        sender: "Bob",
-        content: "Hello boy",
-        timestamp: DateTime.parse("2012-02-27 13:27:00"),
-        colour: Colors.green,
-        ai: true),
-    Chat(
-        sender: "Jaffer",
-        content: "stihjtyjfgjfgjtyjhsthhjshghdhdfhfghdfhsfhdfhunkty stinky",
-        timestamp: DateTime.parse("2012-02-27 13:28:00"),
-        colour: Colors.blue,
-        ai: false)
   ];
 
   void addtoChat(bool isAi, String text) {
-    Chat toAdd = Chat(sender: "Me", content: text, timestamp: DateTime.now(), colour: Colors.blue, ai: isAi);
+    Chat toAdd = Chat(
+        sender: "Me",
+        content: text,
+        timestamp: DateTime.now(),
+        colour: Colors.blue,
+        ai: isAi);
     setState(() {
       chatt.insert(0, toAdd);
+      sendMessageFromUser(userID, chatID, text);
     });
   }
 
@@ -240,7 +147,6 @@ class _ConversationState extends State<Conversation> {
       print('Message sent');
     }).catchError((error) {
       print('Error sending message: $error');
-
     });
   }
 
@@ -273,24 +179,11 @@ class _ConversationState extends State<Conversation> {
                       decoration: const InputDecoration(
                           border: OutlineInputBorder(),
                           hintText: "Reply here or with the mic",
-
-                          hintStyle: TextStyle(
-                            fontSize: 15.0
-                          )
-                        ),
-                      ),
-                    ),
-                    IconButton(
-                      onPressed: (() => userPressedSend(_controller.text)),
-                      icon: Icon(
-                        Icons.send,
-                        size: 30,
-                        color: Theme.of(context).primaryColor,
-                      ),
+                          hintStyle: TextStyle(fontSize: 15.0)),
                     ),
                   ),
                   IconButton(
-                    onPressed: addtoChat,
+                    onPressed: (() => userPressedSend(_controller.text)),
                     icon: Icon(
                       Icons.send,
                       size: 30,
