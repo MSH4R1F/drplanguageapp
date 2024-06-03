@@ -93,12 +93,18 @@ class _ConversationState extends State<Conversation> {
     Chat(sender: "Jaffer", content: "stihjtyjfgjfgjtyjhsthhjshghdhdfhfghdfhsfhdfhunkty stinky", timestamp: DateTime.parse("2012-02-27 13:28:00") , colour: Colors.blue, ai: false)
     ];
 
-  void addtoChat() {
-    var temp = _controller.text;
-    _controller.clear();
+  void addtoChat(bool isAi, String text) {
+    Chat toAdd = Chat(sender: "Me", content: text, timestamp: DateTime.now(), colour: Colors.blue, ai: isAi);
     setState(() {
-      chatt = [Chat(sender: "Me", content: temp, timestamp: DateTime.now(), colour: Colors.blue, ai: false)];
+      chatt.insert(0, toAdd);
     });
+  }
+
+  void userPressedSend(String text) {
+    if (text.isNotEmpty) {
+      addtoChat(false, text);
+    }
+    _controller.clear();
   }
 
   @override
@@ -130,7 +136,7 @@ class _ConversationState extends State<Conversation> {
                       ),
                     ),
                     IconButton(
-                      onPressed: addtoChat,
+                      onPressed: (() => userPressedSend(_controller.text)),
                       icon: Icon(
                         Icons.send,
                         size: 30,
