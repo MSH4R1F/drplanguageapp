@@ -13,7 +13,7 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -31,7 +31,6 @@ class MyApp extends StatelessWidget {
         '/dashboard/conversation': (context) => const Conversation(),
         '/dashboard/readingcomp': (context) => const DialoguePage(),
         '/dashboard/highlights': (context) => const Highlights(),
-        '/dialogue': (context) => const DialoguePage(),
       },
     );
   }
@@ -49,12 +48,8 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(title: widget.title, home: const LoginScreen(), routes: {
-      '/loginpage': (context) => const LoginScreen(),
-      '/dashboard': (context) => const DashboardPage(),
-      '/dashboard/conversation': (context) => const Conversation(),
-      '/dashboard/readingcomp': (context) => const DialoguePage(),
-      '/dashboard/highlights': (context) => const Highlights()
-    });
+    return const Scaffold(
+      body: LoginScreen(),
+    );
   }
 }

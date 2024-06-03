@@ -19,8 +19,6 @@ class _DashboardPageState extends State<DashboardPage> {
         .get();
 
     // log the querySnapshot using a logging framework but print in red
-    print(querySnapshot.docs);
-    
     if (querySnapshot.docs.isNotEmpty) {
       return querySnapshot.docs.first.get('Name');
     } else {
@@ -33,13 +31,23 @@ class _DashboardPageState extends State<DashboardPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Dashboard'),
+        centerTitle: true,
+        automaticallyImplyLeading: false,
+        actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.pushReplacementNamed(context, '/loginpage');
+            },
+            icon: const Icon(Icons.logout),
+          )
+        ],
       ),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Padding(
-              padding: EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(16.0),
               child: FutureBuilder(
                 future: fetchUserNameByUID(userUID),
                 builder: (context, snapshot) {
@@ -57,7 +65,7 @@ class _DashboardPageState extends State<DashboardPage> {
                 },
               ),
             ),
-            Padding(
+            const Padding(
                 padding: EdgeInsets.all(8.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -93,9 +101,12 @@ class _DashboardPageState extends State<DashboardPage> {
                     ),
                   ],
                 )),
-            FeatureCard(title: 'Conversation', link: '/dashboard/conversation'),
-            FeatureCard(title: 'Reading Comp', link: '/dashboard/readingcomp'),
-            FeatureCard(title: 'Highlights', link: '/dashboard/highlights'),
+            const FeatureCard(
+                title: 'Conversation', link: '/dashboard/conversation'),
+            const FeatureCard(
+                title: 'Reading Comp', link: '/dashboard/readingcomp'),
+            const FeatureCard(
+                title: 'Highlights', link: '/dashboard/highlights'),
           ],
         ),
       ),

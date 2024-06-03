@@ -8,7 +8,9 @@ class LoginScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: const Text("Login to Bloom"),
+        title: const Text("Login to Mahdi"),
+        centerTitle: true,
+        automaticallyImplyLeading: false,
       ),
       body: Center(
         // Center is a layout widget. It takes a single child and positions it
@@ -46,18 +48,7 @@ class LoginScreen extends StatelessWidget {
               onPressed: () {
                 // Respond to button press
               },
-              style: ElevatedButton.styleFrom(
-                  minimumSize: const Size(double.infinity, 50)),
               child: const Text('Register'),
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pushReplacementNamed(context, '/dialogue');
-              },
-              child: const Text("Dialogue"),
             ),
           ],
         ),
