@@ -1,10 +1,15 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:drplanguageapp/pages/chat_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_sound/flutter_sound.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class Conversation extends StatefulWidget {
   final String userID;
-  Conversation({super.key, required this.userID});
+  const Conversation({super.key, required this.userID});
 
   @override
   State<Conversation> createState() => _ConversationState();
@@ -12,74 +17,103 @@ class Conversation extends StatefulWidget {
 
 class _ConversationState extends State<Conversation> {
   final TextEditingController _controller = TextEditingController();
-  // final FlutterSoundRecorder _recorder = FlutterSoundRecorder();
-  // bool _isRecording = false;
   final String chatID = "chat1";
   String userID = "userID";
+
+  FlutterSoundRecorder? _recorder;
+  FlutterSoundPlayer? _player;
+  bool _isRecording = false;
+  // bool _isPlaying = false;
+  String? _filePath;
+
+
+
   @override
   void initState() {
     super.initState();
-    // _initialiseRecorder();
+    _recorder = FlutterSoundRecorder();
+    _player = FlutterSoundPlayer();
+    _initializeRecorder();
+    _initializePlayer();
     userID = widget.userID;
   }
 
-  // Future<void> _initialiseRecorder() async {
-  //   await _recorder.openRecorder();
+  Future<void> _initializeRecorder() async {
+    await _recorder!.openRecorder();
+    await _requestPermissions();
+  }
 
-  //   if (await Permission.microphone.request().isGranted) {
-  //     print("yayy");
-  //   } else {
-  //     // TODO: GREY OUT MIC IF MIC PERMISSION NOT ALLOWED
-  //     print("Denied");
-  //   }
-  // }
+  Future<void> _initializePlayer() async {
+    await _player!.openPlayer();
+  }
 
-  // Future<void> _initialiseRecorder() async {
-  //   await _recorder.openRecorder();
-  //   var status = await Permission.microphone.request();
-  //   // if (!status.isGranted) {
-  //   //   throw RecordingPermissionException("Microphone permission not granted");
-  //   // }
-  // }
+  Future<void> _requestPermissions() async {
+    await Permission.microphone.request();
+    await Permission.storage.request();
+  }
 
   @override
   void dispose() {
-    // _recorder.closeRecorder();
+    _recorder!.closeRecorder();
+    _player!.closePlayer();
+    _recorder = null;
+    _player = null;
     _controller.dispose();
     super.dispose();
   }
 
-  void printInput() {
-    print("User input: ${_controller.text}");
-    _controller.clear();
+  Future<void> _startRecording() async {
+    Directory docsDir = await getApplicationDocumentsDirectory();
+    String path = '${docsDir.path}/voice_recording.aac';
+    await _recorder!.startRecorder(
+      toFile: path,
+      codec: Codec.aacADTS,
+    );
+    setState(() {
+      _isRecording = true;
+      _filePath = path;
+    });
   }
 
-  // void _micButtonPressed() async {
-  //   if (!_isRecording) {
-  //     // start recording
-  //     await _recorder.startRecorder(
-  //       toFile: 'current_recording.aac',
-  //       codec: Codec.aacADTS,
-  //     );
+  Future<void> _stopRecording() async {
+    await _recorder!.stopRecorder();
+    setState(() {
+      _isRecording = false;
+      chatt.insert(0, Chat(sender: "me", content: "saved to $_filePath/voice_recording.aac", timestamp: DateTime.now(), ai: false));
+    });
+  }
 
+  // Future<void> _startPlayback() async {
+  //   if (_filePath != null) {
+  //     await _player!.startPlayer(
+  //       fromURI: _filePath,
+  //       codec: Codec.aacADTS,
+  //       whenFinished: () {
+  //         setState(() {
+  //           _isPlaying = false;
+  //         });
+  //       },
+  //     );
   //     setState(() {
-  //       _isRecording = true;
+  //       _isPlaying = true;
   //     });
-  //   } else {
-  //     String path = (await _recorder.stopRecorder()).toString();
-  //     setState(() {
-  //       _isRecording = false;
-  //     });
-  //     print("Recorded audio path: $path");
   //   }
   // }
+
+  // Future<void> _stopPlayback() async {
+  //   await _player!.stopPlayer();
+  //   setState(() {
+  //     _isPlaying = false;
+  //   });
+  // }
+
+
 
   var chatt = [
     Chat(
         sender: "AI",
         content: "Hello! How can I help you today?",
         timestamp: DateTime.now(),
-        colour: Colors.green,
         ai: true),
   ];
 
@@ -88,7 +122,6 @@ class _ConversationState extends State<Conversation> {
         sender: "Me",
         content: text,
         timestamp: DateTime.now(),
-        colour: Colors.blue,
         ai: isAi);
     setState(() {
       chatt.insert(0, toAdd);
@@ -192,8 +225,15 @@ class _ConversationState extends State<Conversation> {
                   ),
                   IconButton(
                     // TODO: MAKE MICROPHONE WORK
-                    onPressed: printInput,
-                    icon: Icon(Icons.mic,
+                    onPressed: () {
+                      if (_isRecording) {
+                        _stopRecording();
+                      } else {
+                        _startRecording();
+                      }
+                    },
+                    icon: Icon(
+                      _isRecording ? Icons.stop : Icons.mic,
                         size: 30, color: Theme.of(context).primaryColor),
                   ),
                 ],
