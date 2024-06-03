@@ -182,18 +182,10 @@ class _ConversationState extends State<Conversation> {
         ai: false)
   ];
 
-  void addtoChat() {
-    var temp = _controller.text;
-    _controller.clear();
+  void addtoChat(bool isAi, String text) {
+    Chat toAdd = Chat(sender: "Me", content: text, timestamp: DateTime.now(), colour: Colors.blue, ai: isAi);
     setState(() {
-      chatt = [
-        Chat(
-            sender: "Me",
-            content: temp,
-            timestamp: DateTime.now(),
-            colour: Colors.blue,
-            ai: false)
-      ];
+      chatt.insert(0, toAdd);
     });
   }
 
@@ -248,7 +240,15 @@ class _ConversationState extends State<Conversation> {
       print('Message sent');
     }).catchError((error) {
       print('Error sending message: $error');
+
     });
+  }
+
+  void userPressedSend(String text) {
+    if (text.isNotEmpty) {
+      addtoChat(false, text);
+    }
+    _controller.clear();
   }
 
   @override
@@ -273,7 +273,20 @@ class _ConversationState extends State<Conversation> {
                       decoration: const InputDecoration(
                           border: OutlineInputBorder(),
                           hintText: "Reply here or with the mic",
-                          hintStyle: TextStyle(fontSize: 15.0)),
+
+                          hintStyle: TextStyle(
+                            fontSize: 15.0
+                          )
+                        ),
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: (() => userPressedSend(_controller.text)),
+                      icon: Icon(
+                        Icons.send,
+                        size: 30,
+                        color: Theme.of(context).primaryColor,
+                      ),
                     ),
                   ),
                   IconButton(
