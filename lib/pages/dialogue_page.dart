@@ -30,7 +30,7 @@ class _DialoguePageState extends State<DialoguePage> {
       );
     }
 
-    List<Widget> splitSelectableText(String text) {
+    List<Widget> splitSelectableWord(String text) {
       //List<String> splitText = text.split(RegExp(r'(?<=[۔])\s*'));
       List<String> splitText = text.split(RegExp(r' '));
       return splitText
@@ -44,6 +44,28 @@ class _DialoguePageState extends State<DialoguePage> {
                 ),
                 textAlign: TextAlign.center,
               ),
+            ),
+          )
+          .toList();
+    }
+
+    List<Widget> splitSentence(String text) {
+      List<String> splitText = text.split(RegExp(r'(?<=[۔])\s*'));
+      return splitText
+          .map(
+            (sentence) => Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: Wrap(
+                    alignment: WrapAlignment.center,
+                    children: splitSelectableWord(sentence),
+                  ),
+                ),
+                const Divider(
+                  color: Colors.grey,
+                ),
+              ],
             ),
           )
           .toList();
@@ -103,8 +125,8 @@ class _DialoguePageState extends State<DialoguePage> {
         ),
         child: Directionality(
           textDirection: TextDirection.rtl,
-          child: Wrap(
-            children: splitSelectableText(text),
+          child: Column(
+            children: splitSentence(text),
           ),
         ),
       ),
