@@ -71,6 +71,7 @@ class _DialoguePageState extends State<DialoguePage> {
             const DrawerHeader(
               child: CircleAvatar(
                 backgroundImage: AssetImage('assets/images/bloom.png'),
+                radius: 50,
               ),
             ),
             ListTile(
