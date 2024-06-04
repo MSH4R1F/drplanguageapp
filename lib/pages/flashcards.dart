@@ -64,9 +64,10 @@ class SpinWordWidget extends StatefulWidget {
 }
 
 class SpinWordWidgetState extends State<SpinWordWidget>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   bool _showFirstWord = true;
   late AnimationController _controller;
+  late AnimationController _imageController;
   late Animation<double> _rotationAnimation;
   late Animation<Offset> _slideUpAnimation;
   late Animation<Offset> _slideDownAnimation;
@@ -79,9 +80,13 @@ class SpinWordWidgetState extends State<SpinWordWidget>
       duration: const Duration(seconds: 1),
       vsync: this,
     );
+    _imageController = AnimationController(
+      duration: const Duration(seconds: 1),
+      vsync: this,
+    );
     _rotationAnimation = Tween<double>(begin: 0, end: 1).animate(_controller);
     _slideUpAnimation = Tween<Offset>(begin: Offset.zero, end: const Offset(0, -1))
-        .animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
+        .animate(CurvedAnimation(parent: _imageController, curve: Curves.easeInOut));
     _slideDownAnimation = Tween<Offset>(begin: const Offset(0, 1), end: Offset.zero)
         .animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
     _fadeInFadeOutAnimation = Tween<double>(begin: 0.0, end: 1.0)
@@ -91,13 +96,15 @@ class SpinWordWidgetState extends State<SpinWordWidget>
   void _toggleWord() {
     if (_showFirstWord) {
       _controller.forward();
+      _imageController.reverse();
     } else {
       _controller.reverse();
+      _imageController.forward();
     }
     _showFirstWord = !_showFirstWord;
   }
 
-  @override
+    @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: _toggleWord,
@@ -108,17 +115,23 @@ class SpinWordWidgetState extends State<SpinWordWidget>
             animation: _rotationAnimation,
             builder: (context, child) {
               return SlideTransition(
-                position: _rotationAnimation.value <= 0.5 ? _slideUpAnimation : _slideDownAnimation,
-                child: Transform(
-                  alignment: FractionalOffset.center,
-                  transform: Matrix4.rotationY(_rotationAnimation.value * 3.14),
-                  child: _rotationAnimation.value <= 0.5
-                      ? Text(widget.word1, style: const TextStyle(fontSize: 24))
-                      : Transform(
-                          alignment: Alignment.center,
-                          transform: Matrix4.rotationY(3.14),
-                          child: Text(widget.word2, style: const TextStyle(fontSize: 24)),
+                position: _slideUpAnimation,
+                child: FadeTransition(
+                  opacity: _fadeInFadeOutAnimation,
+                  child: Visibility(
+                    visible: _rotationAnimation.value > 0.5,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Image.network(
+                          widget.imageUrl,
+                          height: 150,
                         ),
+                        const SizedBox(height: 20),
+                      ]
+                    ),
+                  ),
                 ),
               );
             },
@@ -126,32 +139,42 @@ class SpinWordWidgetState extends State<SpinWordWidget>
           AnimatedBuilder(
             animation: _rotationAnimation,
             builder: (context, child) {
-              return FadeTransition(
-                opacity: _fadeInFadeOutAnimation,
-                child: Visibility(
-                  visible: _rotationAnimation.value > 0.5,
-                  child: SlideTransition(
-                    position: _slideDownAnimation,
+              return Transform(
+                  alignment: FractionalOffset.center,
+                  transform: Matrix4.rotationY(_rotationAnimation.value * 3.14),
+                  child: _rotationAnimation.value <= 0.5
+                      ? Text(widget.word1, style: const TextStyle(fontSize: 28))
+                      : Transform(
+                          alignment: Alignment.center,
+                          transform: Matrix4.rotationY(3.14),
+                          child: Text(widget.word2, style: const TextStyle(fontSize: 28)),
+                        ),
+              );
+            },
+          ),
+            AnimatedBuilder(
+            animation: _rotationAnimation,
+            builder: (context, child) {
+              return SlideTransition(
+                position: _slideDownAnimation,
+                child: FadeTransition(
+                  opacity: _fadeInFadeOutAnimation,
+                  child: Visibility(
+                    visible: _rotationAnimation.value > 0.5,
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         const SizedBox(height: 20),
-                        Image.network(
-                          widget.imageUrl,
-                          height: 100,
-                          width: 100,
-                        ),
-                        const SizedBox(height: 20),
                         Text(
                           widget.definition,
-                          style: const TextStyle(fontSize: 16, fontStyle: FontStyle.italic),
+                          style: const TextStyle(fontSize: 20, fontStyle: FontStyle.italic),
                           textAlign: TextAlign.center,
                         ),
                         const SizedBox(height: 10),
                         Text(
                           'Synonyms: ${widget.synonyms.join('، ')}',
-                          style: const TextStyle(fontSize: 16),
+                          style: const TextStyle(fontSize: 20),
                           textAlign: TextAlign.center,
                         ),
                       ],
