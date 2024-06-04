@@ -23,7 +23,7 @@ class _DialoguePageState extends State<DialoguePage> {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(5),
             ),
-            child: Container(
+            child: SizedBox(
               height: 300,
               width: MediaQuery.of(context).size.width,
               child: Center(
@@ -121,6 +121,13 @@ class _DialoguePageState extends State<DialoguePage> {
               title: const Text("Highlights"),
               onTap: () {
                 Navigator.pushNamed(context, '/dashboard/highlights');
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.subtitles),
+              title: const Text("Flashcards"),
+              onTap: () {
+                Navigator.pushNamed(context, '/dashboard/flashcards');
               },
             ),
           ],
