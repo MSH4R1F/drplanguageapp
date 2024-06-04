@@ -17,10 +17,13 @@ class Conversation extends StatefulWidget {
   State<Conversation> createState() => _ConversationState();
 }
 
+const List<String> list = <String>["Al Minshawi", "Khalil Al-Qari", "GENERIC_BANGLADESHI_NAME"];
+
 class _ConversationState extends State<Conversation> {
   final TextEditingController _controller = TextEditingController();
   final String chatID = "chat1";
   String userID = "userID";
+  var dropdownValue = list.first; 
 
   FlutterSoundRecorder? _recorder;
   FlutterSoundPlayer? _player;
@@ -78,15 +81,12 @@ class _ConversationState extends State<Conversation> {
 
   Future<void> _stopRecording() async {
     await _recorder!.stopRecorder();
+    
     setState(() {
       _isRecording = false;
-      chatt.insert(
-          0,
-          Chat(
-              sender: "me",
-              content: "saved to $_filePath/voice_recording.aac",
-              timestamp: DateTime.now(),
-              ai: false));
+      // chatt.insert(0, Chat(sender: "me", content: Text("saved to $_filePath"), timestamp: DateTime.now(), ai: false));
+      chatt.insert(0, Chat(sender: "me", content: const Text("--- AUDIO SENT ---"), timestamp: DateTime.now(), ai: false));
+
     });
   }
 
@@ -113,6 +113,7 @@ class _ConversationState extends State<Conversation> {
   //     _isPlaying = false;
   //   });
   // }
+
 
   // declare list of chats
   List<Chat> chatt = [];
@@ -192,12 +193,35 @@ class _ConversationState extends State<Conversation> {
     _controller.clear();
   }
 
+  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Conversation"),
-      ),
+        title: Row(
+          children: [
+            const Icon(Icons.account_circle_rounded, size: 50,),
+            Container(
+              margin: const EdgeInsets.all(5.0),
+            ),
+            Expanded(
+              child: DropdownMenu<String>(
+                    initialSelection: list.first,
+                    onSelected: (String? value) {
+                      // This is called when the user selects an item.
+                      setState(() {
+                        dropdownValue = value!;
+                      });
+                    },
+                    dropdownMenuEntries: list.map<DropdownMenuEntry<String>>((String value) {
+                      return DropdownMenuEntry<String>(value: value, label: value);
+                    }).toList(),
+                ),
+            )
+          ],
+        ),
+      ), 
       body: Column(
         children: [
           Expanded(child: ChatPage(chats: chatt)),
@@ -218,11 +242,15 @@ class _ConversationState extends State<Conversation> {
                     ),
                   ),
                   IconButton(
-                    onPressed: (() => userPressedSend(_controller.text)),
+                    onPressed: (() => {
+                      if (!_isRecording) {
+                      userPressedSend(_controller.text)
+                      }
+                    }),
                     icon: Icon(
                       Icons.send,
                       size: 30,
-                      color: Theme.of(context).primaryColor,
+                      color: _isRecording ? Colors.grey : Theme.of(context).primaryColor,
                     ),
                   ),
                   IconButton(

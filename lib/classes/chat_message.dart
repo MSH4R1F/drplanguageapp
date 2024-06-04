@@ -19,12 +19,7 @@ class ChatMessage extends StatelessWidget {
                     bottomLeft: chat.ai ? Radius.zero :  const Radius.circular(12.0),
                   ),
                 ),
-                child: Text(
-                  chat.content,
-                  style: const TextStyle(
-                    color: Colors.black,
-                  )
-                ),
+                child: chat.content,
                 );
   }
 }

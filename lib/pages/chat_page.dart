@@ -37,12 +37,7 @@ class _ChatPageState extends State<ChatPage> {
                     bottomLeft: widget.chats[index].ai ? Radius.zero :  const Radius.circular(12.0),
                   ),
                 ),
-                child: Text(
-                  widget.chats[index].content,
-                  style: const TextStyle(
-                    color: Colors.black,
-                  )
-                ),
+                child: widget.chats[index].content,
                 ),
               );
             },
@@ -56,7 +51,7 @@ class _ChatPageState extends State<ChatPage> {
 
 class Chat {
   final String sender;
-  final String content;
+  final Widget content;
   final DateTime timestamp;
   final bool ai;
 
