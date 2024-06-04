@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:drplanguageapp/pages/chat_page.dart';
 import 'package:flutter/material.dart';
+import 'package:drplanguageapp/classes/chat_service.dart';
 
 class Conversation extends StatefulWidget {
   final String userID;
@@ -154,6 +155,12 @@ class _ConversationState extends State<Conversation> {
     if (text.isNotEmpty) {
       addtoChat(false, text);
     }
+    ChatService().request().then((value) {
+      if (value != null) {
+        addtoChat(true, value);
+        addtoChat(false, "bye");
+      }
+    });
     _controller.clear();
   }
 

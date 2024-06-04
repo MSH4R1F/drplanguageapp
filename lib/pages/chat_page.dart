@@ -1,5 +1,7 @@
 
 import 'package:flutter/material.dart';
+import 'package:drplanguageapp/classes/chat_message.dart';
+
 
 class ChatPage extends StatefulWidget {
   final List<Chat> chats;
@@ -22,6 +24,7 @@ class _ChatPageState extends State<ChatPage> {
             itemBuilder: (context, index) {
               return Align(
                 alignment: widget.chats[index].ai ? Alignment.centerLeft : Alignment.centerRight,
+                // child: ChatMessage(chat: widget.chats[index]),
                 child: Container(
                   margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
                   padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 16.0),
@@ -57,6 +60,7 @@ class Chat {
   final DateTime timestamp;
   final Color colour;
   final bool ai;
+
 
   Chat({
     required this.sender,
