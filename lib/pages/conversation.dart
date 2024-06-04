@@ -27,8 +27,6 @@ class _ConversationState extends State<Conversation> {
   // bool _isPlaying = false;
   String? _filePath;
 
-
-
   @override
   void initState() {
     super.initState();
@@ -80,7 +78,13 @@ class _ConversationState extends State<Conversation> {
     await _recorder!.stopRecorder();
     setState(() {
       _isRecording = false;
-      chatt.insert(0, Chat(sender: "me", content: "saved to $_filePath/voice_recording.aac", timestamp: DateTime.now(), ai: false));
+      chatt.insert(
+          0,
+          Chat(
+              sender: "me",
+              content: "saved to $_filePath/voice_recording.aac",
+              timestamp: DateTime.now(),
+              ai: false));
     });
   }
 
@@ -108,8 +112,6 @@ class _ConversationState extends State<Conversation> {
   //   });
   // }
 
-
-
   var chatt = [
     Chat(
         sender: "AI",
@@ -119,11 +121,8 @@ class _ConversationState extends State<Conversation> {
   ];
 
   void addtoChat(bool isAi, String text) {
-    Chat toAdd = Chat(
-        sender: "Me",
-        content: text,
-        timestamp: DateTime.now(),
-        ai: isAi);
+    Chat toAdd =
+        Chat(sender: "Me", content: text, timestamp: DateTime.now(), ai: isAi);
     setState(() {
       chatt.insert(0, toAdd);
       sendMessageFromUser(userID, chatID, text);
@@ -188,10 +187,9 @@ class _ConversationState extends State<Conversation> {
     if (text.isNotEmpty) {
       addtoChat(false, text);
     }
-    ChatService().request().then((value) {
+    ChatService().request(text).then((value) {
       if (value != null) {
         addtoChat(true, value);
-        addtoChat(false, "bye");
       }
     });
     _controller.clear();
@@ -239,8 +237,7 @@ class _ConversationState extends State<Conversation> {
                         _startRecording();
                       }
                     },
-                    icon: Icon(
-                      _isRecording ? Icons.stop : Icons.mic,
+                    icon: Icon(_isRecording ? Icons.stop : Icons.mic,
                         size: 30, color: Theme.of(context).primaryColor),
                   ),
                 ],
