@@ -42,5 +42,3 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
-# ignore openAI key file
-/lib/api_key.dart
