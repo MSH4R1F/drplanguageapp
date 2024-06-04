@@ -8,16 +8,25 @@ class ChatMessage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8),
-        color: Colors.blue,
-      ),
-      child: const Text(
-        "hello stinksdfgo[dngoisfjh[oisfjh]]",
-        style:  TextStyle(fontSize: 16)
-        ,)
-      ,
-      ); 
+                  margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
+                  padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 16.0),
+                  decoration: BoxDecoration(
+                    color: chat.ai ? Colors.grey[300] : Colors.green[300],
+                  borderRadius: BorderRadius.only(
+                    topLeft: const Radius.circular(12.0),
+                    topRight: const Radius.circular(12.0),
+                    bottomRight: chat.ai ? const Radius.circular(12.0) : Radius.zero,
+                    bottomLeft: chat.ai ? Radius.zero :  const Radius.circular(12.0),
+                  ),
+                ),
+                child: Text(
+                  chat.content,
+                  style: const TextStyle(
+                    color: Colors.black,
+                  )
+                ),
+                );
   }
 }
+
+// content is either text or audio

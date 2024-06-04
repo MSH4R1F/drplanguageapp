@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:drplanguageapp/pages/chat_page.dart';
 import 'package:flutter/material.dart';
+import 'package:drplanguageapp/classes/chat_service.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -187,6 +188,12 @@ class _ConversationState extends State<Conversation> {
     if (text.isNotEmpty) {
       addtoChat(false, text);
     }
+    ChatService().request().then((value) {
+      if (value != null) {
+        addtoChat(true, value);
+        addtoChat(false, "bye");
+      }
+    });
     _controller.clear();
   }
 
