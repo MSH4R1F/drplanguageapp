@@ -1,3 +1,4 @@
+import 'dart:ffi';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -34,6 +35,7 @@ class _ConversationState extends State<Conversation> {
     _player = FlutterSoundPlayer();
     _initializeRecorder();
     _initializePlayer();
+    _initializeAI();
     userID = widget.userID;
   }
 
@@ -112,13 +114,8 @@ class _ConversationState extends State<Conversation> {
   //   });
   // }
 
-  var chatt = [
-    Chat(
-        sender: "AI",
-        content: "Hello! How can I help you today?",
-        timestamp: DateTime.now(),
-        ai: true),
-  ];
+  // declare list of chats
+  List<Chat> chatt = [];
 
   void addtoChat(bool isAi, String text) {
     Chat toAdd =
@@ -247,5 +244,19 @@ class _ConversationState extends State<Conversation> {
         ],
       ),
     );
+  }
+
+  void sendMessageToAI(String messageText) {
+    ChatService().request(messageText).then((value) {
+      if (value != null) {
+        addtoChat(true, value);
+        return value;
+      }
+    });
+  }
+
+  void _initializeAI() {
+    sendMessageToAI(
+        "Hello! Following this message you are going to help this user practise conversation in Arabic. Here are the rules you must follow: 1: Speak only in Arabic, 2: Do not speak English except when I ask for someone help. First message introduce yourself, your name is Jaber, the topic you will speak about today is 'The Weather'. Please can you speak like you are speaking to a beginner in the language.");
   }
 }

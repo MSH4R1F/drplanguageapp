@@ -11,7 +11,7 @@ class ChatService {
   };
 
   Future<String?> request(String prompt) async {
-    int maxTokens = 50;
+    int maxTokens = 100;
     try {
       var response = await http.post(
         _url,
