@@ -77,13 +77,17 @@ class WordsListPage extends StatelessWidget {
           itemCount: flashcards.length,
           itemBuilder: (context, index) {
             return ListTile(
-              title: Center(child: Text(flashcards[index].word)),
+              title: Center(
+                  child: Text(flashcards[index].word,
+                      style: const TextStyle(fontSize: 24))),
               onTap: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) =>
-                        FlashcardPage(flashcard: flashcards[index]),
+                    builder: (context) => FlashcardPage(
+                      flashcard: flashcards[index],
+                      flashcards: flashcards,
+                    ),
                   ),
                 );
               },
@@ -97,8 +101,10 @@ class WordsListPage extends StatelessWidget {
 
 class FlashcardPage extends StatelessWidget {
   final Flashcard flashcard;
+  final List<Flashcard> flashcards;
 
-  const FlashcardPage({super.key, required this.flashcard});
+  const FlashcardPage(
+      {super.key, required this.flashcard, required this.flashcards});
 
   @override
   Widget build(BuildContext context) {
@@ -124,11 +130,8 @@ class FlashcardPage extends StatelessWidget {
         ),
         body: Center(
           child: SpinWordWidget(
-            word1: flashcard.word,
-            word2: flashcard.translation,
-            definition: flashcard.definition,
-            synonyms: flashcard.synonyms,
-            imageUrl: flashcard.imageUrl,
+            flashcard: flashcard,
+            flashcards: flashcards,
           ),
         ),
       ),
@@ -137,19 +140,13 @@ class FlashcardPage extends StatelessWidget {
 }
 
 class SpinWordWidget extends StatefulWidget {
-  final String word1;
-  final String word2;
-  final String definition;
-  final List<String> synonyms;
-  final String imageUrl;
+  final Flashcard flashcard;
+  final List<Flashcard> flashcards;
 
   const SpinWordWidget({
     super.key,
-    required this.word1,
-    required this.word2,
-    required this.definition,
-    required this.synonyms,
-    required this.imageUrl,
+    required this.flashcard,
+    required this.flashcards,
   });
 
   @override
@@ -220,7 +217,7 @@ class SpinWordWidgetState extends State<SpinWordWidget>
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Image.network(
-                            widget.imageUrl,
+                            widget.flashcard.imageUrl,
                             height: 150,
                           ),
                           const SizedBox(height: 20),
@@ -237,11 +234,12 @@ class SpinWordWidgetState extends State<SpinWordWidget>
                 alignment: FractionalOffset.center,
                 transform: Matrix4.rotationY(_rotationAnimation.value * 3.14),
                 child: _rotationAnimation.value <= 0.5
-                    ? Text(widget.word1, style: const TextStyle(fontSize: 28))
+                    ? Text(widget.flashcard.word,
+                        style: const TextStyle(fontSize: 28))
                     : Transform(
                         alignment: Alignment.center,
                         transform: Matrix4.rotationY(3.14),
-                        child: Text(widget.word2,
+                        child: Text(widget.flashcard.translation,
                             style: const TextStyle(fontSize: 28)),
                       ),
               );
@@ -262,16 +260,39 @@ class SpinWordWidgetState extends State<SpinWordWidget>
                       children: [
                         const SizedBox(height: 20),
                         Text(
-                          widget.definition,
+                          widget.flashcard.definition,
                           style: const TextStyle(
                               fontSize: 20, fontStyle: FontStyle.italic),
                           textAlign: TextAlign.center,
                         ),
                         const SizedBox(height: 10),
-                        Text(
-                          'Synonyms: ${widget.synonyms.join('، ')}',
-                          style: const TextStyle(fontSize: 20),
-                          textAlign: TextAlign.center,
+                        Wrap(
+                          spacing: 8.0, // gap between adjacent chips
+                          runSpacing: 4.0, // gap between lines
+                          children:
+                              widget.flashcard.synonyms.map((String synonym) {
+                            return GestureDetector(
+                              onTap: () {
+                                Flashcard? flashcard = widget.flashcards
+                                    .firstWhere((card) => card.word == synonym,
+                                        orElse: () => null as Flashcard);
+                                if (flashcard != null) {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => FlashcardPage(
+                                        flashcard: flashcard,
+                                        flashcards: widget.flashcards,
+                                      ),
+                                    ),
+                                  );
+                                }
+                              },
+                              child: Chip(
+                                label: Text(synonym),
+                              ),
+                            );
+                          }).toList(),
                         ),
                       ],
                     ),
