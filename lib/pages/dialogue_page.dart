@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:drplanguageapp/api/gpt.dart';
 
 class DialoguePage extends StatefulWidget {
   const DialoguePage({super.key});
@@ -8,10 +9,9 @@ class DialoguePage extends StatefulWidget {
 }
 
 class _DialoguePageState extends State<DialoguePage> {
+  TextGenerator generator = TextGenerator();
   @override
   Widget build(BuildContext context) {
-    const String text =
-        "گاہک بہت اہم ہے، گاہک گاہک کی پیروی کرے گا۔ اس کی کوئی وجہ نہیں ہے۔ یہ زندگی، لیسنیا اور دوا کے نتیجے سے مختلف نہیں تھا. لیکن باسکٹ بال لیگ اس کی پیروی کرے گی، جیسا کہ فٹ بال کی خوشامد کرتے ہیں۔ کچھ تکیے اور چاکلیٹ کارٹون۔ کچھ بھی آسان نہیں ہے۔ اداس خالص الٹریسیز اور تکیہ تک. کچھ تیر مفت ہیں۔ امیر زندگی سے چاپلوسی ہوتی ہے، اور وادی بدصورت ہے۔ ملک کام نہیں کرنا چاہتا۔ یہ موریس کی حاملہ زندگی کا ماتم ہے۔ اب فٹ بال کے شائقین کو پینے کی ضرورت ہے۔ یہ ایک لحاف کی طرح ہے۔ لیکن بچے لائم لائٹ میں ہوتے ہیں، اس لیے بعض اوقات کچھ لوگ پسند کرتے ہیں۔";
     // TODO: implement build
     void showDialogueBox(String text) {
       String filteredText = text.replaceAll(RegExp(r"['،؟۔!.,;:?-]"), '');
@@ -133,16 +133,29 @@ class _DialoguePageState extends State<DialoguePage> {
           ],
         ),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 5,
-        ),
-        child: Directionality(
-          textDirection: TextDirection.rtl,
-          child: Column(
-            children: splitSentence(text),
-          ),
-        ),
+      body: FutureBuilder<String?>(
+        future: generator.generateText(
+            "Give a paragraph of about 100 words in Urdu without any additional text or introduction"),
+        builder: (BuildContext context, AsyncSnapshot<String?> snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            if (snapshot.hasData) {
+              return SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 5),
+                child: Directionality(
+                  textDirection: TextDirection.rtl,
+                  child: Column(
+                    children: splitSentence(snapshot.data!),
+                  ),
+                ),
+              );
+            } else if (snapshot.hasError) {
+              return Text('Error: ${snapshot.error}');
+            }
+          }
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        },
       ),
     );
   }
