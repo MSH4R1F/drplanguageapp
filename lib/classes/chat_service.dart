@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:http/http.dart' as http;
 import 'dart:convert'; // Import JSON utilities
 import 'package:drplanguageapp/api_key.dart';
@@ -39,5 +41,29 @@ class ChatService {
       print(e);
     }
     return null;
+  }
+
+  Future<String> requestAudio(String filename) async {
+    try {
+      var url = Uri.parse('https://api.openai.com/v1/audio/transcriptions');
+      var headers = {
+        'Authorization': 'Bearer ${ApiKey.openAIKey}',
+        'Content-Type': 'multipart/form-data'
+      };
+      print("hello world");
+      var body = json
+          .encode({'model': "whisper-1", 'language': "ar", 'audio': filename});
+      var response = await http.post(url, headers: headers, body: body);
+      var responseBody = jsonDecode(utf8.decode(response.bodyBytes));
+      if (responseBody['transcription'] != null) {
+        String transcription = responseBody['transcription'];
+        print(transcription);
+      } else {
+        return 'No transcription available';
+      }
+    } catch (e) {
+      print(e);
+    }
+    return 'Error';
   }
 }

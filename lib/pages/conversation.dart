@@ -8,6 +8,8 @@ import 'package:drplanguageapp/classes/chat_service.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:speech_to_text/speech_recognition_result.dart';
+import 'package:speech_to_text/speech_to_text.dart';
 
 class Conversation extends StatefulWidget {
   final String userID;
@@ -17,38 +19,29 @@ class Conversation extends StatefulWidget {
   State<Conversation> createState() => _ConversationState();
 }
 
-const List<String> list = <String>["Al Minshawi", "Khalil Al-Qari", "GENERIC_BANGLADESHI_NAME"];
+const List<String> list = <String>[
+  "Al Minshawi",
+  "Khalil Al-Qari",
+  "GENERIC_BANGLADESHI_NAME"
+];
 
 class _ConversationState extends State<Conversation> {
   final TextEditingController _controller = TextEditingController();
   final String chatID = "chat1";
   String userID = "userID";
-  var dropdownValue = list.first; 
+  var dropdownValue = list.first;
 
-  FlutterSoundRecorder? _recorder;
-  FlutterSoundPlayer? _player;
-  bool _isRecording = false;
-  // bool _isPlaying = false;
-  String? _filePath;
-
+  // FlutterSoundRecorder? _recorder;
+  // FlutterSoundPlayer? _player;
+  bool _speechEnabled = false;
+  String _lastWords = '';
+  SpeechToText _speechToText = SpeechToText();
   @override
   void initState() {
     super.initState();
-    _recorder = FlutterSoundRecorder();
-    _player = FlutterSoundPlayer();
-    _initializeRecorder();
-    _initializePlayer();
+    _initSpeech();
     _initializeAI();
     userID = widget.userID;
-  }
-
-  Future<void> _initializeRecorder() async {
-    await _recorder!.openRecorder();
-    await _requestPermissions();
-  }
-
-  Future<void> _initializePlayer() async {
-    await _player!.openPlayer();
   }
 
   Future<void> _requestPermissions() async {
@@ -56,71 +49,29 @@ class _ConversationState extends State<Conversation> {
     await Permission.storage.request();
   }
 
-  @override
-  void dispose() {
-    _recorder!.closeRecorder();
-    _player!.closePlayer();
-    _recorder = null;
-    _player = null;
-    _controller.dispose();
-    super.dispose();
-  }
-
-  Future<void> _startRecording() async {
-    Directory docsDir = await getApplicationDocumentsDirectory();
-    String path = '${docsDir.path}/voice_recording.aac';
-    await _recorder!.startRecorder(
-      toFile: path,
-      codec: Codec.aacADTS,
+  Future<void> _startListening() async {
+    await _speechToText.listen(
+      onResult: (SpeechRecognitionResult result) {
+        setState(() {
+          _lastWords = result.recognizedWords;
+          _controller.text = _lastWords;
+        });
+      },
+      localeId: 'ar_EG',
     );
-    setState(() {
-      _isRecording = true;
-      _filePath = path;
-    });
   }
 
-  Future<void> _stopRecording() async {
-    await _recorder!.stopRecorder();
-    
-    setState(() {
-      _isRecording = false;
-      // chatt.insert(0, Chat(sender: "me", content: Text("saved to $_filePath"), timestamp: DateTime.now(), ai: false));
-      chatt.insert(0, Chat(sender: "me", content: const Text("--- AUDIO SENT ---"), timestamp: DateTime.now(), ai: false));
-
-    });
+  Future<void> _stopListening() async {
+    await _speechToText.stop();
+    setState(() {});
   }
-
-  // Future<void> _startPlayback() async {
-  //   if (_filePath != null) {
-  //     await _player!.startPlayer(
-  //       fromURI: _filePath,
-  //       codec: Codec.aacADTS,
-  //       whenFinished: () {
-  //         setState(() {
-  //           _isPlaying = false;
-  //         });
-  //       },
-  //     );
-  //     setState(() {
-  //       _isPlaying = true;
-  //     });
-  //   }
-  // }
-
-  // Future<void> _stopPlayback() async {
-  //   await _player!.stopPlayer();
-  //   setState(() {
-  //     _isPlaying = false;
-  //   });
-  // }
-
 
   // declare list of chats
   List<Chat> chatt = [];
 
   void addtoChat(bool isAi, String text) {
-    Chat toAdd =
-        Chat(sender: "Me", content: text, timestamp: DateTime.now(), ai: isAi);
+    Chat toAdd = Chat(
+        sender: "Me", content: Text(text), timestamp: DateTime.now(), ai: isAi);
     setState(() {
       chatt.insert(0, toAdd);
       sendMessageFromUser(userID, chatID, text);
@@ -193,35 +144,36 @@ class _ConversationState extends State<Conversation> {
     _controller.clear();
   }
 
-  
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Row(
           children: [
-            const Icon(Icons.account_circle_rounded, size: 50,),
-            Container(
-              margin: const EdgeInsets.all(5.0),
+            const Icon(
+              Icons.account_circle_rounded,
+              size: 15,
             ),
+            Spacer(),
             Expanded(
               child: DropdownMenu<String>(
-                    initialSelection: list.first,
-                    onSelected: (String? value) {
-                      // This is called when the user selects an item.
-                      setState(() {
-                        dropdownValue = value!;
-                      });
-                    },
-                    dropdownMenuEntries: list.map<DropdownMenuEntry<String>>((String value) {
-                      return DropdownMenuEntry<String>(value: value, label: value);
-                    }).toList(),
-                ),
-            )
+                initialSelection: list.first,
+                onSelected: (String? value) {
+                  // This is called when the user selects an item.
+                  setState(() {
+                    dropdownValue = value!;
+                  });
+                },
+                dropdownMenuEntries:
+                    list.map<DropdownMenuEntry<String>>((String value) {
+                  return DropdownMenuEntry<String>(value: value, label: value);
+                }).toList(),
+              ),
+            ),
+            Spacer(flex: 3)
           ],
         ),
-      ), 
+      ),
       body: Column(
         children: [
           Expanded(child: ChatPage(chats: chatt)),
@@ -243,27 +195,30 @@ class _ConversationState extends State<Conversation> {
                   ),
                   IconButton(
                     onPressed: (() => {
-                      if (!_isRecording) {
-                      userPressedSend(_controller.text)
-                      }
-                    }),
+                          if (_speechToText.isNotListening)
+                            {userPressedSend(_controller.text)}
+                        }),
                     icon: Icon(
                       Icons.send,
                       size: 30,
-                      color: _isRecording ? Colors.grey : Theme.of(context).primaryColor,
+                      color: _speechToText.isListening
+                          ? Colors.grey
+                          : Theme.of(context).primaryColor,
                     ),
                   ),
                   IconButton(
                     // TODO: MAKE MICROPHONE WORK
                     onPressed: () {
-                      if (_isRecording) {
-                        _stopRecording();
+                      if (_speechToText.isListening) {
+                        _stopListening();
                       } else {
-                        _startRecording();
+                        _startListening();
                       }
                     },
-                    icon: Icon(_isRecording ? Icons.stop : Icons.mic,
-                        size: 30, color: Theme.of(context).primaryColor),
+                    icon: Icon(
+                        _speechToText.isListening ? Icons.stop : Icons.mic,
+                        size: 30,
+                        color: Theme.of(context).primaryColor),
                   ),
                 ],
               ),
@@ -285,6 +240,12 @@ class _ConversationState extends State<Conversation> {
 
   void _initializeAI() {
     sendMessageToAI(
-        "Hello! Following this message you are going to help this user practise conversation in Arabic. Here are the rules you must follow: 1: Speak only in Arabic, 2: Do not speak English except when I ask for someone help. First message introduce yourself, your name is Jaber, the topic you will speak about today is 'The Weather'. Please can you speak like you are speaking to a beginner in the language.");
+        "Hello! In the following conversation, you will help this user practice speaking Arabic. Please adhere to these rules: 1. Communicate solely in Arabic, except when explicitly requested to provide assistance in English. 2. Your name is Jaber. In your initial message, introduce yourself and mention that the topic of today's conversation will be 'The Weather'. 3. Tailor your language complexity and speaking pace to suit a beginner in Arabic, using simple vocabulary and short sentences to ensure clarity and ease of understanding");
+  }
+
+  void _initSpeech() async {
+    _speechEnabled = await _speechToText.initialize();
+    print(_speechEnabled);
+    setState(() {});
   }
 }
