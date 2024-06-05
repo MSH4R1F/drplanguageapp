@@ -31,7 +31,7 @@ class MyApp extends StatelessWidget {
         '/dashboard/conversation': (context) => const Conversation(),
         '/dashboard/readingcomp': (context) => const DialoguePage(),
         '/dashboard/highlights': (context) => const Highlights(),
-        '/dashboard/flashcards': (context) => const FlashcardsPage(),
+        '/dashboard/flashcards': (context) => WordsListPage(),
       },
     );
   }
