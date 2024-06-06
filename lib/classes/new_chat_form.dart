@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 
 class LanguageTopicForm extends StatefulWidget {
+  const LanguageTopicForm({super.key});
+
   @override
   _LanguageTopicFormState createState() => _LanguageTopicFormState();
 }
@@ -19,17 +21,17 @@ class _LanguageTopicFormState extends State<LanguageTopicForm> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Language and Topic Selection'),
+        title: const Text('Language and Topic Selection'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Choose a Language:', style: TextStyle(fontSize: 18)),
+            const Text('Choose a Language:', style: TextStyle(fontSize: 18)),
             DropdownButton<String>(
               value: _selectedLanguage,
-              hint: Text('Select Language'),
+              hint: const Text('Select Language'),
               items: ['Arabic', 'Urdu'].map((String value) {
                 return DropdownMenuItem<String>(
                   value: value,
@@ -42,13 +44,13 @@ class _LanguageTopicFormState extends State<LanguageTopicForm> {
                 });
               },
             ),
-            SizedBox(height: 20),
-            Text('Choose a Topic:', style: TextStyle(fontSize: 18)),
+            const SizedBox(height: 20),
+            const Text('Choose a Topic:', style: TextStyle(fontSize: 18)),
             if (_selectedLanguage != null) ...topics.entries.map((entry) {
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(entry.key, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  Text(entry.key, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                   ...entry.value.map((topic) {
                     return RadioListTile<String>(
                       title: Text(topic),
@@ -60,11 +62,11 @@ class _LanguageTopicFormState extends State<LanguageTopicForm> {
                         });
                       },
                     );
-                  }).toList(),
+                  }),
                 ],
               );
-            }).toList(),
-            SizedBox(height: 20),
+            }),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
                 if (_selectedLanguage != null && _selectedTopic != null) {
@@ -72,11 +74,11 @@ class _LanguageTopicFormState extends State<LanguageTopicForm> {
                   Navigator.pop(context, Selection(language: _selectedLanguage!, topic: _selectedTopic!));
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Please select both language and topic')),
+                    const SnackBar(content: Text('Please select both language and topic')),
                   );
                 }
               },
-              child: Text('Submit'),
+              child: const Text('Submit'),
             ),
           ],
         ),
@@ -94,6 +96,6 @@ class Selection {
   @override
   String toString() {
     // TODO: implement toString
-    return "Language: ${language}, topic: ${topic}";
+    return "Language: $language, topic: $topic";
   }
 }

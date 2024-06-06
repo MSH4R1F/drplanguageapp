@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 class _CombinedChat extends StatefulWidget {
   final Combined combined;
   const _CombinedChat({
-    super.key,
     required this.combined
     });
 

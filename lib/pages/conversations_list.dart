@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 
 class ConversationsList extends StatefulWidget {
   final String userID;
-  ConversationsList({super.key, required this.userID});
+  const ConversationsList({super.key, required this.userID});
 
   @override
   State<ConversationsList> createState() => _ConversationsListState();
@@ -75,7 +75,7 @@ class _ConversationsListState extends State<ConversationsList> {
         onPressed: () async {
           final result = await Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => LanguageTopicForm()),
+            MaterialPageRoute(builder: (context) => const LanguageTopicForm()),
           );
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(result.toString())),

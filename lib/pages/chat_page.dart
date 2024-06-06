@@ -1,6 +1,5 @@
 
 import 'package:flutter/material.dart';
-import 'package:drplanguageapp/classes/chat_message.dart';
 
 
 class ChatPage extends StatefulWidget {

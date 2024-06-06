@@ -1,12 +1,8 @@
-import 'dart:ffi';
-import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:drplanguageapp/pages/chat_page.dart';
 import 'package:flutter/material.dart';
 import 'package:drplanguageapp/classes/chat_service.dart';
-import 'package:flutter_sound/flutter_sound.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart';
@@ -32,7 +28,7 @@ class _ConversationState extends State<Conversation> {
   // FlutterSoundPlayer? _player;
   bool _speechEnabled = false;
   String _lastWords = '';
-  SpeechToText _speechToText = SpeechToText();
+  final SpeechToText _speechToText = SpeechToText();
 
   @override
   void initState() {
@@ -152,9 +148,9 @@ class _ConversationState extends State<Conversation> {
               Icons.account_circle_rounded,
               size: 15,
             ),
-            Spacer(),
+            const Spacer(),
             Text(widget.chatLabel),
-            Spacer(flex: 3)
+            const Spacer(flex: 3)
           ],
         ),
       ),

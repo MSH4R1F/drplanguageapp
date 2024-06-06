@@ -21,7 +21,7 @@ class _DialoguePageState extends State<DialoguePage> {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(5),
             ),
-            child: Container(
+            child: SizedBox(
               height: 300,
               width: MediaQuery.of(context).size.width,
             ),

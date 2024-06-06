@@ -1,6 +1,5 @@
 import 'package:drplanguageapp/classes/new_chat_form.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 class ChatListEntry extends StatefulWidget {
   
@@ -19,14 +18,14 @@ class _ChatListEntryState extends State<ChatListEntry> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          Spacer(),
+          const Spacer(),
           ClipOval(
             child: SizedBox(
               width: 200,
               height: 200,
               child: widget.chatEntry.image),
           ),
-          Spacer(),
+          const Spacer(),
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -35,7 +34,7 @@ class _ChatListEntryState extends State<ChatListEntry> {
               Text(widget.chatEntry.lastmessage, style: const TextStyle(color: Colors.grey, fontSize: 10.0),)
               ],
           ),
-          Spacer(flex: 5,),
+          const Spacer(flex: 5,),
         ],
       ),
     );
