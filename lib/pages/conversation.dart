@@ -167,7 +167,6 @@ class _ConversationState extends State<Conversation> {
               // children: [TextButton(onPressed: () {}, child: Text("Ballsfggdddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"),)],
               children: suggestions.map(
                 // TODO: This on pressed can change so that it plays the text out loud, so the user has to say it
-                // ALSO REMOVE CHAT ID
                 (str) => GestureDetector(
                   onTap: () {userPressedSend(str);},
                   onLongPress: () {}, // TODO: MAKE SUGGESTION PLAY OUT LOUD
@@ -205,7 +204,6 @@ class _ConversationState extends State<Conversation> {
                     ),
                   ),
                   IconButton(
-                    // TODO: MAKE MICROPHONE WORK
                     onPressed: () {
                       if (_speechToText.isListening) {
                         _stopListening();
