@@ -62,6 +62,7 @@ class _ConversationState extends State<Conversation> {
 
   // declare list of chats
   List<Chat> chatt = [];
+  var suggestions = ["Ting Tong", "Bing Bong", "Goofy Dookiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii Dookiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii Dookiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiie", ];
 
   void addtoChat(bool isAi, String text) {
     Chat toAdd = Chat(
@@ -157,6 +158,22 @@ class _ConversationState extends State<Conversation> {
       body: Column(
         children: [
           Expanded(child: ChatPage(chats: chatt, textToSpeechEngine: "",)),
+          Divider(),
+          SizedBox(
+            height: 50,
+            child: ListView(
+              scrollDirection: Axis.horizontal,
+              // children: [TextButton(onPressed: () {}, child: Text("Ballsfggdddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"),)],
+              children: suggestions.map(
+                // TODO: This on pressed can change so that it plays the text out loud, so the user has to say it
+                // ALSO REMOVE CHAT ID
+                (str) => TextButton(
+                  onPressed: () {addtoChat(false, str);},
+                  onLongPress: () {}, // TODO: MAKE SUGGESTION PLAY OUT LOUD
+                  child: Text(str))
+              ).toList()
+            ),
+          ),
           Container(
             color: Theme.of(context).cardColor,
             child: Padding(
