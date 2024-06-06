@@ -30,45 +30,78 @@ class _DialoguePageState extends State<DialoguePage> {
               borderRadius: BorderRadius.circular(5),
             ),
             child: SizedBox(
-              height: 300,
+              height: 250,
               width: MediaQuery.of(context).size.width,
-              child: FutureBuilder(
-                future: generator.generateText(
-                    "Translate the sentence '$sentence' from Urdu to English. Then, translate the word '$filteredText', ensuring the translation is exactly how it was translated in the sentence. Please present both translations individually on separate lines, without any additional text or clarifications."),
-                builder:
-                    (BuildContext context, AsyncSnapshot<String?> snapshot) {
-                  if (snapshot.connectionState == ConnectionState.done) {
-                    if (snapshot.hasData) {
-                      List<String> translations = snapshot.data!.split('\n');
-                      String word = translations[translations.length - 1]
-                          .replaceAll(RegExp(r"[^A-Za-z]"), '');
-                      return Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            SelectableText(filteredText),
-                            Text(word.toLowerCase()),
-                            const Divider(),
-                            SelectableText(
-                              sentence,
-                              textAlign: TextAlign.center,
-                            ),
-                            Text(
-                              translations[0].replaceAll(RegExp(r"-"), ''),
-                              textAlign: TextAlign.center,
-                            ),
-                          ],
-                        ),
-                      );
-                    } else if (snapshot.hasError) {
-                      return Text("Error: ${snapshot.error}");
-                    }
-                  }
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
-                },
+              child: Column(
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.only(top: 8, right: 8),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Icon(Icons.copy), // Your icon
+                        // Add more icons as needed
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: Center(
+                      child: FutureBuilder(
+                        future: generator.generateText(
+                            "Translate the sentence '$sentence' from Urdu to English. Then, translate the word '$filteredText', ensuring the translation is exactly how it was translated in the sentence. Please present both translations individually on separate lines, without any additional text, clarifications or introductions."),
+                        builder: (BuildContext context,
+                            AsyncSnapshot<String?> snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.done) {
+                            if (snapshot.hasData) {
+                              List<String> translations =
+                                  snapshot.data!.split('\n');
+                              String word =
+                                  translations[translations.length - 1]
+                                      .replaceAll(RegExp(r"[^A-Za-z]"), '');
+                              return SingleChildScrollView(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      SelectableText(filteredText),
+                                      const SizedBox(
+                                        height: 10,
+                                      ),
+                                      Text(word.toLowerCase()),
+                                      const SizedBox(
+                                        height: 10,
+                                      ),
+                                      const Divider(),
+                                      SelectableText(
+                                        sentence,
+                                        textAlign: TextAlign.center,
+                                      ),
+                                      const SizedBox(
+                                        height: 10,
+                                      ),
+                                      Text(
+                                        translations[0]
+                                            .replaceAll(RegExp(r"-"), ''),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            } else if (snapshot.hasError) {
+                              return Text("Error: ${snapshot.error}");
+                            }
+                          }
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           );
