@@ -1,4 +1,3 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:drplanguageapp/classes/chat_message.dart';
 import 'package:drplanguageapp/pages/chat_page.dart';
@@ -14,7 +13,12 @@ class Conversation extends StatefulWidget {
   final String topic;
   final String chatLabel;
 
-  const Conversation({super.key, required this.userID, required this.language, required this.topic, required this.chatLabel});
+  const Conversation(
+      {super.key,
+      required this.userID,
+      required this.language,
+      required this.topic,
+      required this.chatLabel});
 
   @override
   State<Conversation> createState() => _ConversationState();
@@ -63,8 +67,12 @@ class _ConversationState extends State<Conversation> {
 
   // declare list of chats
   List<Chat> chatt = [];
-  var suggestions = ["Ting Tong", "Bing Bong", "Goofy Dookiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii Dookiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii Dookiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiie", ];
-
+  var suggestions = [
+    "What do you mean?",
+    "Translate to English",
+    "End Conversation",
+  ];
+  var previousMessage = "";
   void addtoChat(bool isAi, String text) {
     Chat toAdd = Chat(
         sender: "Me", content: Text(text), timestamp: DateTime.now(), ai: isAi);
@@ -136,6 +144,7 @@ class _ConversationState extends State<Conversation> {
       if (value != null) {
         addtoChat(true, value);
       }
+      previousMessage = value!;
     });
     _controller.clear();
   }
@@ -158,21 +167,41 @@ class _ConversationState extends State<Conversation> {
       ),
       body: Column(
         children: [
-          Expanded(child: ChatPage(chats: chatt, textToSpeechEngine: "",)),
+          Expanded(
+              child: ChatPage(
+            chats: chatt,
+            textToSpeechEngine: "",
+          )),
           Divider(),
           SizedBox(
             height: 50,
             child: ListView(
-              scrollDirection: Axis.horizontal,
-              // children: [TextButton(onPressed: () {}, child: Text("Ballsfggdddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"),)],
-              children: suggestions.map(
-                // TODO: This on pressed can change so that it plays the text out loud, so the user has to say it
-                (str) => GestureDetector(
-                  onTap: () {userPressedSend(str);},
-                  onLongPress: () {}, // TODO: MAKE SUGGESTION PLAY OUT LOUD
-                  child: ChatMessage(chat: Chat(sender: "Me", content: Text(str), timestamp: DateTime.now(), ai: false),))
-              ).toList()
-            ),
+                scrollDirection: Axis.horizontal,
+                // children: [TextButton(onPressed: () {}, child: Text("Ballsfggdddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"),)],
+                children: suggestions
+                    .map(
+                        // TODO: This on pressed can change so that it plays the text out loud, so the user has to say it
+                        (str) => GestureDetector(
+                            onTap: () {
+                              if (str == "End Conversation") {
+                                Navigator.pop(context);
+                              } else if (str == "Translate to English") {
+                                translateMessage(
+                                    "Translate your previous message to English");
+                              } else {
+                                explanationRequired();
+                              }
+                            },
+                            onLongPress:
+                                () {}, // TODO: MAKE SUGGESTION PLAY OUT LOUD
+                            child: ChatMessage(
+                              chat: Chat(
+                                  sender: "Me",
+                                  content: Text(str),
+                                  timestamp: DateTime.now(),
+                                  ai: false),
+                            )))
+                    .toList()),
           ),
           Container(
             color: Theme.of(context).cardColor,
@@ -236,12 +265,37 @@ class _ConversationState extends State<Conversation> {
 
   void _initializeAI() {
     sendMessageToAI(
-        "Hello! In the following conversation, you will help this user practice speaking Arabic. Please adhere to these rules: 1. Communicate solely in Arabic, except when explicitly requested to provide assistance in English. 2. Your name is Jaber. In your initial message, introduce yourself and mention that the topic of today's conversation will be 'The Weather'. 3. Tailor your language complexity and speaking pace to suit a beginner in Arabic, using simple vocabulary and short sentences to ensure clarity and ease of understanding");
+        "Hello! In the following conversation, you will help this user practice speaking Arabic. Please adhere to these rules: 1. Communicate solely in Arabic, except when explicitly requested to provide assistance in English. 2. Your name is Jaber. In your initial message, introduce yourself and mention that the topic of today's conversation will be ${widget.topic} . 3. Tailor your language complexity and speaking pace to suit a beginner in Arabic, using simple vocabulary and short sentences to ensure clarity and ease of understanding");
   }
 
   void _initSpeech() async {
     _speechEnabled = await _speechToText.initialize();
     print(_speechEnabled);
     setState(() {});
+  }
+
+  void translateMessage(String text) {
+    addtoChat(false, "Translating: $previousMessage");
+    ChatService()
+        .request("Can you translate the text: $previousMessage to English?")
+        .then((value) {
+      if (value != null) {
+        addtoChat(true, value);
+      }
+    });
+    _controller.clear();
+  }
+
+  void explanationRequired() {
+    addtoChat(false, "Can you explain what you said?");
+    ChatService()
+        .request(
+            "Can you explain the text: $previousMessage only in ${widget.language}")
+        .then((value) {
+      if (value != null) {
+        addtoChat(true, value);
+      }
+    });
+    _controller.clear();
   }
 }

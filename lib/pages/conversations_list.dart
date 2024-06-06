@@ -1,4 +1,3 @@
-
 import 'package:drplanguageapp/classes/chat_list_entry.dart';
 import 'package:drplanguageapp/classes/new_chat_form.dart';
 import 'package:drplanguageapp/pages/conversation.dart';
@@ -13,32 +12,31 @@ class ConversationsList extends StatefulWidget {
 }
 
 class _ConversationsListState extends State<ConversationsList> {
-  
   final List<ChatEntry> chats = [];
 
   void addToChats(Selection s) {
-    var toAdd = 
-    ChatEntry(
-        Image.network("https://m.media-amazon.com/images/I/41pPE67EwOL._AC_UF894,1000_QL80_.jpg"),
+    var toAdd = ChatEntry(
+        Image.network(
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Flag_of_the_Arabic_language.svg/1024px-Flag_of_the_Arabic_language.svg.png"),
         "Talking about ${s.topic} in ${s.language}",
-        "TEMP SUBTITLE IN CONVERSATIONS LIST",
-        s
-      );
+        "Last message: ${s.topic} in ${s.language}",
+        s);
 
-      setState(() {
-        chats.insert(0,toAdd);
-      });
+    setState(() {
+      chats.insert(0, toAdd);
+    });
   }
-  
+
   void openConversation(ChatEntry chatEntry, String chatLabel) {
     Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => Conversation(userID: widget.userID, language: chatEntry.selection.language, topic: chatEntry.selection.topic, chatLabel: chatLabel)
-      )
-    );
+        context,
+        MaterialPageRoute(
+            builder: (context) => Conversation(
+                userID: widget.userID,
+                language: chatEntry.selection.language,
+                topic: chatEntry.selection.topic,
+                chatLabel: chatLabel)));
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -47,30 +45,26 @@ class _ConversationsListState extends State<ConversationsList> {
         title: const Text("Conversations"),
       ),
       body: Align(
-        alignment: Alignment.topCenter,
-        // child: Placeholder(),
-        child: ListView.builder(
-          reverse: false,
-          itemCount: chats.length,
-          itemBuilder: (context, index) {
-            return GestureDetector(
-              onTap: () => openConversation(
-                chats[index],
-                chats[index].lastmessage
-              ),
-              onLongPress: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text("Removed ${chats[index].title}")),
-                );   
-                setState(() {
-                  chats.removeAt(index);
-                });
-              },
-              child: ChatListEntry(chatEntry: chats[index])
-            );
-          }
-          )
-      ),
+          alignment: Alignment.topCenter,
+          // child: Placeholder(),
+          child: ListView.builder(
+              reverse: false,
+              itemCount: chats.length,
+              itemBuilder: (context, index) {
+                return GestureDetector(
+                    onTap: () => openConversation(
+                        chats[index], chats[index].lastmessage),
+                    onLongPress: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                            content: Text("Removed ${chats[index].title}")),
+                      );
+                      setState(() {
+                        chats.removeAt(index);
+                      });
+                    },
+                    child: ChatListEntry(chatEntry: chats[index]));
+              })),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           final result = await Navigator.push(
@@ -81,7 +75,6 @@ class _ConversationsListState extends State<ConversationsList> {
             SnackBar(content: Text(result.toString())),
           );
           addToChats(result);
-
         },
         backgroundColor: Theme.of(context).primaryColor,
         foregroundColor: Theme.of(context).secondaryHeaderColor,
