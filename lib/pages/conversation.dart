@@ -156,7 +156,7 @@ class _ConversationState extends State<Conversation> {
       ),
       body: Column(
         children: [
-          Expanded(child: ChatPage(chats: chatt)),
+          Expanded(child: ChatPage(chats: chatt, textToSpeechEngine: "",)),
           Container(
             color: Theme.of(context).cardColor,
             child: Padding(
