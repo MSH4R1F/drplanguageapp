@@ -1,5 +1,6 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:drplanguageapp/classes/chat_message.dart';
 import 'package:drplanguageapp/pages/chat_page.dart';
 import 'package:flutter/material.dart';
 import 'package:drplanguageapp/classes/chat_service.dart';
@@ -167,10 +168,10 @@ class _ConversationState extends State<Conversation> {
               children: suggestions.map(
                 // TODO: This on pressed can change so that it plays the text out loud, so the user has to say it
                 // ALSO REMOVE CHAT ID
-                (str) => TextButton(
-                  onPressed: () {addtoChat(false, str);},
+                (str) => GestureDetector(
+                  onTap: () {userPressedSend(str);},
                   onLongPress: () {}, // TODO: MAKE SUGGESTION PLAY OUT LOUD
-                  child: Text(str))
+                  child: ChatMessage(chat: Chat(sender: "Me", content: Text(str), timestamp: DateTime.now(), ai: false),))
               ).toList()
             ),
           ),
