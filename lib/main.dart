@@ -1,4 +1,5 @@
 import 'package:drplanguageapp/pages/conversation.dart';
+import 'package:drplanguageapp/pages/conversations_list.dart';
 import 'package:drplanguageapp/pages/dashboard_page.dart';
 import 'package:drplanguageapp/pages/dialogue_page.dart';
 import 'package:drplanguageapp/pages/highlights.dart';
@@ -33,7 +34,7 @@ class MyApp extends StatelessWidget {
           case '/dashboard/conversation':
             final userID = settings.arguments as String;
             return MaterialPageRoute(
-                builder: (_) => Conversation(userID: userID));
+                builder: (_) => ConversationsList(userID: userID));
           case '/dashboard/readingcomp':
             return MaterialPageRoute(builder: (_) => const DialoguePage());
           case '/dashboard/highlights':

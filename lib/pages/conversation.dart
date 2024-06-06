@@ -13,29 +13,27 @@ import 'package:speech_to_text/speech_to_text.dart';
 
 class Conversation extends StatefulWidget {
   final String userID;
-  const Conversation({super.key, required this.userID});
+  final String language;
+  final String topic;
+  final String chatLabel;
+
+  const Conversation({super.key, required this.userID, required this.language, required this.topic, required this.chatLabel});
 
   @override
   State<Conversation> createState() => _ConversationState();
 }
 
-const List<String> list = <String>[
-  "Al Minshawi",
-  "Khalil Al-Qari",
-  "GENERIC_BANGLADESHI_NAME"
-];
-
 class _ConversationState extends State<Conversation> {
   final TextEditingController _controller = TextEditingController();
   final String chatID = "chat1";
   String userID = "userID";
-  var dropdownValue = list.first;
 
   // FlutterSoundRecorder? _recorder;
   // FlutterSoundPlayer? _player;
   bool _speechEnabled = false;
   String _lastWords = '';
   SpeechToText _speechToText = SpeechToText();
+
   @override
   void initState() {
     super.initState();
@@ -155,21 +153,7 @@ class _ConversationState extends State<Conversation> {
               size: 15,
             ),
             Spacer(),
-            Expanded(
-              child: DropdownMenu<String>(
-                initialSelection: list.first,
-                onSelected: (String? value) {
-                  // This is called when the user selects an item.
-                  setState(() {
-                    dropdownValue = value!;
-                  });
-                },
-                dropdownMenuEntries:
-                    list.map<DropdownMenuEntry<String>>((String value) {
-                  return DropdownMenuEntry<String>(value: value, label: value);
-                }).toList(),
-              ),
-            ),
+            Text(widget.chatLabel),
             Spacer(flex: 3)
           ],
         ),
