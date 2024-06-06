@@ -10,11 +10,17 @@ class DialoguePage extends StatefulWidget {
 
 class _DialoguePageState extends State<DialoguePage> {
   TextGenerator generator = TextGenerator();
+  String trialPrompt2 =
+      "Translate the following Urdu text into English, focusing on contextual accuracy. Assess whether the highlighted word ^ should be translated independently or as an integral part of the surrounding phrase to preserve its meaning. Provide the translation of this word or phrase first, followed by the translation of the entire sentence ^. Ensure the translations are contextually coherent and present them on separate lines, with no additional text or explanations.";
+  String trialPrompt1 =
+      "Translate the following Urdu text into English, ensuring the translation of the word matches its context in the sentence. Provide only the English translations without including the original Urdu text. First, accurately translate the word: ^ as used in its sentence. Then, translate the full sentence: ^. Provide both translations on separate lines, with no additional text or explanations.";
+  String trialPrompt3 =
+      "Translate the sentence '^sentence' from Urdu to English. Then, translate the word '^filteredText', ensuring the translation is exactly how it was translated in the sentence. Please present both translations individually on separate lines, without any supplementary text or clarifications.";
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    void showDialogueBox(String text) {
-      String filteredText = text.replaceAll(RegExp(r"['،؟۔!.,;:?-]"), '');
+    void showDialogueBox(String word, String sentence) {
+      String filteredText = word.replaceAll(RegExp(r"['،؟۔!.,;:?-]"), '');
       filteredText = filteredText.replaceAll(RegExp('"'), '');
       showDialog(
         context: context,
@@ -26,11 +32,43 @@ class _DialoguePageState extends State<DialoguePage> {
             child: SizedBox(
               height: 300,
               width: MediaQuery.of(context).size.width,
-              child: Center(
-                child: Text(
-                  filteredText,
-                  style: const TextStyle(fontSize: 20),
-                ),
+              child: FutureBuilder(
+                future: generator.generateText(
+                    "Translate the sentence '$sentence' from Urdu to English. Then, translate the word '$filteredText', ensuring the translation is exactly how it was translated in the sentence. Please present both translations individually on separate lines, without any additional text or clarifications."),
+                builder:
+                    (BuildContext context, AsyncSnapshot<String?> snapshot) {
+                  if (snapshot.connectionState == ConnectionState.done) {
+                    if (snapshot.hasData) {
+                      List<String> translations = snapshot.data!.split('\n');
+                      String word = translations[translations.length - 1]
+                          .replaceAll(RegExp(r"[^A-Za-z]"), '');
+                      return Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SelectableText(filteredText),
+                            Text(word.toLowerCase()),
+                            const Divider(),
+                            SelectableText(
+                              sentence,
+                              textAlign: TextAlign.center,
+                            ),
+                            Text(
+                              translations[0].replaceAll(RegExp(r"-"), ''),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
+                        ),
+                      );
+                    } else if (snapshot.hasError) {
+                      return Text("Error: ${snapshot.error}");
+                    }
+                  }
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                },
               ),
             ),
           );
@@ -38,12 +76,12 @@ class _DialoguePageState extends State<DialoguePage> {
       );
     }
 
-    List<Widget> splitSelectableWord(String text) {
-      List<String> splitText = text.split(RegExp(r' '));
+    List<Widget> splitSelectableWord(String sentence) {
+      List<String> splitText = sentence.split(RegExp(r' '));
       return splitText
           .map(
             (word) => InkWell(
-              onTap: () => showDialogueBox(word),
+              onTap: () => showDialogueBox(word, sentence),
               child: Text(
                 "$word ",
                 style: const TextStyle(
