@@ -175,29 +175,29 @@ packages:
     source: hosted
     version: "3.0.2"
   flutter_sound:
-    dependency: "direct dev"
+    dependency: "direct main"
     description:
       name: flutter_sound
-      sha256: faa544f073fa9e7e4633e35acf228d4aa1012b39e35eb3b1c81b9b6fb6511af1
+      sha256: "9239b329a915d22575729e356e3adf4f43231583720ccfd09eec73c69e724bf3"
       url: "https://pub.dev"
     source: hosted
-    version: "9.4.12"
+    version: "9.4.14"
   flutter_sound_platform_interface:
     dependency: transitive
     description:
       name: flutter_sound_platform_interface
-      sha256: "638b0c234ec73a04511a3d186f85e3957f0e56da82326bcb8e905d7f05a06554"
+      sha256: "375601b32a94042ea7ac89492f07b29435b07408503296c35650959f48919266"
       url: "https://pub.dev"
     source: hosted
-    version: "9.4.12"
+    version: "9.4.14"
   flutter_sound_web:
     dependency: transitive
     description:
       name: flutter_sound_web
-      sha256: d7db4b3febbab37c00a4a4fee7956433b3d1e1ce9778c265db607a07aabc4e09
+      sha256: "4a153fccfbb77d49c66d7f7891b5b4655a8396e6e84791cbea134c298f75d177"
       url: "https://pub.dev"
     source: hosted
-    version: "9.4.12"
+    version: "9.4.14"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -208,6 +208,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  http:
+    dependency: "direct main"
+    description:
+      name: http
+      sha256: "761a297c042deedc1ffbb156d6e2af13886bb305c2a343a4d972504cd67dd938"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.2.1"
   http_parser:
     dependency: transitive
     description:
@@ -224,6 +232,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.7.1"
+  json_annotation:
+    dependency: transitive
+    description:
+      name: json_annotation
+      sha256: "1ce844379ca14835a50d2f019a3099f419082cfdd231cd86a142af94dd5c6bb1"
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.9.0"
   leak_tracker:
     dependency: transitive
     description:
@@ -305,7 +321,7 @@ packages:
     source: hosted
     version: "1.9.0"
   path_provider:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: path_provider
       sha256: c9e7d3a4cd1410877472158bee69963a4579f78b68c65a2b7d40d1a7a88bb161
@@ -352,8 +368,16 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.2.1"
+  pedantic:
+    dependency: transitive
+    description:
+      name: pedantic
+      sha256: "67fc27ed9639506c856c840ccce7594d0bdcd91bc8d53d6e52359449a1d50602"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.11.1"
   permission_handler:
-    dependency: "direct dev"
+    dependency: "direct main"
     description:
       name: permission_handler
       sha256: "18bf33f7fefbd812f37e72091a15575e72d5318854877e0e4035a24ac1113ecb"
@@ -445,6 +469,30 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.10.0"
+  speech_to_text:
+    dependency: "direct main"
+    description:
+      name: speech_to_text
+      sha256: "771686424c8b065b814823d63245c593f8a6f066537d658c837bfe51887ac4ce"
+      url: "https://pub.dev"
+    source: hosted
+    version: "6.6.1"
+  speech_to_text_macos:
+    dependency: transitive
+    description:
+      name: speech_to_text_macos
+      sha256: e685750f7542fcaa087a5396ee471e727ec648bf681f4da83c84d086322173f6
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.0"
+  speech_to_text_platform_interface:
+    dependency: transitive
+    description:
+      name: speech_to_text_platform_interface
+      sha256: a0df1a907091ea09880077dc25aae02af9f79811264e6e97ddb08639b7f771c2
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.2.0"
   sprintf:
     dependency: transitive
     description:

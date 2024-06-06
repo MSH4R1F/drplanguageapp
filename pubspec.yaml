@@ -38,12 +38,16 @@ dependencies:
   firebase_auth: ^4.20.0
   cloud_firestore: ^4.17.5
   firebase_core: ^2.32.0
+  http: ^1.2.1
+  flutter_sound: ^9.1.5+1
+  path_provider: ^2.0.13
+  permission_handler: ^11.3.1
+  speech_to_text: ^6.6.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_sound: ^9.4.12
-  permission_handler: ^11.3.1
+
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
