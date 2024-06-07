@@ -2,7 +2,6 @@ import 'package:drplanguageapp/classes/new_chat_form.dart';
 import 'package:flutter/material.dart';
 
 class ChatListEntry extends StatefulWidget {
-  
   final ChatEntry chatEntry;
   const ChatListEntry({super.key, required this.chatEntry});
 
@@ -14,33 +13,45 @@ class _ChatListEntryState extends State<ChatListEntry> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      constraints: const BoxConstraints(maxHeight: 100),
+      constraints:
+          const BoxConstraints(maxHeight: 100), // Max height is set to 100
+      padding: const EdgeInsets.symmetric(
+          horizontal: 10), // Padding added for spacing
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          const Spacer(),
           ClipOval(
             child: SizedBox(
-              width: 200,
-              height: 200,
-              child: widget.chatEntry.image),
+              width: 60, // Reduced to fit within the height constraint
+              height: 60, // Same as width for a circular image
+              child: widget.chatEntry.image, // Display the chat entry image
+            ),
           ),
-          const Spacer(),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(widget.chatEntry.title, style: const TextStyle(fontWeight: FontWeight.bold),),
-              Text(widget.chatEntry.lastmessage, style: const TextStyle(color: Colors.grey, fontSize: 10.0),)
+          SizedBox(width: 10), // Provides a gap between the image and text
+          Expanded(
+            // Ensures that the text does not overflow
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  widget.chatEntry.title,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                  overflow: TextOverflow
+                      .ellipsis, // Prevents overflow by showing ellipsis
+                ),
+                Text(
+                  widget.chatEntry.lastmessage,
+                  style: const TextStyle(color: Colors.grey, fontSize: 10.0),
+                  overflow: TextOverflow.ellipsis, // Same as above
+                ),
               ],
+            ),
           ),
-          const Spacer(flex: 5,),
         ],
       ),
     );
   }
 }
-
 
 class ChatEntry {
   final String title;

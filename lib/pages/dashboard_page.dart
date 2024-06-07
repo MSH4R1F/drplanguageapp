@@ -112,8 +112,8 @@ class _DashboardPageState extends State<DashboardPage> {
             FeatureCard(
                 title: 'Highlights',
                 link: '/dashboard/highlights',
-                userID: userUID),
-            Image.network("https://i.pinimg.com/originals/83/cd/af/83cdaf182b196bad532ca40f761095ca.gif")
+                userID: userUID)
+            // Image.network("https://i.pinimg.com/originals/83/cd/af/83cdaf182b196bad532ca40f761095ca.gif")
           ],
         ),
       ),

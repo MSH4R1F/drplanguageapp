@@ -154,14 +154,21 @@ class _ConversationState extends State<Conversation> {
     return Scaffold(
       appBar: AppBar(
         title: Row(
+          mainAxisAlignment: MainAxisAlignment
+              .center, // This centers the children within the Row
           children: [
-            const Icon(
+            Icon(
               Icons.account_circle_rounded,
-              size: 15,
+              size: 24, // Increased size for better visibility
             ),
-            const Spacer(),
-            Text(widget.chatLabel),
-            const Spacer(flex: 3)
+            Expanded(
+              // This widget will take all available space
+              child: Container(
+                alignment: Alignment
+                    .center, // This centers the text within the expanded space
+                child: Text(widget.chatLabel),
+              ),
+            ),
           ],
         ),
       ),
