@@ -24,7 +24,6 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: const MyHomePage(),
-
       onGenerateRoute: (RouteSettings settings) {
         // Handling each route
         switch (settings.name) {
@@ -40,8 +39,8 @@ class MyApp extends StatelessWidget {
             return MaterialPageRoute(builder: (_) => const DialoguePage());
           case '/dashboard/highlights':
             return MaterialPageRoute(builder: (_) => const Highlights());
-          case '/dashboard/flashcards': 
-            return MaterialPageRoute(builder: (_) => const WordsListPage());
+          case '/dashboard/flashcards':
+            return MaterialPageRoute(builder: (_) => WordsListPage());
           default:
             return MaterialPageRoute(
                 builder: (_) =>
