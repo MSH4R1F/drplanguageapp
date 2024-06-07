@@ -41,7 +41,7 @@ class MyApp extends StatelessWidget {
           case '/dashboard/highlights':
             return MaterialPageRoute(builder: (_) => const Highlights());
           case '/dashboard/flashcards': 
-            return MaterialPageRoute(builder: (_) => const WordsListPage());
+            return MaterialPageRoute(builder: (_) => WordsListPage());
           default:
             return MaterialPageRoute(
                 builder: (_) =>
