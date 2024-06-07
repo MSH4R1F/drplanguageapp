@@ -22,6 +22,7 @@ class _DialoguePageState extends State<DialoguePage> {
     void showDialogueBox(String word, String sentence) {
       String filteredText = word.replaceAll(RegExp(r"['،؟۔!.,;:?-]"), '');
       filteredText = filteredText.replaceAll(RegExp('"'), '');
+
       showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -31,6 +32,7 @@ class _DialoguePageState extends State<DialoguePage> {
             ),
             child: SizedBox(
               height: 250,
+
               width: MediaQuery.of(context).size.width,
               child: Column(
                 children: [

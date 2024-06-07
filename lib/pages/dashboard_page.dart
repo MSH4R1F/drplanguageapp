@@ -101,12 +101,19 @@ class _DashboardPageState extends State<DashboardPage> {
                     ),
                   ],
                 )),
-            const FeatureCard(
-                title: 'Conversation', link: '/dashboard/conversation'),
-            const FeatureCard(
-                title: 'Reading Comp', link: '/dashboard/readingcomp'),
-            const FeatureCard(
-                title: 'Highlights', link: '/dashboard/highlights'),
+            FeatureCard(
+                title: 'Conversation',
+                link: '/dashboard/conversation',
+                userID: userUID),
+            FeatureCard(
+                title: 'Reading Comp',
+                link: '/dashboard/readingcomp',
+                userID: userUID),
+            FeatureCard(
+                title: 'Highlights',
+                link: '/dashboard/highlights',
+                userID: userUID),
+            Image.network("https://i.pinimg.com/originals/83/cd/af/83cdaf182b196bad532ca40f761095ca.gif")
           ],
         ),
       ),
@@ -117,7 +124,12 @@ class _DashboardPageState extends State<DashboardPage> {
 class FeatureCard extends StatelessWidget {
   final String title;
   final String link;
-  const FeatureCard({super.key, required this.title, required this.link});
+  final String userID;
+  const FeatureCard(
+      {super.key,
+      required this.title,
+      required this.link,
+      required this.userID});
 
   @override
   Widget build(BuildContext context) {
@@ -127,7 +139,7 @@ class FeatureCard extends StatelessWidget {
         title: Text(title),
         trailing: const Icon(Icons.arrow_forward),
         onTap: () {
-          Navigator.pushNamed(context, link);
+          Navigator.pushNamed(context, link, arguments: userID);
         },
       ),
     );
