@@ -10,6 +10,8 @@ class TextGenerator {
     'Content-Type': 'application/json',
     'Authorization': 'Bearer ${ApiKey.openAIKey}',
   };
+  static String? text;
+
   Future<String?> generateText(String prompt) async {
     try {
       var response = await http.post(_url,
@@ -31,5 +33,15 @@ class TextGenerator {
       print(e);
     }
     return null;
+  }
+
+  Future<String> getText(String prompt) async {
+    text ??= await generateText(prompt);
+    return text!;
+  }
+
+  void regenerateText(String prompt) async {
+    text = null;
+    text = await generateText(prompt);
   }
 }

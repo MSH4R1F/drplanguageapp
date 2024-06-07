@@ -32,7 +32,6 @@ class _DialoguePageState extends State<DialoguePage> {
             ),
             child: SizedBox(
               height: 250,
-
               width: MediaQuery.of(context).size.width,
               child: Column(
                 children: [
@@ -130,7 +129,7 @@ class _DialoguePageState extends State<DialoguePage> {
     }
 
     List<Widget> splitSentence(String text) {
-      List<String> splitText = text.split(RegExp(r'(?<=[۔])\s*'));
+      List<String> splitText = text.split(RegExp(r'(?<=[۔.])\s*'));
       return splitText
           .map(
             (sentence) => Column(
@@ -154,9 +153,17 @@ class _DialoguePageState extends State<DialoguePage> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: const Text("Dialogue"),
+        title: const Text("Comprehension"),
         backgroundColor: Colors.amber,
         actions: [
+          IconButton(
+            onPressed: () async {
+              generator.regenerateText(
+                  "Give a paragraph of about 200 words in Urdu without any additional text or introduction");
+              Navigator.pushReplacementNamed(context, '/dashboard/readingcomp');
+            },
+            icon: const Icon(Icons.refresh),
+          ),
           IconButton(
             onPressed: () {
               Navigator.pushNamed(context, '/loginpage');
@@ -207,8 +214,8 @@ class _DialoguePageState extends State<DialoguePage> {
         ),
       ),
       body: FutureBuilder<String?>(
-        future: generator.generateText(
-            "Give a paragraph of about 100 words in Urdu without any additional text or introduction"),
+        future: generator.getText(
+            "Give a paragraph of about 200 words in Urdu without any additional text or introduction"),
         builder: (BuildContext context, AsyncSnapshot<String?> snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             if (snapshot.hasData) {
