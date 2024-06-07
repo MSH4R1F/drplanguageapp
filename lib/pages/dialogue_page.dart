@@ -59,7 +59,7 @@ class _DialoguePageState extends State<DialoguePage> {
                                   snapshot.data!.split('\n');
                               String word =
                                   translations[translations.length - 1]
-                                      .replaceAll(RegExp(r"[^A-Za-z]"), '');
+                                      .replaceAll(RegExp(r"[^A-Za-z ]"), '');
                               return SingleChildScrollView(
                                 child: Padding(
                                   padding: const EdgeInsets.all(8.0),
