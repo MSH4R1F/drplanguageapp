@@ -1,6 +1,7 @@
 import 'package:drplanguageapp/pages/conversations_list.dart';
 import 'package:drplanguageapp/pages/dashboard_page.dart';
 import 'package:drplanguageapp/pages/dialogue_page.dart';
+import 'package:drplanguageapp/pages/flashcards.dart';
 import 'package:drplanguageapp/pages/highlights.dart';
 import 'package:drplanguageapp/pages/login_page.dart';
 import 'package:flutter/material.dart';
@@ -23,6 +24,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: const MyHomePage(),
+
       onGenerateRoute: (RouteSettings settings) {
         // Handling each route
         switch (settings.name) {
@@ -38,6 +40,8 @@ class MyApp extends StatelessWidget {
             return MaterialPageRoute(builder: (_) => const DialoguePage());
           case '/dashboard/highlights':
             return MaterialPageRoute(builder: (_) => const Highlights());
+          case '/dashboard/flashcards': 
+            return MaterialPageRoute(builder: (_) => const WordsListPage());
           default:
             return MaterialPageRoute(
                 builder: (_) =>
