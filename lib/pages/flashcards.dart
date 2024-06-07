@@ -246,7 +246,8 @@ class SpinWordWidgetState extends State<SpinWordWidget>
                 builder: (context, child) {
                   return Transform(
                     alignment: FractionalOffset.center,
-                    transform: Matrix4.rotationY(_rotationAnimation.value * 3.14),
+                    transform:
+                        Matrix4.rotationY(_rotationAnimation.value * 3.14),
                     child: _rotationAnimation.value <= 0.5
                         ? Text(widget.flashcard.word,
                             style: const TextStyle(fontSize: 28))
@@ -283,8 +284,8 @@ class SpinWordWidgetState extends State<SpinWordWidget>
                             Wrap(
                               spacing: 8.0, // gap between adjacent chips
                               runSpacing: 4.0, // gap between lines
-                              children:
-                                  widget.flashcard.synonyms.map((String synonym) {
+                              children: widget.flashcard.synonyms
+                                  .map((String synonym) {
                                 return GestureDetector(
                                   onTap: () {
                                     Flashcard? flashcard = widget.flashcards

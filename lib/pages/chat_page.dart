@@ -1,9 +1,11 @@
 
 import 'package:flutter/material.dart';
 
+
 class ChatPage extends StatefulWidget {
+  final Object textToSpeechEngine;
   final List<Chat> chats;
-  const ChatPage({super.key, required this.chats});
+  const ChatPage({super.key, required this.chats, required this.textToSpeechEngine});
 
   @override
   State<ChatPage> createState() => _ChatPageState();
@@ -13,31 +15,42 @@ class _ChatPageState extends State<ChatPage> {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      reverse: true,
-      itemCount: widget.chats.length,
-      prototypeItem: ListTile(
-        title: Text(widget.chats.first.toString()),
-      ),
-      itemBuilder: (context, index) {
-        return Container(
-                constraints: const BoxConstraints(maxWidth: 300),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10)
-                ),
-                child: Column(
-                  children: [
-                    ListTile(
-                      title: Text(
-                        widget.chats[index].toString(),
-                        textAlign: widget.chats[index].ai ? TextAlign.left : TextAlign.right
-                        ),
-                        tileColor: widget.chats[index].ai ? Colors.red : Colors.blue,
-                    )
-                  ],
+    return Column(
+      children: [
+        Expanded(
+          child: ListView.builder(
+            reverse: true,
+            itemCount: widget.chats.length,
+            itemBuilder: (context, index) {
+              return Align(
+                alignment: widget.chats[index].ai ? Alignment.centerLeft : Alignment.centerRight,
+                // child: ChatMessage(chat: widget.chats[index]),
+                child: GestureDetector(
+                  onDoubleTap: () {
+                    // TODO: ADD TTS FUNCTIONALITY
+                    // widget.textToSpeechEngine
+                    // widget.chats[index].content.data has the string to output
+                  },
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
+                    padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 16.0),
+                    decoration: BoxDecoration(
+                      color: widget.chats[index].ai ? Colors.grey[300] : Colors.green[300],
+                    borderRadius: BorderRadius.only(
+                      topLeft: const Radius.circular(12.0),
+                      topRight: const Radius.circular(12.0),
+                      bottomRight: widget.chats[index].ai ? const Radius.circular(12.0) : Radius.zero,
+                      bottomLeft: widget.chats[index].ai ? Radius.zero :  const Radius.circular(12.0),
+                    ),
+                  ),
+                  child: widget.chats[index].content,
+                  ),
                 ),
               );
-      },
+            },
+          ),
+        ),
+      ],
     );
   }
 }
@@ -45,16 +58,15 @@ class _ChatPageState extends State<ChatPage> {
 
 class Chat {
   final String sender;
-  final String content;
+  final Text content;
   final DateTime timestamp;
-  final Color colour;
   final bool ai;
+
 
   Chat({
     required this.sender,
     required this.content,
     required this.timestamp,
-    required this.colour,
     required this.ai,
   });
 
