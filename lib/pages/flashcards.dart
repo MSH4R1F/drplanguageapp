@@ -1,4 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_tts/flutter_tts.dart';
+
+final FlutterTts flutterTts = FlutterTts();
+
+Future<void> _speak(String text) async {
+  await flutterTts.setLanguage('ar');
+  await flutterTts.speak(text);
+}
 
 void main() {
   runApp(WordsListPage());
@@ -209,128 +217,139 @@ class SpinWordWidgetState extends State<SpinWordWidget>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: GestureDetector(
-          onTap: _toggleWord,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              AnimatedBuilder(
-                animation: _rotationAnimation,
-                builder: (context, child) {
-                  return SlideTransition(
-                    position: _slideUpAnimation,
-                    child: FadeTransition(
-                      opacity: _fadeInFadeOutAnimation,
-                      child: Visibility(
-                        visible: _rotationAnimation.value > 0.5,
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Image.network(
-                              widget.flashcard.imageUrl,
-                              height: 150,
+      body:
+          Center(
+            child: GestureDetector(
+              onTap: _toggleWord,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  AnimatedBuilder(
+                    animation: _rotationAnimation,
+                    builder: (context, child) {
+                      return SlideTransition(
+                        position: _slideUpAnimation,
+                        child: FadeTransition(
+                          opacity: _fadeInFadeOutAnimation,
+                          child: Visibility(
+                            visible: _rotationAnimation.value > 0.5,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Image.network(
+                                  widget.flashcard.imageUrl,
+                                  height: 150,
+                                ),
+                                Text('Source: ${widget.flashcard.imgSource}'),
+                                const SizedBox(height: 20),
+                              ],
                             ),
-                            Text('Source: ${widget.flashcard.imgSource}'),  // Add this line
-                            const SizedBox(height: 20),
-                          ],
-                        ),
-                      ),
-                    ),
-                  );
-                },
-              ),
-              AnimatedBuilder(
-                animation: _rotationAnimation,
-                builder: (context, child) {
-                  return Transform(
-                    alignment: FractionalOffset.center,
-                    transform:
-                        Matrix4.rotationY(_rotationAnimation.value * 3.14),
-                    child: _rotationAnimation.value <= 0.5
-                        ? Text(widget.flashcard.word,
-                            style: const TextStyle(fontSize: 28))
-                        : Transform(
-                            alignment: Alignment.center,
-                            transform: Matrix4.rotationY(3.14),
-                            child: Text(widget.flashcard.translation,
-                                style: const TextStyle(fontSize: 28)),
                           ),
-                  );
-                },
-              ),
-              AnimatedBuilder(
-                animation: _rotationAnimation,
-                builder: (context, child) {
-                  return SlideTransition(
-                    position: _slideDownAnimation,
-                    child: FadeTransition(
-                      opacity: _fadeInFadeOutAnimation,
-                      child: Visibility(
-                        visible: _rotationAnimation.value > 0.5,
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            const SizedBox(height: 20),
-                            Text(
-                              widget.flashcard.definition,
-                              style: const TextStyle(
-                                  fontSize: 20, fontStyle: FontStyle.italic),
-                              textAlign: TextAlign.center,
-                            ),
-                            const SizedBox(height: 10),
-                            Wrap(
-                              spacing: 8.0, // gap between adjacent chips
-                              runSpacing: 4.0, // gap between lines
-                              children: widget.flashcard.synonyms
-                                  .map((String synonym) {
-                                return GestureDetector(
-                                  onTap: () {
-                                    Flashcard? flashcard = widget.flashcards
-                                        .firstWhere(
-                                            (card) => card.word == synonym,
-                                            orElse: () => null as Flashcard);
-                                    if (flashcard != null) {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => FlashcardPage(
-                                            flashcard: flashcard,
-                                            flashcards: widget.flashcards,
-                                          ),
-                                        ),
-                                      );
-                                    }
-                                  },
-                                  child: Chip(
-                                    label: Text(synonym),
-                                  ),
-                                );
-                              }).toList(),
-                            ),
-                          ],
                         ),
-                      ),
-                    ),
-                  );
-                },
+                      );
+                    },
+                  ),
+                  AnimatedBuilder(
+                    animation: _rotationAnimation,
+                    builder: (context, child) {
+                      return Transform(
+                        alignment: FractionalOffset.center,
+                        transform:
+                            Matrix4.rotationY(_rotationAnimation.value * 3.14),
+                        child: _rotationAnimation.value <= 0.5
+                            ? Text(widget.flashcard.word,
+                                style: const TextStyle(fontSize: 28))
+                            : Transform(
+                                alignment: Alignment.center,
+                                transform: Matrix4.rotationY(3.14),
+                                child: Text(widget.flashcard.translation,
+                                    style: const TextStyle(fontSize: 28)),
+                              ),
+                      );
+                    },
+                  ),
+                  AnimatedBuilder(
+                    animation: _rotationAnimation,
+                    builder: (context, child) {
+                      return SlideTransition(
+                        position: _slideDownAnimation,
+                        child: FadeTransition(
+                          opacity: _fadeInFadeOutAnimation,
+                          child: Visibility(
+                            visible: _rotationAnimation.value > 0.5,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                const SizedBox(height: 20),
+                                Text(
+                                  widget.flashcard.definition,
+                                  style: const TextStyle(
+                                      fontSize: 20, fontStyle: FontStyle.italic),
+                                  textAlign: TextAlign.center,
+                                ),
+                                const SizedBox(height: 10),
+                                Wrap(
+                                  spacing: 8.0, // gap between adjacent chips
+                                  runSpacing: 4.0, // gap between lines
+                                  children: widget.flashcard.synonyms
+                                      .map((String synonym) {
+                                    return GestureDetector(
+                                      onTap: () {
+                                        Flashcard? flashcard = widget.flashcards
+                                            .firstWhere(
+                                                (card) => card.word == synonym,
+                                                orElse: () => null as Flashcard);
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) => FlashcardPage(
+                                                flashcard: flashcard,
+                                                flashcards: widget.flashcards,
+                                              ),
+                                            ),
+                                          );
+                                      },
+                                      child: Chip(
+                                        label: Text(synonym),
+                                      ),
+                                    );
+                                  }).toList(),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ],
               ),
-            ],
-          ),
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(widget.flashcard.hint),
             ),
-          );
-        },
-        child: const Icon(Icons.lightbulb_outline),
-      ),
+          ),
+      floatingActionButton: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: <Widget>[
+            ElevatedButton(
+              onPressed: () async {
+                await _speak(widget.flashcard.word);
+              },
+              child: Icon(Icons.volume_up),
+            ),
+            SizedBox(width: 10), // Add some spacing between the buttons
+            ElevatedButton(
+              onPressed: () {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(widget.flashcard.hint),
+                  ),
+                );
+              },
+              child: Icon(Icons.lightbulb_outline),
+            ),
+          ],
+        ),
     );
   }
 
