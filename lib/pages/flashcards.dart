@@ -173,13 +173,16 @@ class SpinWordWidget extends StatefulWidget {
 
 class SpinWordWidgetState extends State<SpinWordWidget>
     with TickerProviderStateMixin {
-  bool _showFirstWord = true;
+  bool _showWord = true;
+  bool _showImage = false;
   late AnimationController _controller;
   late AnimationController _imageController;
-  late Animation<double> _rotationAnimation;
-  late Animation<Offset> _slideUpAnimation;
-  late Animation<Offset> _slideDownAnimation;
-  late Animation<double> _fadeInFadeOutAnimation;
+  late Animation<double> _rotateWordAnimation;
+  late Animation<double> _imageAnimation;
+  late Animation<Offset> _imageSlideUpAnimation;
+  late Animation<Offset> _definitionSlideDownAnimation;
+  late Animation<double> _definitionFadeAnimation;
+  late Animation<double> _imageFadeAnimation;
 
   @override
   void initState() {
@@ -192,72 +195,90 @@ class SpinWordWidgetState extends State<SpinWordWidget>
       duration: const Duration(seconds: 1),
       vsync: this,
     );
-    _rotationAnimation = Tween<double>(begin: 0, end: 1).animate(_controller);
-    _slideUpAnimation =
-        Tween<Offset>(begin: Offset.zero, end: const Offset(0, -1)).animate(
+    _rotateWordAnimation = Tween<double>(begin: 0, end: 1).animate(_controller);
+    _imageAnimation = Tween<double>(begin: 0, end: 1).animate(_imageController);
+    _imageSlideUpAnimation =
+        Tween<Offset>(begin: Offset.zero, end: const Offset(0, 0)).animate(
             CurvedAnimation(parent: _imageController, curve: Curves.easeInOut));
-    _slideDownAnimation = Tween<Offset>(
+    _definitionSlideDownAnimation = Tween<Offset>(
             begin: const Offset(0, 1), end: Offset.zero)
         .animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
-    _fadeInFadeOutAnimation = Tween<double>(begin: 0.0, end: 1.0)
+    _definitionFadeAnimation = Tween<double>(begin: 0.0, end: 1.0)
         .animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
+    _imageFadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+        CurvedAnimation(parent: _imageController, curve: Curves.easeInOut));
   }
 
   void _toggleWord() {
-    if (_showFirstWord) {
+    if (_showWord) {
       _controller.forward();
-      _imageController.reverse();
     } else {
       _controller.reverse();
+    }
+    _showWord = !_showWord;
+  }
+
+  void _toggleImage() {
+    if (_showImage) {
+      _imageController.reverse();
+    } else {
       _imageController.forward();
     }
-    _showFirstWord = !_showFirstWord;
+    _showImage = !_showImage;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body:
-          Center(
-            child: GestureDetector(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            AnimatedBuilder(
+              animation: _imageAnimation,
+              builder: (context, child) {
+                return SlideTransition(
+                  position: _imageSlideUpAnimation,
+                  child: FadeTransition(
+                    opacity: _imageFadeAnimation,
+                    child: AnimatedCrossFade(
+                      firstChild: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Image.network(
+                            widget.flashcard.imageUrl,
+                            height: 150,
+                          ),
+                          Text('Source: ${widget.flashcard.imgSource}'),
+                          const SizedBox(height: 20),
+                        ],
+                      ),
+                      secondChild:
+                          Container(), // Empty container takes no space
+                      crossFadeState: _showImage
+                          ? CrossFadeState.showFirst
+                          : CrossFadeState.showSecond,
+                      duration: const Duration(milliseconds: 300),
+                    ),
+                  ),
+                );
+              },
+            ),
+            GestureDetector(
               onTap: _toggleWord,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   AnimatedBuilder(
-                    animation: _rotationAnimation,
-                    builder: (context, child) {
-                      return SlideTransition(
-                        position: _slideUpAnimation,
-                        child: FadeTransition(
-                          opacity: _fadeInFadeOutAnimation,
-                          child: Visibility(
-                            visible: _rotationAnimation.value > 0.5,
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Image.network(
-                                  widget.flashcard.imageUrl,
-                                  height: 150,
-                                ),
-                                Text('Source: ${widget.flashcard.imgSource}'),
-                                const SizedBox(height: 20),
-                              ],
-                            ),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                  AnimatedBuilder(
-                    animation: _rotationAnimation,
+                    animation: _rotateWordAnimation,
                     builder: (context, child) {
                       return Transform(
                         alignment: FractionalOffset.center,
-                        transform:
-                            Matrix4.rotationY(_rotationAnimation.value * 3.14),
-                        child: _rotationAnimation.value <= 0.5
+                        transform: Matrix4.rotationY(
+                            _rotateWordAnimation.value * 3.14),
+                        child: _rotateWordAnimation.value <= 0.5
                             ? Text(widget.flashcard.word,
                                 style: const TextStyle(fontSize: 28))
                             : Transform(
@@ -270,14 +291,14 @@ class SpinWordWidgetState extends State<SpinWordWidget>
                     },
                   ),
                   AnimatedBuilder(
-                    animation: _rotationAnimation,
+                    animation: _rotateWordAnimation,
                     builder: (context, child) {
                       return SlideTransition(
-                        position: _slideDownAnimation,
+                        position: _definitionSlideDownAnimation,
                         child: FadeTransition(
-                          opacity: _fadeInFadeOutAnimation,
+                          opacity: _definitionFadeAnimation,
                           child: Visibility(
-                            visible: _rotationAnimation.value > 0.5,
+                            visible: _rotateWordAnimation.value > 0.5,
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               crossAxisAlignment: CrossAxisAlignment.center,
@@ -286,7 +307,8 @@ class SpinWordWidgetState extends State<SpinWordWidget>
                                 Text(
                                   widget.flashcard.definition,
                                   style: const TextStyle(
-                                      fontSize: 20, fontStyle: FontStyle.italic),
+                                      fontSize: 20,
+                                      fontStyle: FontStyle.italic),
                                   textAlign: TextAlign.center,
                                 ),
                                 const SizedBox(height: 10),
@@ -300,16 +322,17 @@ class SpinWordWidgetState extends State<SpinWordWidget>
                                         Flashcard? flashcard = widget.flashcards
                                             .firstWhere(
                                                 (card) => card.word == synonym,
-                                                orElse: () => null as Flashcard);
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) => FlashcardPage(
-                                                flashcard: flashcard,
-                                                flashcards: widget.flashcards,
-                                              ),
+                                                orElse: () =>
+                                                    null as Flashcard);
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => FlashcardPage(
+                                              flashcard: flashcard,
+                                              flashcards: widget.flashcards,
                                             ),
-                                          );
+                                          ),
+                                        );
                                       },
                                       child: Chip(
                                         label: Text(synonym),
@@ -327,29 +350,36 @@ class SpinWordWidgetState extends State<SpinWordWidget>
                 ],
               ),
             ),
-          ),
-      floatingActionButton: Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: <Widget>[
-            ElevatedButton(
-              onPressed: () async {
-                await _speak(widget.flashcard.word);
-              },
-              child: Icon(Icons.volume_up),
-            ),
-            SizedBox(width: 10), // Add some spacing between the buttons
-            ElevatedButton(
-              onPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(widget.flashcard.hint),
-                  ),
-                );
-              },
-              child: Icon(Icons.lightbulb_outline),
-            ),
           ],
         ),
+      ),
+      floatingActionButton: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: <Widget>[
+          ElevatedButton(
+            onPressed: () async {
+              await _speak(widget.flashcard.word);
+            },
+            child: const Icon(Icons.volume_up),
+          ),
+          const SizedBox(width: 10),
+          ElevatedButton(
+            onPressed: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(widget.flashcard.hint),
+                ),
+              );
+            },
+            child: const Icon(Icons.lightbulb_outline),
+          ),
+          const SizedBox(width: 10), // Add some spacing between the buttons
+          ElevatedButton(
+            onPressed: _toggleImage,
+            child: const Icon(Icons.image),
+          ),
+        ],
+      ),
     );
   }
 
