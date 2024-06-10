@@ -6,19 +6,22 @@ import 'package:drplanguageapp/classes/chat_service.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Conversation extends StatefulWidget {
   final String userID;
   final String language;
   final String topic;
   final String chatLabel;
+  final DocumentReference<Map<String, dynamic>> chatRef;
 
   const Conversation(
       {super.key,
       required this.userID,
       required this.language,
       required this.topic,
-      required this.chatLabel});
+      required this.chatLabel,
+      required this.chatRef});
 
   @override
   State<Conversation> createState() => _ConversationState();
@@ -26,21 +29,23 @@ class Conversation extends StatefulWidget {
 
 class _ConversationState extends State<Conversation> {
   final TextEditingController _controller = TextEditingController();
-  final String chatID = "chat1";
   String userID = "userID";
 
   // FlutterSoundRecorder? _recorder;
   // FlutterSoundPlayer? _player;
   bool _speechEnabled = false;
+  bool introduced = false;
   String _lastWords = '';
   final SpeechToText _speechToText = SpeechToText();
+  // final FlutterTts _flutterTts = FlutterTts();
 
   @override
   void initState() {
     super.initState();
+    userID = widget.userID;
     _initSpeech();
     _initializeAI();
-    userID = widget.userID;
+    loadChats();
   }
 
   Future<void> _requestPermissions() async {
@@ -78,7 +83,11 @@ class _ConversationState extends State<Conversation> {
         sender: "Me", content: Text(text), timestamp: DateTime.now(), ai: isAi);
     setState(() {
       chatt.insert(0, toAdd);
-      sendMessageFromUser(userID, chatID, text);
+      if (isAi) {
+        sendMessageFromAI(widget.chatRef.id, text);
+      } else {
+        sendMessageFromUser(userID, widget.chatRef.id, text);
+      }
     });
   }
 
@@ -121,9 +130,12 @@ class _ConversationState extends State<Conversation> {
 
   void sendMessageFromAI(String chatID, String messageText) {
     var messagesRef = FirebaseFirestore.instance
+        .collection('users')
+        .doc(userID)
         .collection('chats')
         .doc(chatID)
         .collection('messages');
+
     messagesRef.add({
       'sender': 'AI',
       'message': messageText,
@@ -162,7 +174,6 @@ class _ConversationState extends State<Conversation> {
               size: 24, // Increased size for better visibility
             ),
             Expanded(
-              // This widget will take all available space
               child: Container(
                 alignment: Alignment
                     .center, // This centers the text within the expanded space
@@ -184,7 +195,6 @@ class _ConversationState extends State<Conversation> {
             height: 50,
             child: ListView(
                 scrollDirection: Axis.horizontal,
-                // children: [TextButton(onPressed: () {}, child: Text("Ballsfggdddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"),)],
                 children: suggestions
                     .map(
                         // TODO: This on pressed can change so that it plays the text out loud, so the user has to say it
@@ -270,9 +280,50 @@ class _ConversationState extends State<Conversation> {
     });
   }
 
-  void _initializeAI() {
-    sendMessageToAI(
-        "Hello! In the following conversation, you will help this user practice speaking Arabic. Please adhere to these rules: 1. Communicate solely in Arabic, except when explicitly requested to provide assistance in English. 2. Your name is Jaber. In your initial message, introduce yourself and mention that the topic of today's conversation will be ${widget.topic} . 3. Tailor your language complexity and speaking pace to suit a beginner in Arabic, using simple vocabulary and short sentences to ensure clarity and ease of understanding");
+  void loadChats() {
+    print("loading chats");
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(widget.userID)
+        .collection('chats')
+        .doc(widget.chatRef.id)
+        .collection('messages')
+        .orderBy('timestamp', descending: true)
+        .snapshots()
+        .listen((event) {
+      chatt = event.docs
+          .map((e) => Chat(
+              sender: e.get('sender'),
+              content: Text(e.get('message')),
+              timestamp: e.get('timestamp').toDate(),
+              ai: e.get('isAI')))
+          .toList();
+    });
+    setState(() {});
+  }
+
+  void _initializeAI() async {
+    print("Initializing AI...");
+    // Fetch messages to check if AI introduction is needed
+    var messagesRef = FirebaseFirestore.instance
+        .collection('users')
+        .doc(userID) // Ensure userID is set correctly before this call
+        .collection('chats')
+        .doc(widget.chatRef.id)
+        .collection('messages');
+
+    var messages = await messagesRef.get();
+    print("Messages fetched: ${messages.docs.length}");
+
+    // If no messages, send AI introduction
+    if (messages.docs.isEmpty) {
+      print("No messages found, sending AI introduction...");
+      sendMessageToAI(
+          "Hello! In the following conversation, you will help this user practice speaking ${widget.language}. Please adhere to these rules: 1. Communicate solely in ${widget.language}, except when explicitly requested to provide assistance in English. 2. Your name is Jaber. In your initial message, introduce yourself and mention that the topic of today's conversation will be ${widget.topic}. 3. Tailor your language complexity and speaking pace to suit a beginner in ${widget.language}, using simple vocabulary and short sentences to ensure clarity and ease of understanding.");
+    } else {
+      print("Messages already exist, skipping AI introduction.");
+    }
+    setState(() {});
   }
 
   void _initSpeech() async {

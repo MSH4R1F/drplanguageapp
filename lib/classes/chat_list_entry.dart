@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:drplanguageapp/classes/new_chat_form.dart';
 import 'package:flutter/material.dart';
 
@@ -58,6 +59,17 @@ class ChatEntry {
   final String lastmessage;
   final Image image;
   final Selection selection;
+  DocumentReference<Map<String, dynamic>>? reference;
 
   ChatEntry(this.image, this.title, this.lastmessage, this.selection);
+  ChatEntry.withReference(
+      this.image, this.title, this.lastmessage, this.selection, this.reference);
+
+  void setReference(DocumentReference<Map<String, dynamic>> ref) {
+    reference = ref;
+  }
+
+  getReference() {
+    return reference;
+  }
 }

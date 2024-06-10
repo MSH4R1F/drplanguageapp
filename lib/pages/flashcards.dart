@@ -55,7 +55,7 @@ class WordsListPage extends StatelessWidget {
   ];
 
   WordsListPage({super.key});
-
+  
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -110,6 +110,7 @@ class FlashcardPage extends StatelessWidget {
 
   const FlashcardPage(
       {super.key, required this.flashcard, required this.flashcards});
+
 
   @override
   Widget build(BuildContext context) {
