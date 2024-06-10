@@ -10,6 +10,7 @@ class Flashcard {
   final String definition;
   final List<String> synonyms;
   final String imageUrl;
+  final String imgSource;
   final String hint;
 
   Flashcard({
@@ -18,6 +19,7 @@ class Flashcard {
     required this.definition,
     required this.synonyms,
     required this.imageUrl,
+    required this.imgSource,
     required this.hint,
   });
 }
@@ -33,6 +35,7 @@ class WordsListPage extends StatelessWidget {
         synonyms: ['صباح الخير', 'ترحيب'],
         imageUrl:
             'https://static.independent.co.uk/s3fs-public/thumbnails/image/2017/04/03/17/donald-trump-sisi.jpg?width=1200',
+        imgSource: 'The Independent',
         hint: 'This word is used to greet someone.'),
     Flashcard(
         word: 'ترحيب',
@@ -42,6 +45,7 @@ class WordsListPage extends StatelessWidget {
         synonyms: ['صباح الخير', 'مرحبًا'],
         imageUrl:
             'https://previews.123rf.com/images/perig76/perig761410/perig76141000059/32314128-view-of-a-young-attractive-man-welcoming-you-in-his-house.jpg',
+        imgSource: '123RF',
         hint: 'This word is used to greet someone.'),
     Flashcard(
         word: 'صباح الخير',
@@ -51,6 +55,7 @@ class WordsListPage extends StatelessWidget {
         synonyms: ['ترحيب', 'مرحبًا'],
         imageUrl:
             'https://i.pinimg.com/736x/d1/8a/69/d18a69b3b01b6f80aa192e26fc622324.jpg',
+        imgSource: 'Pinterest',
         hint: 'This word is used to greet someone in the morning.'),
   ];
 
@@ -220,15 +225,17 @@ class SpinWordWidgetState extends State<SpinWordWidget>
                       child: Visibility(
                         visible: _rotationAnimation.value > 0.5,
                         child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Image.network(
-                                widget.flashcard.imageUrl,
-                                height: 150,
-                              ),
-                              const SizedBox(height: 20),
-                            ]),
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Image.network(
+                              widget.flashcard.imageUrl,
+                              height: 150,
+                            ),
+                            Text('Source: ${widget.flashcard.imgSource}'),
+                            const SizedBox(height: 20),
+                          ],
+                        ),
                       ),
                     ),
                   );
