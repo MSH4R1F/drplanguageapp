@@ -1,15 +1,12 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 
 final FlutterTts flutterTts = FlutterTts();
 
-Future<void> _speak(String text) async {
-  await flutterTts.setLanguage('ar');
+Future<void> _speak(String text, String language) async {
+  await flutterTts.setLanguage(language);
   await flutterTts.speak(text);
-}
-
-void main() {
-  runApp(WordsListPage());
 }
 
 class Flashcard {
@@ -32,42 +29,38 @@ class Flashcard {
   });
 }
 
-class WordsListPage extends StatelessWidget {
-  // todo: get flashcards from the database instead :>
-  final List<Flashcard> flashcards = [
-    Flashcard(
-        word: 'مرحبًا',
-        translation: 'hello',
-        definition:
-            'A greeting used to begin a conversation or to acknowledge someone\'s presence.',
-        synonyms: ['صباح الخير', 'ترحيب'],
+Future<List<Flashcard>> getFlashcards(String userID) async {
+  try {
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(userID)
+        .collection('flashcards')
+        .get();
+    return querySnapshot.docs.map((doc) {
+      return Flashcard(
+        word: doc['word'],
+        translation: doc['trWord'],
+        definition: '*there is nothing here yet!*',
+        // synonyms: List<String>.from(doc['synonyms']),
+        synonyms: [],
         imageUrl:
             'https://static.independent.co.uk/s3fs-public/thumbnails/image/2017/04/03/17/donald-trump-sisi.jpg?width=1200',
-        imgSource: 'The Independent',
-        hint: 'This word is used to greet someone.'),
-    Flashcard(
-        word: 'ترحيب',
-        translation: 'welcome',
-        definition:
-            'A greeting or expression of goodwill given upon someone\'s arrival.',
-        synonyms: ['صباح الخير', 'مرحبًا'],
-        imageUrl:
-            'https://previews.123rf.com/images/perig76/perig761410/perig76141000059/32314128-view-of-a-young-attractive-man-welcoming-you-in-his-house.jpg',
-        imgSource: '123RF',
-        hint: 'This word is used to greet someone.'),
-    Flashcard(
-        word: 'صباح الخير',
-        translation: 'good morning',
-        definition:
-            'A greeting used to acknowledge or welcome someone during the morning hours.',
-        synonyms: ['ترحيب', 'مرحبًا'],
-        imageUrl:
-            'https://i.pinimg.com/736x/d1/8a/69/d18a69b3b01b6f80aa192e26fc622324.jpg',
-        imgSource: 'Pinterest',
-        hint: 'This word is used to greet someone in the morning.'),
-  ];
+        imgSource: 'the Independent',
+        hint: 'You have not added a hint yet!',
+      );
+    }).toList();
+  } catch (e) {
+    print('Error fetching flashcards: $e');
+    return [];
+  }
+}
 
-  WordsListPage({super.key});
+class WordsListPage extends StatelessWidget {
+  final String userID;
+  final Future<List<Flashcard>> flashcards;
+
+  WordsListPage({super.key, required this.userID})
+      : flashcards = getFlashcards(userID);
 
   @override
   Widget build(BuildContext context) {
@@ -91,25 +84,47 @@ class WordsListPage extends StatelessWidget {
             ),
           ],
         ),
-        body: ListView.builder(
-          itemCount: flashcards.length,
-          itemBuilder: (context, index) {
-            return ListTile(
-              title: Center(
-                  child: Text(flashcards[index].word,
-                      style: const TextStyle(fontSize: 24))),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => FlashcardPage(
-                      flashcard: flashcards[index],
-                      flashcards: flashcards,
-                    ),
-                  ),
+        body: FutureBuilder<List<Flashcard>>(
+          future: flashcards,
+          builder:
+              (BuildContext context, AsyncSnapshot<List<Flashcard>> snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return Text('Error: ${snapshot.error}');
+            } else {
+              print('here is your snapshot.data!::: ${snapshot.data}');
+              if (snapshot.data != null && snapshot.data!.isNotEmpty) {
+                return ListView.builder(
+                  itemCount: snapshot.data!.length,
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      title: Center(
+                        child: Text(
+                          snapshot.data![index].word,
+                          style: const TextStyle(fontSize: 24),
+                        ),
+                      ),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => FlashcardPage(
+                              flashcard: snapshot.data![index],
+                              flashcards: snapshot.data!,
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  },
                 );
-              },
-            );
+              } else {
+                return const Center(
+                  child: Text('You have no flashcards yet!'),
+                );
+              }
+            }
           },
         ),
       ),
@@ -358,7 +373,8 @@ class SpinWordWidgetState extends State<SpinWordWidget>
         children: <Widget>[
           ElevatedButton(
             onPressed: () async {
-              await _speak(widget.flashcard.word);
+              // todo: make language dynamic ('ar' for Arabic, 'ur' for Urdu, etc.)
+              await _speak(widget.flashcard.word, 'ur-PK');
             },
             child: const Icon(Icons.volume_up),
           ),

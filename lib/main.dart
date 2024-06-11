@@ -25,6 +25,10 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       home: const MyHomePage(),
       onGenerateRoute: (RouteSettings settings) {
+        // todo : change userID
+        // final userID = settings.arguments as String;
+        final userID = "userID";
+
         // Handling each route
         switch (settings.name) {
           case '/loginpage':
@@ -32,9 +36,6 @@ class MyApp extends StatelessWidget {
           case '/dashboard':
             return MaterialPageRoute(builder: (_) => const DashboardPage());
           case '/dashboard/conversation':
-            // todo : change userID
-            // final userID = settings.arguments as String;
-            final userID = "userID";
             return MaterialPageRoute(
                 builder: (_) => ConversationsList(
                       userID: userID,
@@ -48,7 +49,7 @@ class MyApp extends StatelessWidget {
           case '/dashboard/highlights':
             return MaterialPageRoute(builder: (_) => const Highlights());
           case '/dashboard/flashcards': 
-            return MaterialPageRoute(builder: (_) => WordsListPage());
+            return MaterialPageRoute(builder: (_) => WordsListPage(userID: userID,));
           default:
             return MaterialPageRoute(
                 builder: (_) =>
