@@ -1,13 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:drplanguageapp/main.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_tts/flutter_tts.dart';
-
-final FlutterTts flutterTts = FlutterTts();
-
-Future<void> _speak(String text, String language) async {
-  await flutterTts.setLanguage(language);
-  await flutterTts.speak(text);
-}
 
 class Flashcard {
   final String word;
@@ -417,72 +410,6 @@ class SpinWordWidgetState extends State<SpinWordWidget>
                       },
                     ),
                   ),
-                  // AnimatedBuilder(
-                  //   animation: _rotateWordAnimation,
-                  //   builder: (context, child) {
-                  //     return SlideTransition(
-                  //       position: _definitionSlideDownAnimation,
-                  //       child: FadeTransition(
-                  //         opacity: _definitionFadeAnimation,
-                  //         child: Visibility(
-                  //           visible: _rotateWordAnimation.value > 0.5,
-                  //           child: Column(
-                  //             mainAxisSize: MainAxisSize.min,
-                  //             crossAxisAlignment: CrossAxisAlignment.center,
-                  //             children: [
-                  //               const SizedBox(height: 20),
-                  //               const Divider(),
-                  //               Text(
-                  //                 widget.flashcard.sentence,
-                  //                 style: const TextStyle(
-                  //                     fontSize: 20,
-                  //                     fontWeight: FontWeight.bold),
-                  //                 textAlign: TextAlign.center,
-                  //               ),
-                  //               const SizedBox(height: 10),
-                  //               Text(
-                  //                 widget.flashcard.translatedSentence,
-                  //                 style: const TextStyle(
-                  //                     fontSize: 20,
-                  //                     fontStyle: FontStyle.italic),
-                  //                 textAlign: TextAlign.center,
-                  //               ),
-                  //               const SizedBox(height: 10),
-                  //               Wrap(
-                  //                 spacing: 8.0, // gap between adjacent chips
-                  //                 runSpacing: 4.0, // gap between lines
-                  //                 children: widget.flashcard.synonyms
-                  //                     .map((String synonym) {
-                  //                   return GestureDetector(
-                  //                     onTap: () {
-                  //                       Flashcard? flashcard = widget.flashcards
-                  //                           .firstWhere(
-                  //                               (card) => card.word == synonym,
-                  //                               orElse: () =>
-                  //                                   null as Flashcard);
-                  //                       Navigator.push(
-                  //                         context,
-                  //                         MaterialPageRoute(
-                  //                           builder: (context) => FlashcardPage(
-                  //                             flashcard: flashcard,
-                  //                             flashcards: widget.flashcards,
-                  //                           ),
-                  //                         ),
-                  //                       );
-                  //                     },
-                  //                     child: Chip(
-                  //                       label: Text(synonym),
-                  //                     ),
-                  //                   );
-                  //                 }).toList(),
-                  //               ),
-                  //             ],
-                  //           ),
-                  //         ),
-                  //       ),
-                  //     );
-                  //   },
-                  // ),
                 ],
               ),
             ),
@@ -495,7 +422,7 @@ class SpinWordWidgetState extends State<SpinWordWidget>
           ElevatedButton(
             onPressed: () async {
               // todo: make language dynamic ('ar' for Arabic, 'ur' for Urdu, etc.)
-              await _speak(widget.flashcard.word, 'ur-PK');
+              await speak(widget.flashcard.word, 'ur');
             },
             child: const Icon(Icons.volume_up),
           ),

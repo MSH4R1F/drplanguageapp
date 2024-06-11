@@ -6,6 +6,7 @@ import 'package:drplanguageapp/pages/highlights.dart';
 import 'package:drplanguageapp/pages/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -14,6 +15,13 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   runApp(const MyApp());
+}
+
+final FlutterTts flutterTts = FlutterTts();
+
+Future<void> speak(String text, String language) async {
+  await flutterTts.setLanguage(language);
+  await flutterTts.speak(text);
 }
 
 class MyApp extends StatelessWidget {

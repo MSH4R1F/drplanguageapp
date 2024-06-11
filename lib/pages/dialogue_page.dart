@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:drplanguageapp/main.dart';
 import 'package:drplanguageapp/pages/flashcard_store.dart';
 import 'package:flutter/material.dart';
 import 'package:drplanguageapp/api/gpt.dart';
@@ -109,6 +110,13 @@ class _DialoguePageState extends State<DialoguePage> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [
+                                IconButton(
+                                  icon: const Icon(Icons.volume_up),
+                                  onPressed: () async {
+                                  // todo: make language dynamic ('ar' for Arabic, 'ur' for Urdu, etc.)
+                                  await speak(filteredWord, 'ur');
+                                },
+                                ),
                                 IconButton(
                                   icon: const Icon(Icons.copy),
                                   onPressed: () =>
