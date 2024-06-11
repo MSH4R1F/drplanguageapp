@@ -24,7 +24,6 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: const MyHomePage(),
-
       onGenerateRoute: (RouteSettings settings) {
         // Handling each route
         switch (settings.name) {
@@ -33,11 +32,19 @@ class MyApp extends StatelessWidget {
           case '/dashboard':
             return MaterialPageRoute(builder: (_) => const DashboardPage());
           case '/dashboard/conversation':
-            final userID = settings.arguments as String;
+            // todo : change userID
+            // final userID = settings.arguments as String;
+            final userID = "userID";
             return MaterialPageRoute(
-                builder: (_) => ConversationsList(userID: userID));
+                builder: (_) => ConversationsList(
+                      userID: userID,
+                    ));
           case '/dashboard/readingcomp':
-            return MaterialPageRoute(builder: (_) => const DialoguePage());
+            const userID = "userID";
+            return MaterialPageRoute(
+                builder: (_) => const DialoguePage(
+                      userID: userID,
+                    ));
           case '/dashboard/highlights':
             return MaterialPageRoute(builder: (_) => const Highlights());
           case '/dashboard/flashcards': 

@@ -19,7 +19,7 @@ class _ConversationsListState extends State<ConversationsList> {
         Image.network(
             "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Flag_of_the_Arabic_language.svg/1024px-Flag_of_the_Arabic_language.svg.png"),
         "Talking about ${s.topic} in ${s.language}",
-        "Last message: ${s.topic} in ${s.language}",
+        "${s.topic} in ${s.language}",
         s);
 
     setState(() {
