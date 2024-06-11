@@ -3,6 +3,7 @@ import 'package:drplanguageapp/classes/chat_message.dart';
 import 'package:drplanguageapp/pages/chat_page.dart';
 import 'package:flutter/material.dart';
 import 'package:drplanguageapp/classes/chat_service.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart';
@@ -37,7 +38,7 @@ class _ConversationState extends State<Conversation> {
   bool introduced = false;
   String _lastWords = '';
   final SpeechToText _speechToText = SpeechToText();
-  // final FlutterTts _flutterTts = FlutterTts();
+  final FlutterTts _flutterTts = FlutterTts();
 
   @override
   void initState() {
@@ -54,15 +55,47 @@ class _ConversationState extends State<Conversation> {
   }
 
   Future<void> _startListening() async {
-    await _speechToText.listen(
-      onResult: (SpeechRecognitionResult result) {
-        setState(() {
-          _lastWords = result.recognizedWords;
-          _controller.text = _lastWords;
-        });
-      },
-      localeId: 'ar_EG',
-    );
+    if (widget.language == "Arabic") {
+      await _speechToText.listen(
+        onResult: (SpeechRecognitionResult result) {
+          setState(() {
+            _lastWords = result.recognizedWords;
+            _controller.text = _lastWords;
+          });
+        },
+        localeId: 'ar_EG',
+      );
+    } else if (widget.language == "Urdu") {
+      await _speechToText.listen(
+        onResult: (SpeechRecognitionResult result) {
+          setState(() {
+            _lastWords = result.recognizedWords;
+            _controller.text = _lastWords;
+          });
+        },
+        localeId: 'ur_PK',
+      );
+    } else if (widget.language == "Bengali") {
+      await _speechToText.listen(
+        onResult: (SpeechRecognitionResult result) {
+          setState(() {
+            _lastWords = result.recognizedWords;
+            _controller.text = _lastWords;
+          });
+        },
+        localeId: 'bn_BD',
+      );
+    } else {
+      await _speechToText.listen(
+          onResult: (SpeechRecognitionResult result) {
+            setState(() {
+              _lastWords = result.recognizedWords;
+              _controller.text = _lastWords;
+            });
+          },
+          localeId: 'en_US');
+    }
+    setState(() {});
   }
 
   Future<void> _stopListening() async {
@@ -85,6 +118,7 @@ class _ConversationState extends State<Conversation> {
       chatt.insert(0, toAdd);
       if (isAi) {
         sendMessageFromAI(widget.chatRef.id, text);
+        _speak(text); // Speak the AI response
       } else {
         sendMessageFromUser(userID, widget.chatRef.id, text);
       }
@@ -152,7 +186,9 @@ class _ConversationState extends State<Conversation> {
     if (text.isNotEmpty) {
       addtoChat(false, text);
     }
-    ChatService().request(text).then((value) {
+    ChatService()
+        .requestResponse(text, widget.language, widget.topic)
+        .then((value) {
       if (value != null) {
         addtoChat(true, value);
       }
@@ -272,7 +308,9 @@ class _ConversationState extends State<Conversation> {
   }
 
   void sendMessageToAI(String messageText) {
-    ChatService().request(messageText).then((value) {
+    ChatService()
+        .requestResponse(messageText, widget.language, widget.topic)
+        .then((value) {
       if (value != null) {
         addtoChat(true, value);
         return value;
@@ -319,7 +357,7 @@ class _ConversationState extends State<Conversation> {
     if (messages.docs.isEmpty) {
       print("No messages found, sending AI introduction...");
       sendMessageToAI(
-          "Hello! In the following conversation, you will help this user practice speaking ${widget.language}. Please adhere to these rules: 1. Communicate solely in ${widget.language}, except when explicitly requested to provide assistance in English. 2. Your name is Jaber. In your initial message, introduce yourself and mention that the topic of today's conversation will be ${widget.topic}. 3. Tailor your language complexity and speaking pace to suit a beginner in ${widget.language}, using simple vocabulary and short sentences to ensure clarity and ease of understanding.");
+          "Pretend that you are having a conversation with the user. Your name is Jaber. Jaber is trying to help the user learn ${widget.language}. Follow these guidelines when writing your responses: 1. Communicate solely in ${widget.language}, except when asked to translate the message. 2. In your initial message, introduce yourself and your conversation topic will be ${widget.topic}. Do not divert from the topic. 3. Tailor your language complexity and speaking pace to suit a beginner in ${widget.language}, using simple vocabulary and short sentences to ensure clarity and ease of understanding. Create a natural, easygoing, back-and-forth flow to the dialogue. Summarize your response to be as brief as possible. You want to engage the user by asking questions to keep conversation going.Following this, separate your response with a % and give an improvement/advice if any to the message the user sent to help improve their language.");
     } else {
       print("Messages already exist, skipping AI introduction.");
     }
@@ -335,7 +373,10 @@ class _ConversationState extends State<Conversation> {
   void translateMessage(String text) {
     addtoChat(false, "Translating: $previousMessage");
     ChatService()
-        .request("Can you translate the text: $previousMessage to English?")
+        .requestResponse(
+            "Can you translate the text: $previousMessage to English?",
+            widget.language,
+            widget.topic)
         .then((value) {
       if (value != null) {
         addtoChat(true, value);
@@ -355,5 +396,9 @@ class _ConversationState extends State<Conversation> {
       }
     });
     _controller.clear();
+  }
+
+  void _speak(String text) async {
+    await _flutterTts.speak(text);
   }
 }

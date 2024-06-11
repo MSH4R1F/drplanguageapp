@@ -86,6 +86,15 @@ class _ConversationsListState extends State<ConversationsList> {
     });
   }
 
+  void removeFromDatabase(String userID,
+      DocumentReference<Map<String, dynamic>> chatRef, int index) {
+    chatRef
+        .delete()
+        .then((value) => print("Chat removed from database"))
+        .catchError((error) => print("Failed to remove chat: $error"));
+    chats.removeAt(index);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -128,7 +137,8 @@ class _ConversationsListState extends State<ConversationsList> {
                             content: Text("Removed ${chats[index].title}")),
                       );
                       setState(() {
-                        chats.removeAt(index);
+                        removeFromDatabase('Bmoy5vB0vYQQekDx7V87IqIZz043',
+                            chats[index].getReference(), index);
                       });
                     },
                     child: ChatListEntry(chatEntry: chats[index]));
