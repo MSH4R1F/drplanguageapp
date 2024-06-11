@@ -224,7 +224,11 @@ class _DialoguePageState extends State<DialoguePage> {
           ),
           IconButton(
             onPressed: () {
-              Navigator.pushNamed(context, '/loginpage');
+              Navigator.pushNamedAndRemoveUntil(
+                context,
+                '/loginpage',
+                (Route<dynamic> route) => false,
+              );
             },
             icon: const Icon(Icons.logout),
           ),

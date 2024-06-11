@@ -12,6 +12,8 @@ Future<void> _speak(String text, String language) async {
 class Flashcard {
   final String word;
   final String translation;
+  final String sentence;
+  final String translatedSentence;
   final String definition;
   final List<String> synonyms;
   final String imageUrl;
@@ -21,6 +23,8 @@ class Flashcard {
   Flashcard({
     required this.word,
     required this.translation,
+    required this.sentence,
+    required this.translatedSentence,
     required this.definition,
     required this.synonyms,
     required this.imageUrl,
@@ -40,6 +44,8 @@ Future<List<Flashcard>> getFlashcards(String userID) async {
       return Flashcard(
         word: doc['word'],
         translation: doc['trWord'],
+        sentence: doc['sentence'],
+        translatedSentence: doc['trSentence'],
         definition: '*there is nothing here yet!*',
         // synonyms: List<String>.from(doc['synonyms']),
         synonyms: [],
@@ -64,69 +70,107 @@ class WordsListPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('My Flashcards'),
-          backgroundColor: Colors.blueGrey,
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('My Flashcards'),
+        centerTitle: true,
+        backgroundColor: Colors.blueGrey,
+        actions: [
+          IconButton(
             onPressed: () {
-              Navigator.of(context).pop();
+              Navigator.pushNamedAndRemoveUntil(
+                context,
+                '/loginpage',
+                (Route<dynamic> route) => false,
+              );
             },
+            icon: const Icon(Icons.logout),
           ),
-          actions: [
-            IconButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/loginpage');
+        ],
+      ),
+      drawer: Drawer(
+        backgroundColor: Colors.lime,
+        child: Column(
+          children: [
+            const DrawerHeader(
+              child: CircleAvatar(
+                backgroundImage: AssetImage('assets/images/bloom.png'),
+                radius: 50,
+              ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.dashboard),
+              title: const Text("Dashboard"),
+              onTap: () {
+                Navigator.pushNamed(context, '/dashboard');
               },
-              icon: const Icon(Icons.logout),
+            ),
+            ListTile(
+              leading: const Icon(Icons.chat_bubble),
+              title: const Text("Conversation"),
+              onTap: () {
+                Navigator.pushNamed(context, '/dashboard/conversation');
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.lightbulb),
+              title: const Text("Highlights"),
+              onTap: () {
+                Navigator.pushNamed(context, '/dashboard/highlights');
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.auto_stories),
+              title: const Text("Comprehension"),
+              onTap: () {
+                Navigator.pushNamed(context, '/dashboard/readingcomp');
+              },
             ),
           ],
         ),
-        body: FutureBuilder<List<Flashcard>>(
-          future: flashcards,
-          builder:
-              (BuildContext context, AsyncSnapshot<List<Flashcard>> snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            } else if (snapshot.hasError) {
-              return Text('Error: ${snapshot.error}');
-            } else {
-              print('here is your snapshot.data!::: ${snapshot.data}');
-              if (snapshot.data != null && snapshot.data!.isNotEmpty) {
-                return ListView.builder(
-                  itemCount: snapshot.data!.length,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      title: Center(
-                        child: Text(
-                          snapshot.data![index].word,
-                          style: const TextStyle(fontSize: 24),
-                        ),
+      ),
+      body: FutureBuilder<List<Flashcard>>(
+        future: flashcards,
+        builder:
+            (BuildContext context, AsyncSnapshot<List<Flashcard>> snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Text('Error: ${snapshot.error}');
+          } else {
+            print('here is your snapshot.data!::: ${snapshot.data}');
+            if (snapshot.data != null && snapshot.data!.isNotEmpty) {
+              return ListView.builder(
+                itemCount: snapshot.data!.length,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    title: Center(
+                      child: Text(
+                        snapshot.data![index].word,
+                        style: const TextStyle(fontSize: 24),
                       ),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => FlashcardPage(
-                              flashcard: snapshot.data![index],
-                              flashcards: snapshot.data!,
-                            ),
+                    ),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => FlashcardPage(
+                            flashcard: snapshot.data![index],
+                            flashcards: snapshot.data!,
                           ),
-                        );
-                      },
-                    );
-                  },
-                );
-              } else {
-                return const Center(
-                  child: Text('You have no flashcards yet!'),
-                );
-              }
+                        ),
+                      );
+                    },
+                  );
+                },
+              );
+            } else {
+              return const Center(
+                child: Text('You have no flashcards yet!'),
+              );
             }
-          },
-        ),
+          }
+        },
       ),
     );
   }
@@ -141,31 +185,30 @@ class FlashcardPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Flashcard'),
-          backgroundColor: Colors.blueGrey,
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
-          actions: [
-            IconButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/loginpage');
-              },
-              icon: const Icon(Icons.logout),
-            ),
-          ],
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Flashcard'),
+        centerTitle: true,
+        backgroundColor: Colors.blueGrey,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
         ),
-        body: Center(
-          child: SpinWordWidget(
-            flashcard: flashcard,
-            flashcards: flashcards,
+        actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.pushNamed(context, '/loginpage');
+            },
+            icon: const Icon(Icons.logout),
           ),
+        ],
+      ),
+      body: Center(
+        child: SpinWordWidget(
+          flashcard: flashcard,
+          flashcards: flashcards,
         ),
       ),
     );
@@ -270,8 +313,7 @@ class SpinWordWidgetState extends State<SpinWordWidget>
                           const SizedBox(height: 20),
                         ],
                       ),
-                      secondChild:
-                          Container(), // Empty container takes no space
+                      secondChild: Container(),
                       crossFadeState: _showImage
                           ? CrossFadeState.showFirst
                           : CrossFadeState.showSecond,
@@ -305,63 +347,142 @@ class SpinWordWidgetState extends State<SpinWordWidget>
                       );
                     },
                   ),
-                  AnimatedBuilder(
-                    animation: _rotateWordAnimation,
-                    builder: (context, child) {
-                      return SlideTransition(
-                        position: _definitionSlideDownAnimation,
-                        child: FadeTransition(
-                          opacity: _definitionFadeAnimation,
-                          child: Visibility(
-                            visible: _rotateWordAnimation.value > 0.5,
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                const SizedBox(height: 20),
-                                Text(
-                                  widget.flashcard.definition,
-                                  style: const TextStyle(
-                                      fontSize: 20,
-                                      fontStyle: FontStyle.italic),
-                                  textAlign: TextAlign.center,
-                                ),
-                                const SizedBox(height: 10),
-                                Wrap(
-                                  spacing: 8.0, // gap between adjacent chips
-                                  runSpacing: 4.0, // gap between lines
-                                  children: widget.flashcard.synonyms
-                                      .map((String synonym) {
-                                    return GestureDetector(
-                                      onTap: () {
-                                        Flashcard? flashcard = widget.flashcards
-                                            .firstWhere(
-                                                (card) => card.word == synonym,
-                                                orElse: () =>
-                                                    null as Flashcard);
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) => FlashcardPage(
-                                              flashcard: flashcard,
-                                              flashcards: widget.flashcards,
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                      child: Chip(
-                                        label: Text(synonym),
-                                      ),
-                                    );
-                                  }).toList(),
-                                ),
-                              ],
-                            ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: AnimatedBuilder(
+                      animation: _rotateWordAnimation,
+                      builder: (context, child) {
+                        return AnimatedCrossFade(
+                          firstChild: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              const SizedBox(height: 20),
+                              const Divider(),
+                              Text(
+                                widget.flashcard.sentence,
+                                style: const TextStyle(
+                                    fontSize: 20, fontWeight: FontWeight.bold),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
                           ),
-                        ),
-                      );
-                    },
+                          secondChild: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              const SizedBox(height: 20),
+                              const Divider(),
+                              Text(
+                                widget.flashcard.translatedSentence,
+                                style: const TextStyle(
+                                    fontSize: 20, fontStyle: FontStyle.italic),
+                                textAlign: TextAlign.center,
+                              ),
+                              const SizedBox(height: 10),
+                              Wrap(
+                                spacing: 8.0, // gap between adjacent chips
+                                runSpacing: 4.0, // gap between lines
+                                children: widget.flashcard.synonyms
+                                    .map((String synonym) {
+                                  return GestureDetector(
+                                    onTap: () {
+                                      Flashcard? flashcard = widget.flashcards
+                                          .firstWhere(
+                                              (card) => card.word == synonym,
+                                              orElse: () => null as Flashcard);
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => FlashcardPage(
+                                            flashcard: flashcard,
+                                            flashcards: widget.flashcards,
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                    child: Chip(
+                                      label: Text(synonym),
+                                    ),
+                                  );
+                                }).toList(),
+                              ),
+                            ],
+                          ),
+                          crossFadeState: _showWord
+                              ? CrossFadeState.showFirst
+                              : CrossFadeState.showSecond,
+                          duration: const Duration(milliseconds: 300),
+                        );
+                      },
+                    ),
                   ),
+                  // AnimatedBuilder(
+                  //   animation: _rotateWordAnimation,
+                  //   builder: (context, child) {
+                  //     return SlideTransition(
+                  //       position: _definitionSlideDownAnimation,
+                  //       child: FadeTransition(
+                  //         opacity: _definitionFadeAnimation,
+                  //         child: Visibility(
+                  //           visible: _rotateWordAnimation.value > 0.5,
+                  //           child: Column(
+                  //             mainAxisSize: MainAxisSize.min,
+                  //             crossAxisAlignment: CrossAxisAlignment.center,
+                  //             children: [
+                  //               const SizedBox(height: 20),
+                  //               const Divider(),
+                  //               Text(
+                  //                 widget.flashcard.sentence,
+                  //                 style: const TextStyle(
+                  //                     fontSize: 20,
+                  //                     fontWeight: FontWeight.bold),
+                  //                 textAlign: TextAlign.center,
+                  //               ),
+                  //               const SizedBox(height: 10),
+                  //               Text(
+                  //                 widget.flashcard.translatedSentence,
+                  //                 style: const TextStyle(
+                  //                     fontSize: 20,
+                  //                     fontStyle: FontStyle.italic),
+                  //                 textAlign: TextAlign.center,
+                  //               ),
+                  //               const SizedBox(height: 10),
+                  //               Wrap(
+                  //                 spacing: 8.0, // gap between adjacent chips
+                  //                 runSpacing: 4.0, // gap between lines
+                  //                 children: widget.flashcard.synonyms
+                  //                     .map((String synonym) {
+                  //                   return GestureDetector(
+                  //                     onTap: () {
+                  //                       Flashcard? flashcard = widget.flashcards
+                  //                           .firstWhere(
+                  //                               (card) => card.word == synonym,
+                  //                               orElse: () =>
+                  //                                   null as Flashcard);
+                  //                       Navigator.push(
+                  //                         context,
+                  //                         MaterialPageRoute(
+                  //                           builder: (context) => FlashcardPage(
+                  //                             flashcard: flashcard,
+                  //                             flashcards: widget.flashcards,
+                  //                           ),
+                  //                         ),
+                  //                       );
+                  //                     },
+                  //                     child: Chip(
+                  //                       label: Text(synonym),
+                  //                     ),
+                  //                   );
+                  //                 }).toList(),
+                  //               ),
+                  //             ],
+                  //           ),
+                  //         ),
+                  //       ),
+                  //     );
+                  //   },
+                  // ),
                 ],
               ),
             ),
