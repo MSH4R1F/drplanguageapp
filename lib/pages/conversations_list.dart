@@ -113,7 +113,7 @@ class _ConversationsListState extends State<ConversationsList> {
                       addToChats(result);
                     },
                     child: Container(
-                      constraints: BoxConstraints(minHeight: 140),
+                      constraints: const BoxConstraints(minHeight: 140),
                       color: Colors.amberAccent,
                       child: const Icon(Icons.add),
                     ),

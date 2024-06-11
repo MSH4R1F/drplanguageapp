@@ -71,7 +71,7 @@ class _LanguageTopicFormState extends State<LanguageTopicForm> {
                       }),
                     ],
                   );
-                }).toList(),
+                }),
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {

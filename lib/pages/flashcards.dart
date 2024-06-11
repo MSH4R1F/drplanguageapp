@@ -286,18 +286,16 @@ class SpinWordWidgetState extends State<SpinWordWidget>
                                         .firstWhere(
                                             (card) => card.word == synonym,
                                             orElse: () => null as Flashcard);
-                                    if (flashcard != null) {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => FlashcardPage(
-                                            flashcard: flashcard,
-                                            flashcards: widget.flashcards,
-                                          ),
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => FlashcardPage(
+                                          flashcard: flashcard,
+                                          flashcards: widget.flashcards,
                                         ),
-                                      );
-                                    }
-                                  },
+                                      ),
+                                    );
+                                                                    },
                                   child: Chip(
                                     label: Text(synonym),
                                   ),
