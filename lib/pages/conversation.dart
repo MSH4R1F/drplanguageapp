@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:drplanguageapp/classes/chat_message.dart';
 import 'package:drplanguageapp/classes/chat_overlay.dart';
-import 'package:drplanguageapp/classes/text_suggestions.dart';
 import 'package:drplanguageapp/pages/chat_page.dart';
 import 'package:flutter/material.dart';
 import 'package:drplanguageapp/classes/chat_service.dart';
@@ -34,7 +33,7 @@ class _ConversationState extends State<Conversation> {
   String userID = "userID";
   var shownOverlay = false;
   var currentChatString = "";
-
+  Chat? selectedChat; // Chat to show overlay for
   // FlutterSoundRecorder? _recorder;
   // FlutterSoundPlayer? _player;
   bool _speechEnabled = false;
@@ -107,7 +106,7 @@ class _ConversationState extends State<Conversation> {
   }
 
   // declare list of chats
-  List<TextPair> chatt = [];
+  List<Chat> chatt = [];
   List<Chat> improvements = [];
   var suggestions = [
     "What do you mean?",
@@ -120,9 +119,9 @@ class _ConversationState extends State<Conversation> {
     Chat toAdd = Chat(
         sender: "Me", content: Text(text), timestamp: DateTime.now(), ai: isAi);
     setState(() {
-      chatt.insert(0, TextPair(toAdd, ""));
+      chatt.insert(0, toAdd);
       if (isAi) {
-        sendMessageFromAI(widget.chatRef.id, text);
+        sendMessageFromAI(widget.chatRef.id, text, "");
         _speak(text); // Speak the AI response
       } else {
         sendMessageFromUser(userID, widget.chatRef.id, text);
@@ -131,12 +130,16 @@ class _ConversationState extends State<Conversation> {
   }
 
   void addtoChatWithSuggestion(bool isAi, String text, String suggestion) {
-    Chat toAdd = Chat(
-        sender: "Me", content: Text(text), timestamp: DateTime.now(), ai: isAi);
+    Chat toAdd = Chat.suggestion(
+        sender: "Me",
+        content: Text(text),
+        timestamp: DateTime.now(),
+        ai: isAi,
+        suggestion: suggestion);
     setState(() {
-      chatt.insert(0, TextPair(toAdd, suggestion));
+      chatt.insert(0, toAdd);
       if (isAi) {
-        sendMessageFromAI(widget.chatRef.id, text);
+        sendMessageFromAI(widget.chatRef.id, text, suggestion);
         _speak(text); // Speak the AI response
       } else {
         sendMessageFromUser(userID, widget.chatRef.id, text);
@@ -181,7 +184,7 @@ class _ConversationState extends State<Conversation> {
     });
   }
 
-  void sendMessageFromAI(String chatID, String messageText) {
+  void sendMessageFromAI(String chatID, String messageText, String suggestion) {
     var messagesRef = FirebaseFirestore.instance
         .collection('users')
         .doc(userID)
@@ -193,7 +196,8 @@ class _ConversationState extends State<Conversation> {
       'sender': 'AI',
       'message': messageText,
       'timestamp': DateTime.now(),
-      'isAI': true
+      'isAI': true,
+      'improvement': suggestion
     }).then((docRef) {
       print('Message sent');
     }).catchError((error) {
@@ -215,9 +219,7 @@ class _ConversationState extends State<Conversation> {
         value = value.split('%')[0];
         // strip value of trailing whitespace
         value = value.trim();
-        // print(suggestion);
-        currentChatString = suggestion;
-        chatSuggestions = [suggestion];
+        print(suggestion);
         addtoChatWithSuggestion(true, value, suggestion);
       }
       previousMessage = value!;
@@ -225,9 +227,9 @@ class _ConversationState extends State<Conversation> {
     _controller.clear();
   }
 
-  void showOverlay(String text) {
+  void showOverlay(Chat chat) {
     setState(() {
-      currentChatString = text;
+      selectedChat = chat;
       shownOverlay = true;
     });
   }
@@ -366,8 +368,8 @@ class _ConversationState extends State<Conversation> {
               color: Theme.of(context).cardColor,
               child: ChatOverlay(
                   ai: false,
-                  responses: chatSuggestions,
-                  chatText: currentChatString),
+                  chatText: selectedChat!.suggestion,
+                  chat: selectedChat!),
             ),
           ),
       ]),
@@ -396,17 +398,26 @@ class _ConversationState extends State<Conversation> {
         .orderBy('timestamp', descending: true)
         .snapshots()
         .listen((event) {
-      chatt = event.docs
-          .map((e) => TextPair(
-              Chat(
-                  sender: e.get('sender'),
-                  content: Text(e.get('message')),
-                  timestamp: e.get('timestamp').toDate(),
-                  ai: e.get('isAI')),
-              ""))
-          .toList();
+      chatt = event.docs.map((e) {
+        // Check if the document has a 'suggestion' field
+        if (e.data().containsKey('improvement') && e.get('improvement') != "") {
+          return Chat.suggestion(
+              sender: e.get('sender'),
+              content: Text(e.get('message')),
+              timestamp: e.get('timestamp').toDate(),
+              ai: e.get('isAI'),
+              suggestion: e.get('improvement'));
+        } else {
+          return Chat(
+              sender: e.get('sender'),
+              content: Text(e.get('message')),
+              timestamp: e.get('timestamp').toDate(),
+              ai: e.get('isAI'));
+        }
+      }).toList();
+      setState(
+          () {}); // Ensure this is inside the listen callback to update the state after data is received
     });
-    setState(() {});
   }
 
   void _initializeAI() async {
