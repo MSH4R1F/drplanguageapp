@@ -41,7 +41,7 @@ class _ConversationState extends State<Conversation> {
   String _lastWords = '';
   final SpeechToText _speechToText = SpeechToText();
   final FlutterTts _flutterTts = FlutterTts();
-
+  List<String> chatSuggestions = [];
   @override
   void initState() {
     super.initState();
@@ -107,6 +107,7 @@ class _ConversationState extends State<Conversation> {
 
   // declare list of chats
   List<Chat> chatt = [];
+  List<Chat> improvements = [];
   var suggestions = [
     "What do you mean?",
     "Translate to English",
@@ -192,17 +193,27 @@ class _ConversationState extends State<Conversation> {
         .requestResponse(text, widget.language, widget.topic)
         .then((value) {
       if (value != null) {
-        addtoChat(true, value);
+        // split value by percentage sign and grab first part
+        // var suggestion = value.split('%')[1];
+        // value = value.split('%')[0];
+        // print(suggestion);
+        // currentChatString = suggestion;
+        var suggestion = value.split('%')[1];
+        currentChatString = suggestion;
+        chatSuggestions = [suggestion];
+        print(currentChatString);
+        addtoChat(true, value.split('%')[0]);
       }
       previousMessage = value!;
     });
     _controller.clear();
   }
 
-  void showOverlay(String text) {
+  void showOverlay(String text, String feedback) {
     setState(() {
       currentChatString = text;
       shownOverlay = true;
+      chatSuggestions = [feedback];
     });
   }
 
@@ -228,10 +239,8 @@ class _ConversationState extends State<Conversation> {
           ],
         ),
       ),
-      body: Stack(
-
-        children: [
-          Column(
+      body: Stack(children: [
+        Column(
           children: [
             Expanded(
                 child: ChatPage(
@@ -318,38 +327,35 @@ class _ConversationState extends State<Conversation> {
           ],
         ),
         // hello
-          if (shownOverlay) 
-            GestureDetector(
-              onTap: () => {
-                setState(() {
-                  shownOverlay = false;
-                })
-                },
-              child: Container(
-                color: const Color.fromARGB(50, 0, 0, 0),
-              ),
+        if (shownOverlay)
+          GestureDetector(
+            onTap: () => {
+              setState(() {
+                shownOverlay = false;
+              })
+            },
+            child: Container(
+              color: const Color.fromARGB(50, 0, 0, 0),
             ),
-          if (shownOverlay) 
-            Positioned(
-              top: 100,
-              bottom: 100,
-              left: 50,
-              right: 50,
-
-              child: Container(
-                padding: const EdgeInsets.all(20),
-                width: 400,
-                height: 400,
-                color: Theme.of(context).cardColor,
-                child: ChatOverlay(
+          ),
+        if (shownOverlay)
+          Positioned(
+            top: 50,
+            bottom: 50,
+            left: 25,
+            right: 25,
+            child: Container(
+              padding: const EdgeInsets.all(10),
+              width: 400,
+              height: 400,
+              color: Theme.of(context).cardColor,
+              child: ChatOverlay(
                   ai: false,
-                  // TODO 
-                  chatText: currentChatString,
-                ),
-              ),
-              ),
-        ]
-      ),
+                  responses: chatSuggestions,
+                  chatText: currentChatString),
+            ),
+          ),
+      ]),
     );
   }
 

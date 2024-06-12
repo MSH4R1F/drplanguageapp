@@ -129,8 +129,10 @@ class _ConversationsListState extends State<ConversationsList> {
                   );
                 }
                 return GestureDetector(
-                    onTap: () => openConversation(
-                        chats[index], chats[index].lastmessage),
+                    onTap: () => {
+                      openConversation(
+                        chats[index], chats[index].lastmessage)
+                        },
                     onLongPress: () {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
