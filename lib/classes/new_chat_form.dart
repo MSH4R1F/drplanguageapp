@@ -35,7 +35,7 @@ class _LanguageTopicFormState extends State<LanguageTopicForm> {
                     true, // Set isExpanded to true for better UI experience
                 value: _selectedLanguage,
                 hint: const Text('Select Language'),
-                items: ['Arabic', 'Urdu'].map((String value) {
+                items: ['Arabic', 'Urdu', 'Bengali'].map((String value) {
                   return DropdownMenuItem<String>(
                     value: value,
                     child: Text(value),
@@ -71,7 +71,7 @@ class _LanguageTopicFormState extends State<LanguageTopicForm> {
                       }),
                     ],
                   );
-                }).toList(),
+                }),
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {

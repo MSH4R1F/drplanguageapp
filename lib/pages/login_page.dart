@@ -22,7 +22,7 @@ class LoginScreen extends StatelessWidget {
               radius: 50,
               backgroundImage: AssetImage('assets/images/bloom.png'),
               child: Text(
-                'logo',
+                '',
                 style: TextStyle(color: Colors.black),
               ),
             ),

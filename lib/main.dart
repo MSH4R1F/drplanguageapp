@@ -34,9 +34,9 @@ class MyApp extends StatelessWidget {
           case '/dashboard/conversation':
             // todo : change userID
             // final userID = settings.arguments as String;
-            final userID = "userID";
+            const userID = "userID";
             return MaterialPageRoute(
-                builder: (_) => ConversationsList(userID: userID));
+                builder: (_) => const ConversationsList(userID: userID));
           case '/dashboard/readingcomp':
             return MaterialPageRoute(builder: (_) => const DialoguePage());
           case '/dashboard/highlights':

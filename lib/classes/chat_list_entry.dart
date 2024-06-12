@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:drplanguageapp/classes/new_chat_form.dart';
 import 'package:flutter/material.dart';
 
@@ -26,7 +27,7 @@ class _ChatListEntryState extends State<ChatListEntry> {
               child: widget.chatEntry.image, // Display the chat entry image
             ),
           ),
-          SizedBox(width: 10), // Provides a gap between the image and text
+          const SizedBox(width: 10), // Provides a gap between the image and text
           Expanded(
             // Ensures that the text does not overflow
             child: Column(
@@ -58,6 +59,17 @@ class ChatEntry {
   final String lastmessage;
   final Image image;
   final Selection selection;
+  DocumentReference<Map<String, dynamic>>? reference;
 
   ChatEntry(this.image, this.title, this.lastmessage, this.selection);
+  ChatEntry.withReference(
+      this.image, this.title, this.lastmessage, this.selection, this.reference);
+
+  void setReference(DocumentReference<Map<String, dynamic>> ref) {
+    reference = ref;
+  }
+
+  getReference() {
+    return reference;
+  }
 }

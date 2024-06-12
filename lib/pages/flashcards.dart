@@ -60,7 +60,7 @@ class WordsListPage extends StatelessWidget {
   ];
 
   WordsListPage({super.key});
-
+  
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -115,6 +115,7 @@ class FlashcardPage extends StatelessWidget {
 
   const FlashcardPage(
       {super.key, required this.flashcard, required this.flashcards});
+
 
   @override
   Widget build(BuildContext context) {
@@ -292,18 +293,16 @@ class SpinWordWidgetState extends State<SpinWordWidget>
                                         .firstWhere(
                                             (card) => card.word == synonym,
                                             orElse: () => null as Flashcard);
-                                    if (flashcard != null) {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => FlashcardPage(
-                                            flashcard: flashcard,
-                                            flashcards: widget.flashcards,
-                                          ),
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => FlashcardPage(
+                                          flashcard: flashcard,
+                                          flashcards: widget.flashcards,
                                         ),
-                                      );
-                                    }
-                                  },
+                                      ),
+                                    );
+                                                                    },
                                   child: Chip(
                                     label: Text(synonym),
                                   ),
