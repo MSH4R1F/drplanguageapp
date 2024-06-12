@@ -10,21 +10,24 @@ class ChatService {
     'Authorization': 'Bearer ${ApiKey.openAIKey}',
   };
 
-  Future<String?> request(String prompt) async {
-    int maxTokens = 200;
+  Future<String?> request(String prompt, {int? maxTokens}) async {
+    var body = {
+      'model': 'gpt-3.5-turbo',
+      'messages': [
+        {'role': 'system', 'content': 'You are a helpful assistant'},
+        {'role': 'user', 'content': prompt}
+      ],
+    };
+
+    if (maxTokens == null) {
+      body['max_tokens'] = 100;
+    }
+
     try {
       var response = await http.post(
         _url,
         headers: _headers,
-        body: json.encode({
-          // Encode the body to a JSON string
-          'model': 'gpt-3.5-turbo',
-          'messages': [
-            {'role': 'system', 'content': 'You are a helpful assistant.'},
-            {'role': 'user', 'content': prompt}
-          ],
-          'max_tokens': maxTokens,
-        }),
+        body: json.encode(body),
       );
       var responseBody = jsonDecode(utf8.decode(response.bodyBytes));
       // Access nested data with proper null checks

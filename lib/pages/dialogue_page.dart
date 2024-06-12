@@ -1,8 +1,12 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:drplanguageapp/main.dart';
+import 'package:drplanguageapp/pages/flashcard_store.dart';
 import 'package:flutter/material.dart';
 import 'package:drplanguageapp/api/gpt.dart';
 
 class DialoguePage extends StatefulWidget {
-  const DialoguePage({super.key});
+  final String userID;
+  const DialoguePage({super.key, required this.userID});
 
   @override
   State<DialoguePage> createState() => _DialoguePageState();
@@ -18,10 +22,59 @@ class _DialoguePageState extends State<DialoguePage> {
       "Translate the sentence '^sentence' from Urdu to English. Then, translate the word '^filteredText', ensuring the translation is exactly how it was translated in the sentence. Please present both translations individually on separate lines, without any supplementary text or clarifications.";
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
+    void showFlashcardDialogue(BuildContext context, FlashcardStore store) {
+      showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              content: const Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Center(
+                    child: Text("Add to flashcards?"),
+                  ),
+                ],
+              ),
+              actionsAlignment: MainAxisAlignment.spaceBetween,
+              actionsPadding: const EdgeInsets.all(8),
+              actions: [
+                TextButton(
+                  onPressed: Navigator.of(context).pop,
+                  child: const Text('Cancel'),
+                ),
+                TextButton(
+                  onPressed: () async {
+                    var collection = FirebaseFirestore.instance
+                        .collection('users')
+                        .doc(widget.userID)
+                        .collection('flashcards');
+                    try {
+                      await collection.add({
+                        'word': store.word,
+                        'sentence': store.sentence,
+                        'trWord': store.trWord,
+                        'trSentence': store.trSentence
+                      });
+                      if (mounted) {
+                        Navigator.of(context).pop();
+                      }
+                    } catch (e) {
+                      print("Error adding data: $e");
+                      if (mounted) {
+                        Navigator.of(context).pop();
+                      }
+                    }
+                  },
+                  child: const Text("Yes"),
+                ),
+              ],
+            );
+          });
+    }
+
     void showDialogueBox(String word, String sentence) {
-      String filteredText = word.replaceAll(RegExp(r"['،؟۔!.,;:?-]"), '');
-      filteredText = filteredText.replaceAll(RegExp('"'), '');
+      String filteredWord = word.replaceAll(RegExp(r"['،؟۔!.,;:?-]"), '');
+      filteredWord = filteredWord.replaceAll(RegExp('"'), '');
 
       showDialog(
         context: context,
@@ -33,40 +86,54 @@ class _DialoguePageState extends State<DialoguePage> {
             child: SizedBox(
               height: 250,
               width: MediaQuery.of(context).size.width,
-              child: Column(
-                children: [
-                  const Padding(
-                    padding: EdgeInsets.only(top: 8, right: 8),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Icon(Icons.copy), // Your icon
-                        // Add more icons as needed
-                      ],
-                    ),
-                  ),
-                  Expanded(
-                    child: Center(
-                      child: FutureBuilder(
-                        future: generator.generateText(
-                            "Translate the sentence '$sentence' from Urdu to English. Then, translate the word '$filteredText', ensuring the translation is exactly how it was translated in the sentence. Please present both translations individually on separate lines, without any additional text, clarifications or introductions."),
-                        builder: (BuildContext context,
-                            AsyncSnapshot<String?> snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.done) {
-                            if (snapshot.hasData) {
-                              List<String> translations =
-                                  snapshot.data!.split('\n');
-                              String word =
-                                  translations[translations.length - 1]
-                                      .replaceAll(RegExp(r"[^A-Za-z ]"), '');
-                              return SingleChildScrollView(
+              child: FutureBuilder(
+                future: generator.generateText(
+                    "Translate the sentence '$sentence' from Urdu to English. Then, translate the word '$filteredWord', ensuring the translation is exactly how it was translated in the sentence. Please present both translations individually on separate lines, without any additional text, clarifications or introductions."),
+                builder:
+                    (BuildContext context, AsyncSnapshot<String?> snapshot) {
+                  if (snapshot.connectionState == ConnectionState.done) {
+                    if (snapshot.hasData) {
+                      List<String> translations = snapshot.data!.split('\n');
+                      String trSentence =
+                          translations[0].replaceAll(RegExp(r"-"), '');
+                      String word = translations[translations.length - 1]
+                          .replaceAll(RegExp(r"[^A-Za-z ]"), '');
+                      FlashcardStore store = FlashcardStore(
+                          word: filteredWord,
+                          trWord: word,
+                          sentence: sentence,
+                          trSentence: trSentence);
+                      return Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(top: 8, right: 8),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                IconButton(
+                                  icon: const Icon(Icons.volume_up),
+                                  onPressed: () async {
+                                  // todo: make language dynamic ('ar' for Arabic, 'ur' for Urdu, etc.)
+                                  await speak(filteredWord, 'ur');
+                                },
+                                ),
+                                IconButton(
+                                  icon: const Icon(Icons.copy),
+                                  onPressed: () =>
+                                      showFlashcardDialogue(context, store),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Expanded(
+                            child: Center(
+                              child: SingleChildScrollView(
                                 child: Padding(
                                   padding: const EdgeInsets.all(8.0),
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      SelectableText(filteredText),
+                                      SelectableText(filteredWord),
                                       const SizedBox(
                                         height: 10,
                                       ),
@@ -83,26 +150,25 @@ class _DialoguePageState extends State<DialoguePage> {
                                         height: 10,
                                       ),
                                       Text(
-                                        translations[0]
-                                            .replaceAll(RegExp(r"-"), ''),
+                                        trSentence,
                                         textAlign: TextAlign.center,
                                       ),
                                     ],
                                   ),
                                 ),
-                              );
-                            } else if (snapshot.hasError) {
-                              return Text("Error: ${snapshot.error}");
-                            }
-                          }
-                          return const Center(
-                            child: CircularProgressIndicator(),
-                          );
-                        },
-                      ),
-                    ),
-                  ),
-                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      );
+                    } else if (snapshot.hasError) {
+                      return Text("Error: ${snapshot.error}");
+                    }
+                  }
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                },
               ),
             ),
           );
@@ -166,7 +232,11 @@ class _DialoguePageState extends State<DialoguePage> {
           ),
           IconButton(
             onPressed: () {
-              Navigator.pushNamed(context, '/loginpage');
+              Navigator.pushNamedAndRemoveUntil(
+                context,
+                '/loginpage',
+                (Route<dynamic> route) => false,
+              );
             },
             icon: const Icon(Icons.logout),
           ),

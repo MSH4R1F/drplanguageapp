@@ -5,10 +5,10 @@ class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
 
   @override
-  _DashboardPageState createState() => _DashboardPageState();
+  DashboardPageState createState() => DashboardPageState();
 }
 
-class _DashboardPageState extends State<DashboardPage> {
+class DashboardPageState extends State<DashboardPage> {
   final String userUID = 'Bmoy5vB0vYQQekDx7V87IqIZz043';
 
   Future<String> fetchUserNameByUID(String userUID) async {
@@ -36,10 +36,14 @@ class _DashboardPageState extends State<DashboardPage> {
         actions: [
           IconButton(
             onPressed: () {
-              Navigator.pushReplacementNamed(context, '/loginpage');
+              Navigator.pushNamedAndRemoveUntil(
+                context,
+                '/loginpage',
+                (Route<dynamic> route) => false,
+              );
             },
             icon: const Icon(Icons.logout),
-          )
+          ),
         ],
       ),
       body: SingleChildScrollView(
@@ -112,7 +116,11 @@ class _DashboardPageState extends State<DashboardPage> {
             FeatureCard(
                 title: 'Highlights',
                 link: '/dashboard/highlights',
-                userID: userUID)
+                userID: userUID),
+            FeatureCard(
+                title: 'Flashcards',
+                link: '/dashboard/flashcards',
+                userID: userUID),
             // Image.network("https://i.pinimg.com/originals/83/cd/af/83cdaf182b196bad532ca40f761095ca.gif")
           ],
         ),
