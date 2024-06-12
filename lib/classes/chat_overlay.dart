@@ -30,12 +30,10 @@ class ChatOverlay extends StatelessWidget {
     return SingleChildScrollView(
       scrollDirection: Axis.vertical,
       child: Column(children: [
-        Text(
-          "Message Content",
-          style: const TextStyle(
-            fontSize: 25,
-          ),
-        ),
+        Text("Message Content",
+            style: const TextStyle(
+              fontSize: 25,
+            )),
         Container(
           height: 50,
         ),
@@ -61,7 +59,7 @@ class ChatOverlay extends StatelessWidget {
           height: 100,
         ),
         Text(
-            responses != null
+            responses != null && responses!.isEmpty && feedback != null
                 ? "Feedback: ${responses![0]}"
                 : "No feedback given",
             style: const TextStyle(

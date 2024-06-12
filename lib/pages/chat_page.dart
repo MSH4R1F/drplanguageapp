@@ -1,8 +1,9 @@
+import 'package:drplanguageapp/classes/text_suggestions.dart';
 import 'package:flutter/material.dart';
 
 class ChatPage extends StatefulWidget {
   final Object textToSpeechEngine;
-  final List<Chat> chats;
+  final List<TextPair> chats;
   final Function(String) overlayFunction;
   const ChatPage(
       {super.key,
@@ -25,7 +26,7 @@ class _ChatPageState extends State<ChatPage> {
             itemCount: widget.chats.length,
             itemBuilder: (context, index) {
               return Align(
-                alignment: widget.chats[index].ai
+                alignment: widget.chats[index].chat.ai
                     ? Alignment.centerLeft
                     : Alignment.centerRight,
                 // child: ChatMessage(chat: widget.chats[index]),
@@ -39,7 +40,7 @@ class _ChatPageState extends State<ChatPage> {
                     // TODO: ADD TTS ON DOUBLE TAP
                     onDoubleTap: () => {print("DOUBLE TAPPED")},
                     onLongPress: () {
-                      widget.overlayFunction(widget.chats[index].content.data!);
+                      widget.overlayFunction(widget.chats[index].suggestion);
                     },
                     child: Container(
                       margin: const EdgeInsets.symmetric(
@@ -47,21 +48,21 @@ class _ChatPageState extends State<ChatPage> {
                       padding: const EdgeInsets.symmetric(
                           vertical: 10.0, horizontal: 16.0),
                       decoration: BoxDecoration(
-                        color: widget.chats[index].ai
+                        color: widget.chats[index].chat.ai
                             ? Colors.grey[300]
                             : Colors.green[300],
                         borderRadius: BorderRadius.only(
                           topLeft: const Radius.circular(12.0),
                           topRight: const Radius.circular(12.0),
-                          bottomRight: widget.chats[index].ai
+                          bottomRight: widget.chats[index].chat.ai
                               ? const Radius.circular(12.0)
                               : Radius.zero,
-                          bottomLeft: widget.chats[index].ai
+                          bottomLeft: widget.chats[index].chat.ai
                               ? Radius.zero
                               : const Radius.circular(12.0),
                         ),
                       ),
-                      child: widget.chats[index].content,
+                      child: widget.chats[index].chat.content,
                     ),
                   ),
                 ),

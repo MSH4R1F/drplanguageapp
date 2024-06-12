@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:drplanguageapp/classes/chat_message.dart';
 import 'package:drplanguageapp/classes/chat_overlay.dart';
+import 'package:drplanguageapp/classes/text_suggestions.dart';
 import 'package:drplanguageapp/pages/chat_page.dart';
 import 'package:flutter/material.dart';
 import 'package:drplanguageapp/classes/chat_service.dart';
@@ -106,7 +107,7 @@ class _ConversationState extends State<Conversation> {
   }
 
   // declare list of chats
-  List<Chat> chatt = [];
+  List<TextPair> chatt = [];
   List<Chat> improvements = [];
   var suggestions = [
     "What do you mean?",
@@ -115,10 +116,25 @@ class _ConversationState extends State<Conversation> {
   ];
   var previousMessage = "";
   void addtoChat(bool isAi, String text) {
+    text = text.split("%")[0].trim();
     Chat toAdd = Chat(
         sender: "Me", content: Text(text), timestamp: DateTime.now(), ai: isAi);
     setState(() {
-      chatt.insert(0, toAdd);
+      chatt.insert(0, TextPair(toAdd, ""));
+      if (isAi) {
+        sendMessageFromAI(widget.chatRef.id, text);
+        _speak(text); // Speak the AI response
+      } else {
+        sendMessageFromUser(userID, widget.chatRef.id, text);
+      }
+    });
+  }
+
+  void addtoChatWithSuggestion(bool isAi, String text, String suggestion) {
+    Chat toAdd = Chat(
+        sender: "Me", content: Text(text), timestamp: DateTime.now(), ai: isAi);
+    setState(() {
+      chatt.insert(0, TextPair(toAdd, suggestion));
       if (isAi) {
         sendMessageFromAI(widget.chatRef.id, text);
         _speak(text); // Speak the AI response
@@ -202,7 +218,7 @@ class _ConversationState extends State<Conversation> {
         // print(suggestion);
         currentChatString = suggestion;
         chatSuggestions = [suggestion];
-        addtoChat(true, value);
+        addtoChatWithSuggestion(true, value, suggestion);
       }
       previousMessage = value!;
     });
@@ -381,11 +397,13 @@ class _ConversationState extends State<Conversation> {
         .snapshots()
         .listen((event) {
       chatt = event.docs
-          .map((e) => Chat(
-              sender: e.get('sender'),
-              content: Text(e.get('message')),
-              timestamp: e.get('timestamp').toDate(),
-              ai: e.get('isAI')))
+          .map((e) => TextPair(
+              Chat(
+                  sender: e.get('sender'),
+                  content: Text(e.get('message')),
+                  timestamp: e.get('timestamp').toDate(),
+                  ai: e.get('isAI')),
+              ""))
           .toList();
     });
     setState(() {});
