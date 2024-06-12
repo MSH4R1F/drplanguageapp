@@ -22,22 +22,24 @@ class ChatOverlay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print("Building Chat Overlay");
+    print("AI: $ai");
+    print("Chat Text: $chatText");
+    print("Responses: $responses");
+    print("Feedback: $feedback");
     return SingleChildScrollView(
       scrollDirection: Axis.vertical,
       child: Column(children: [
         Text(
           "Message Content",
-          style:  const TextStyle(
+          style: const TextStyle(
             fontSize: 25,
           ),
         ),
         Container(
           height: 50,
         ),
-        Text(
-          chatText,
-          style: const TextStyle(fontSize: 20)
-        ),
+        Text(chatText, style: const TextStyle(fontSize: 20)),
         Container(
           height: 50,
         ),
@@ -58,7 +60,13 @@ class ChatOverlay extends StatelessWidget {
         Container(
           height: 100,
         ),
-        Text(responses![0])
+        Text(
+            responses != null
+                ? "Feedback: ${responses![0]}"
+                : "No feedback given",
+            style: const TextStyle(
+              fontSize: 25,
+            )),
       ]),
     );
   }

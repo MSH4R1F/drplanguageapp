@@ -194,26 +194,25 @@ class _ConversationState extends State<Conversation> {
         .then((value) {
       if (value != null) {
         // split value by percentage sign and grab first part
-        // var suggestion = value.split('%')[1];
-        // value = value.split('%')[0];
-        // print(suggestion);
-        // currentChatString = suggestion;
+        print(value);
         var suggestion = value.split('%')[1];
+        value = value.split('%')[0];
+        // strip value of trailing whitespace
+        value = value.trim();
+        // print(suggestion);
         currentChatString = suggestion;
         chatSuggestions = [suggestion];
-        print(currentChatString);
-        addtoChat(true, value.split('%')[0]);
+        addtoChat(true, value);
       }
       previousMessage = value!;
     });
     _controller.clear();
   }
 
-  void showOverlay(String text, String feedback) {
+  void showOverlay(String text) {
     setState(() {
       currentChatString = text;
       shownOverlay = true;
-      chatSuggestions = [feedback];
     });
   }
 
@@ -409,7 +408,7 @@ class _ConversationState extends State<Conversation> {
     if (messages.docs.isEmpty) {
       print("No messages found, sending AI introduction...");
       sendMessageToAI(
-          "Pretend that you are having a conversation with the user. Your name is Jaber. Jaber is trying to help the user learn ${widget.language}. Follow these guidelines when writing your responses: 1. Communicate solely in ${widget.language}, except when asked to translate the message. 2. In your initial message, introduce yourself and your conversation topic will be ${widget.topic}. Do not divert from the topic. 3. Tailor your language complexity and speaking pace to suit a beginner in ${widget.language}, using simple vocabulary and short sentences to ensure clarity and ease of understanding. Create a natural, easygoing, back-and-forth flow to the dialogue. Summarize your response to be as brief as possible. You want to engage the user by asking questions to keep conversation going.Following this, separate your response with a % and give an improvement/advice if any to the message the user sent to help improve their language.");
+          "Pretend that you are having a conversation with the user. Your name is Jaber. Jaber is trying to help the user learn ${widget.language}. Follow these guidelines when writing your responses: 1. Communicate solely in ${widget.language}, except when asked to translate the message. 2. In your initial message, introduce yourself and your conversation topic will be ${widget.topic}. Do not divert from the topic. 3. Tailor your language complexity and speaking pace to suit a beginner in ${widget.language}, using simple vocabulary and short sentences to ensure clarity and ease of understanding. Create a natural, easygoing, back-and-forth flow to the dialogue. Summarize your response to be as brief as possible. You want to engage the user by asking questions to keep conversation going.Following this, separate your response with a % and give an improvement/advice if any to the message the user sent to help improve their language, for example any grammar or spelling mistakes they made.");
     } else {
       print("Messages already exist, skipping AI introduction.");
     }

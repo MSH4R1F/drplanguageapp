@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class ChatPage extends StatefulWidget {
   final Object textToSpeechEngine;
   final List<Chat> chats;
-  final Function(String, String) overlayFunction;
+  final Function(String) overlayFunction;
   const ChatPage(
       {super.key,
       required this.chats,
@@ -39,12 +39,7 @@ class _ChatPageState extends State<ChatPage> {
                     // TODO: ADD TTS ON DOUBLE TAP
                     onDoubleTap: () => {print("DOUBLE TAPPED")},
                     onLongPress: () {
-                      widget.overlayFunction(
-                          widget.chats[index].content.data!,
-                          widget.chats[index].ai
-                              ? widget.chats[index].content.data!.split("%")[1]
-                              : widget.chats[index].content.data!
-                                  .split("%")[2]);
+                      widget.overlayFunction(widget.chats[index].content.data!);
                     },
                     child: Container(
                       margin: const EdgeInsets.symmetric(
