@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:drplanguageapp/classes/chat_message.dart';
+import 'package:drplanguageapp/classes/chat_overlay.dart';
 import 'package:drplanguageapp/pages/chat_page.dart';
 import 'package:flutter/material.dart';
 import 'package:drplanguageapp/classes/chat_service.dart';
@@ -7,7 +8,6 @@ import 'package:flutter_tts/flutter_tts.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class Conversation extends StatefulWidget {
   final String userID;
@@ -31,6 +31,8 @@ class Conversation extends StatefulWidget {
 class _ConversationState extends State<Conversation> {
   final TextEditingController _controller = TextEditingController();
   String userID = "userID";
+  var shownOverlay = false;
+  var currentChatString = "";
 
   // FlutterSoundRecorder? _recorder;
   // FlutterSoundPlayer? _player;
@@ -197,6 +199,13 @@ class _ConversationState extends State<Conversation> {
     _controller.clear();
   }
 
+  void showOverlay(String text) {
+    setState(() {
+      currentChatString = text;
+      shownOverlay = true;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -205,7 +214,7 @@ class _ConversationState extends State<Conversation> {
           mainAxisAlignment: MainAxisAlignment
               .center, // This centers the children within the Row
           children: [
-            Icon(
+            const Icon(
               Icons.account_circle_rounded,
               size: 24, // Increased size for better visibility
             ),
@@ -219,90 +228,127 @@ class _ConversationState extends State<Conversation> {
           ],
         ),
       ),
-      body: Column(
+      body: Stack(
+
         children: [
-          Expanded(
-              child: ChatPage(
-            chats: chatt,
-            textToSpeechEngine: "",
-          )),
-          Divider(),
-          SizedBox(
-            height: 50,
-            child: ListView(
-                scrollDirection: Axis.horizontal,
-                children: suggestions
-                    .map(
-                        // TODO: This on pressed can change so that it plays the text out loud, so the user has to say it
-                        (str) => GestureDetector(
-                            onTap: () {
-                              if (str == "End Conversation") {
-                                Navigator.pop(context);
-                              } else if (str == "Translate to English") {
-                                translateMessage(
-                                    "Translate your previous message to English");
-                              } else {
-                                explanationRequired();
-                              }
-                            },
-                            onLongPress:
-                                () {}, // TODO: MAKE SUGGESTION PLAY OUT LOUD
-                            child: ChatMessage(
-                              chat: Chat(
-                                  sender: "Me",
-                                  content: Text(str),
-                                  timestamp: DateTime.now(),
-                                  ai: false),
-                            )))
-                    .toList()),
-          ),
-          Container(
-            color: Theme.of(context).cardColor,
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: _controller,
-                      decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          hintText: "Reply here or with the mic",
-                          hintStyle: TextStyle(fontSize: 15.0)),
+          Column(
+          children: [
+            Expanded(
+                child: ChatPage(
+              chats: chatt,
+              textToSpeechEngine: "",
+              overlayFunction: showOverlay,
+            )),
+            const Divider(),
+            SizedBox(
+              height: 50,
+              child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  children: suggestions
+                      .map(
+                          // TODO: This on pressed can change so that it plays the text out loud, so the user has to say it
+                          (str) => GestureDetector(
+                              onTap: () {
+                                if (str == "End Conversation") {
+                                  Navigator.pop(context);
+                                } else if (str == "Translate to English") {
+                                  translateMessage(
+                                      "Translate your previous message to English");
+                                } else {
+                                  explanationRequired();
+                                }
+                              },
+                              onLongPress:
+                                  () {}, // TODO: MAKE SUGGESTION PLAY OUT LOUD
+                              child: ChatMessage(
+                                chat: Chat(
+                                    sender: "Me",
+                                    content: Text(str),
+                                    timestamp: DateTime.now(),
+                                    ai: false),
+                              )))
+                      .toList()),
+            ),
+            Container(
+              color: Theme.of(context).cardColor,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: _controller,
+                        decoration: const InputDecoration(
+                            border: OutlineInputBorder(),
+                            hintText: "Reply here or with the mic",
+                            hintStyle: TextStyle(fontSize: 15.0)),
+                      ),
                     ),
-                  ),
-                  IconButton(
-                    onPressed: (() => {
-                          if (_speechToText.isNotListening)
-                            {userPressedSend(_controller.text)}
-                        }),
-                    icon: Icon(
-                      Icons.send,
-                      size: 30,
-                      color: _speechToText.isListening
-                          ? Colors.grey
-                          : Theme.of(context).primaryColor,
-                    ),
-                  ),
-                  IconButton(
-                    onPressed: () {
-                      if (_speechToText.isListening) {
-                        _stopListening();
-                      } else {
-                        _startListening();
-                      }
-                    },
-                    icon: Icon(
-                        _speechToText.isListening ? Icons.stop : Icons.mic,
+                    IconButton(
+                      onPressed: (() => {
+                            if (_speechToText.isNotListening)
+                              {userPressedSend(_controller.text)}
+                          }),
+                      icon: Icon(
+                        Icons.send,
                         size: 30,
-                        color: Theme.of(context).primaryColor),
-                  ),
-                ],
+                        color: _speechToText.isListening
+                            ? Colors.grey
+                            : Theme.of(context).primaryColor,
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        if (_speechToText.isListening) {
+                          _stopListening();
+                        } else {
+                          _startListening();
+                        }
+                      },
+                      icon: Icon(
+                          _speechToText.isListening ? Icons.stop : Icons.mic,
+                          size: 30,
+                          color: Theme.of(context).primaryColor),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
+        // hello
+          if (shownOverlay) 
+            GestureDetector(
+              onTap: () => {
+                setState(() {
+                  shownOverlay = false;
+                })
+                },
+              child: Container(
+                color: const Color.fromARGB(50, 0, 0, 0),
+              ),
+            ),
+          if (shownOverlay) 
+            Positioned(
+              top: 100,
+              bottom: 100,
+              left: 50,
+              right: 50,
+
+              child: Container(
+                padding: const EdgeInsets.all(20),
+                width: 400,
+                height: 400,
+                color: Theme.of(context).cardColor,
+                child: ChatOverlay(
+                  ai: false,
+                  // TODO 
+                  chatText: currentChatString,
+                ),
+              ),
+              ),
+        ]
       ),
     );
   }

@@ -27,7 +27,7 @@ class _ChatListEntryState extends State<ChatListEntry> {
               child: widget.chatEntry.image, // Display the chat entry image
             ),
           ),
-          SizedBox(width: 10), // Provides a gap between the image and text
+          const SizedBox(width: 10), // Provides a gap between the image and text
           Expanded(
             // Ensures that the text does not overflow
             child: Column(
