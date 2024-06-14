@@ -242,6 +242,10 @@ class _DialoguePageState extends State<DialoguePage> {
             },
             icon: const Icon(Icons.refresh),
           ),
+          IconButton(
+            onPressed: () => Navigator.pushNamed(context, '/dashboard'),
+            icon: const Icon(Icons.dashboard),
+          ),
         ],
       ),
       drawer: Drawer(
@@ -253,13 +257,6 @@ class _DialoguePageState extends State<DialoguePage> {
                 backgroundImage: AssetImage('assets/images/bloom.png'),
                 radius: 50,
               ),
-            ),
-            ListTile(
-              leading: const Icon(Icons.dashboard),
-              title: const Text("Dashboard"),
-              onTap: () {
-                Navigator.pushNamed(context, '/dashboard');
-              },
             ),
             ListTile(
               leading: const Icon(Icons.chat_bubble),

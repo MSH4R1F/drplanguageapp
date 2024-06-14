@@ -26,6 +26,12 @@ class _SelectionPageState extends State<SelectionPage> {
         title: const Text("Comprehension"),
         centerTitle: true,
         backgroundColor: Colors.amber,
+        actions: [
+          IconButton(
+            onPressed: () => Navigator.pushNamed(context, '/dashboard'),
+            icon: const Icon(Icons.dashboard),
+          ),
+        ],
       ),
       drawer: Drawer(
         backgroundColor: Colors.lime,
@@ -36,13 +42,6 @@ class _SelectionPageState extends State<SelectionPage> {
                 backgroundImage: AssetImage('assets/images/bloom.png'),
                 radius: 50,
               ),
-            ),
-            ListTile(
-              leading: const Icon(Icons.dashboard),
-              title: const Text("Dashboard"),
-              onTap: () {
-                Navigator.pushNamed(context, '/dashboard');
-              },
             ),
             ListTile(
               leading: const Icon(Icons.chat_bubble),
@@ -64,6 +63,18 @@ class _SelectionPageState extends State<SelectionPage> {
               onTap: () {
                 Navigator.pushNamed(context, '/dashboard/flashcards');
               },
+            ),
+            const Spacer(),
+            ListTile(
+              leading: const Icon(Icons.logout),
+              title: const Text("Logout"),
+              onTap: () {
+                Navigator.pushNamedAndRemoveUntil(
+                    context, '/loginpage', (Route<dynamic> route) => false);
+              },
+            ),
+            const SizedBox(
+              height: 10,
             ),
           ],
         ),
