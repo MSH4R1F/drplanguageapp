@@ -111,7 +111,7 @@ class DashboardPageState extends State<DashboardPage> {
                 userID: userUID),
             FeatureCard(
                 title: 'Reading Comp',
-                link: '/dashboard/readingcomp',
+                link: '/selection',
                 userID: userUID),
             FeatureCard(
                 title: 'Highlights',

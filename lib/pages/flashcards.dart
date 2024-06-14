@@ -116,7 +116,7 @@ class WordsListPage extends StatelessWidget {
               leading: const Icon(Icons.auto_stories),
               title: const Text("Comprehension"),
               onTap: () {
-                Navigator.pushNamed(context, '/dashboard/readingcomp');
+                Navigator.pushNamed(context, '/selection');
               },
             ),
           ],
@@ -175,7 +175,6 @@ class FlashcardPage extends StatelessWidget {
 
   const FlashcardPage(
       {super.key, required this.flashcard, required this.flashcards});
-
 
   @override
   Widget build(BuildContext context) {

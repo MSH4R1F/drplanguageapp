@@ -4,6 +4,7 @@ import 'package:drplanguageapp/pages/dialogue_page.dart';
 import 'package:drplanguageapp/pages/flashcards.dart';
 import 'package:drplanguageapp/pages/highlights.dart';
 import 'package:drplanguageapp/pages/login_page.dart';
+import 'package:drplanguageapp/pages/selection_page.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_tts/flutter_tts.dart';
@@ -49,16 +50,17 @@ class MyApp extends StatelessWidget {
             const userID = "userID";
             return MaterialPageRoute(
                 builder: (_) => const ConversationsList(userID: userID));
-          case '/dashboard/readingcomp':
+          case '/selection':
             const userID = "userID";
             return MaterialPageRoute(
-                builder: (_) => const DialoguePage(
-                      userID: userID,
-                    ));
+                builder: (_) => const SelectionPage(userID: userID));
           case '/dashboard/highlights':
             return MaterialPageRoute(builder: (_) => const Highlights());
-          case '/dashboard/flashcards': 
-            return MaterialPageRoute(builder: (_) => WordsListPage(userID: userID,));
+          case '/dashboard/flashcards':
+            return MaterialPageRoute(
+                builder: (_) => WordsListPage(
+                      userID: userID,
+                    ));
           default:
             return MaterialPageRoute(
                 builder: (_) =>

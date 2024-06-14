@@ -119,7 +119,10 @@ class _ConversationsListState extends State<ConversationsList> {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text(result.toString())),
                       );
-                      addToChats(result);
+                      if (result != null) {
+                        addToChats(result);
+                      };
+                      
                     },
                     child: Container(
                       constraints: const BoxConstraints(minHeight: 140),
@@ -130,8 +133,8 @@ class _ConversationsListState extends State<ConversationsList> {
                 }
                 return GestureDetector(
                     onTap: () => {
-                      openConversation(
-                        chats[index], chats[index].lastmessage)
+                          openConversation(
+                              chats[index], chats[index].lastmessage)
                         },
                     onLongPress: () {
                       ScaffoldMessenger.of(context).showSnackBar(

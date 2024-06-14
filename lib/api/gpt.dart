@@ -13,6 +13,10 @@ class TextGenerator {
     return text!;
   }
 
+  void eraseText() {
+    text = null;
+  }
+
   void regenerateText(String prompt) async {
     text = null;
     text = await generateText(prompt);

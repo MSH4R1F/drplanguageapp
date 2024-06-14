@@ -6,7 +6,13 @@ import 'package:drplanguageapp/api/gpt.dart';
 
 class DialoguePage extends StatefulWidget {
   final String userID;
-  const DialoguePage({super.key, required this.userID});
+  final String language;
+  final String difficulty;
+  const DialoguePage(
+      {super.key,
+      required this.userID,
+      required this.language,
+      required this.difficulty});
 
   @override
   State<DialoguePage> createState() => _DialoguePageState();
@@ -15,11 +21,11 @@ class DialoguePage extends StatefulWidget {
 class _DialoguePageState extends State<DialoguePage> {
   TextGenerator generator = TextGenerator();
   String trialPrompt2 =
-      "Translate the following Urdu text into English, focusing on contextual accuracy. Assess whether the highlighted word ^ should be translated independently or as an integral part of the surrounding phrase to preserve its meaning. Provide the translation of this word or phrase first, followed by the translation of the entire sentence ^. Ensure the translations are contextually coherent and present them on separate lines, with no additional text or explanations.";
+      "Translate the following Arabic text into English, focusing on contextual accuracy. Assess whether the highlighted word ^ should be translated independently or as an integral part of the surrounding phrase to preserve its meaning. Provide the translation of this word or phrase first, followed by the translation of the entire sentence ^. Ensure the translations are contextually coherent and present them on separate lines, with no additional text or explanations.";
   String trialPrompt1 =
-      "Translate the following Urdu text into English, ensuring the translation of the word matches its context in the sentence. Provide only the English translations without including the original Urdu text. First, accurately translate the word: ^ as used in its sentence. Then, translate the full sentence: ^. Provide both translations on separate lines, with no additional text or explanations.";
+      "Translate the following Arabic text into English, ensuring the translation of the word matches its context in the sentence. Provide only the English translations without including the original Arabic text. First, accurately translate the word: ^ as used in its sentence. Then, translate the full sentence: ^. Provide both translations on separate lines, with no additional text or explanations.";
   String trialPrompt3 =
-      "Translate the sentence '^sentence' from Urdu to English. Then, translate the word '^filteredText', ensuring the translation is exactly how it was translated in the sentence. Please present both translations individually on separate lines, without any supplementary text or clarifications.";
+      "Translate the sentence '^sentence' from Arabic to English. Then, translate the word '^filteredText', ensuring the translation is exactly how it was translated in the sentence. Please present both translations individually on separate lines, without any supplementary text or clarifications.";
   @override
   Widget build(BuildContext context) {
     void showFlashcardDialogue(BuildContext context, FlashcardStore store) {
@@ -88,7 +94,7 @@ class _DialoguePageState extends State<DialoguePage> {
               width: MediaQuery.of(context).size.width,
               child: FutureBuilder(
                 future: generator.generateText(
-                    "Translate the sentence '$sentence' from Urdu to English. Then, translate the word '$filteredWord', ensuring the translation is exactly how it was translated in the sentence. Please present both translations individually on separate lines, without any additional text, clarifications or introductions."),
+                    "Translate the sentence '$sentence' from ${widget.language} to English. Then, translate the word '$filteredWord', ensuring the translation is exactly how it was translated in the sentence. Please present both translations individually on separate lines, without any additional text, clarifications or introductions."),
                 builder:
                     (BuildContext context, AsyncSnapshot<String?> snapshot) {
                   if (snapshot.connectionState == ConnectionState.done) {
@@ -113,9 +119,9 @@ class _DialoguePageState extends State<DialoguePage> {
                                 IconButton(
                                   icon: const Icon(Icons.volume_up),
                                   onPressed: () async {
-                                  // todo: make language dynamic ('ar' for Arabic, 'ur' for Urdu, etc.)
-                                  await speak(filteredWord, 'ur');
-                                },
+                                    // todo: make language dynamic ('ar' for Arabic, 'ur' for Arabic, etc.)
+                                    await speak(filteredWord, 'ar');
+                                  },
                                 ),
                                 IconButton(
                                   icon: const Icon(Icons.copy),
@@ -195,7 +201,7 @@ class _DialoguePageState extends State<DialoguePage> {
     }
 
     List<Widget> splitSentence(String text) {
-      List<String> splitText = text.split(RegExp(r'(?<=[۔.])\s*'));
+      List<String> splitText = text.split(RegExp(r'(?<=[۔.।])\s*'));
       return splitText
           .map(
             (sentence) => Column(
@@ -225,20 +231,16 @@ class _DialoguePageState extends State<DialoguePage> {
           IconButton(
             onPressed: () async {
               generator.regenerateText(
-                  "Give a paragraph of about 200 words in Urdu without any additional text or introduction");
-              Navigator.pushReplacementNamed(context, '/dashboard/readingcomp');
+                  "Give a paragraph of about 200 words in ${widget.language}, using only ${widget.difficulty} level vocab, without any additional text or introduction");
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (_) => DialoguePage(
+                          userID: widget.userID,
+                          language: widget.language!,
+                          difficulty: widget.difficulty!)));
             },
             icon: const Icon(Icons.refresh),
-          ),
-          IconButton(
-            onPressed: () {
-              Navigator.pushNamedAndRemoveUntil(
-                context,
-                '/loginpage',
-                (Route<dynamic> route) => false,
-              );
-            },
-            icon: const Icon(Icons.logout),
           ),
         ],
       ),
@@ -280,12 +282,24 @@ class _DialoguePageState extends State<DialoguePage> {
                 Navigator.pushNamed(context, '/dashboard/flashcards');
               },
             ),
+            const Spacer(),
+            ListTile(
+              leading: const Icon(Icons.logout),
+              title: const Text("Logout"),
+              onTap: () {
+                Navigator.pushNamedAndRemoveUntil(
+                    context, '/loginpage', (Route<dynamic> route) => false);
+              },
+            ),
+            const SizedBox(
+              height: 10,
+            ),
           ],
         ),
       ),
       body: FutureBuilder<String?>(
         future: generator.getText(
-            "Give a paragraph of about 200 words in Urdu without any additional text or introduction"),
+            "Give a paragraph of about 200 words in ${widget.language}, using only beginner level vocab, without any additional text or introduction"),
         builder: (BuildContext context, AsyncSnapshot<String?> snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             if (snapshot.hasData) {
