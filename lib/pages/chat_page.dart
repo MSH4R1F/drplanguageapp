@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 
 class ChatPage extends StatefulWidget {
   final Object textToSpeechEngine;
-  final List<TextPair> chats;
-  final Function(String) overlayFunction;
+  final List<Chat> chats;
+  final Function(Chat) overlayFunction;
   const ChatPage(
       {super.key,
       required this.chats,
@@ -26,7 +26,7 @@ class _ChatPageState extends State<ChatPage> {
             itemCount: widget.chats.length,
             itemBuilder: (context, index) {
               return Align(
-                alignment: widget.chats[index].chat.ai
+                alignment: widget.chats[index].ai
                     ? Alignment.centerLeft
                     : Alignment.centerRight,
                 // child: ChatMessage(chat: widget.chats[index]),
@@ -40,7 +40,7 @@ class _ChatPageState extends State<ChatPage> {
                     // TODO: ADD TTS ON DOUBLE TAP
                     onDoubleTap: () => {print("DOUBLE TAPPED")},
                     onLongPress: () {
-                      widget.overlayFunction(widget.chats[index].suggestion);
+                      widget.overlayFunction(widget.chats[index]);
                     },
                     child: Container(
                       margin: const EdgeInsets.symmetric(
@@ -48,21 +48,21 @@ class _ChatPageState extends State<ChatPage> {
                       padding: const EdgeInsets.symmetric(
                           vertical: 10.0, horizontal: 16.0),
                       decoration: BoxDecoration(
-                        color: widget.chats[index].chat.ai
+                        color: widget.chats[index].ai
                             ? Colors.grey[300]
                             : Colors.green[300],
                         borderRadius: BorderRadius.only(
                           topLeft: const Radius.circular(12.0),
                           topRight: const Radius.circular(12.0),
-                          bottomRight: widget.chats[index].chat.ai
+                          bottomRight: widget.chats[index].ai
                               ? const Radius.circular(12.0)
                               : Radius.zero,
-                          bottomLeft: widget.chats[index].chat.ai
+                          bottomLeft: widget.chats[index].ai
                               ? Radius.zero
                               : const Radius.circular(12.0),
                         ),
                       ),
-                      child: widget.chats[index].chat.content,
+                      child: widget.chats[index].content,
                     ),
                   ),
                 ),
@@ -80,12 +80,19 @@ class Chat {
   final Text content;
   final DateTime timestamp;
   final bool ai;
+  String suggestion = "";
 
-  Chat({
+  Chat(
+      {required this.sender,
+      required this.content,
+      required this.timestamp,
+      required this.ai});
+  Chat.suggestion({
     required this.sender,
     required this.content,
     required this.timestamp,
     required this.ai,
+    required this.suggestion,
   });
 
   @override
