@@ -31,12 +31,6 @@ class _DialoguePageState extends State<DialoguePage> {
         difficulty: widget.difficulty);
   }
 
-  String trialPrompt2 =
-      "Translate the following Arabic text into English, focusing on contextual accuracy. Assess whether the highlighted word ^ should be translated independently or as an integral part of the surrounding phrase to preserve its meaning. Provide the translation of this word or phrase first, followed by the translation of the entire sentence ^. Ensure the translations are contextually coherent and present them on separate lines, with no additional text or explanations.";
-  String trialPrompt1 =
-      "Translate the following Arabic text into English, ensuring the translation of the word matches its context in the sentence. Provide only the English translations without including the original Arabic text. First, accurately translate the word: ^ as used in its sentence. Then, translate the full sentence: ^. Provide both translations on separate lines, with no additional text or explanations.";
-  String trialPrompt3 =
-      "Translate the sentence '^sentence' from Arabic to English. Then, translate the word '^filteredText', ensuring the translation is exactly how it was translated in the sentence. Please present both translations individually on separate lines, without any supplementary text or clarifications.";
   @override
   Widget build(BuildContext context) {
     void showFlashcardDialogue(BuildContext context, FlashcardStore store) {
