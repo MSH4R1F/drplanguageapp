@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:drplanguageapp/classes/chat_service.dart';
 import 'package:drplanguageapp/main.dart';
 import 'package:drplanguageapp/pages/flashcard_store.dart';
+import 'package:drplanguageapp/pages/selection_page.dart';
 import 'package:flutter/material.dart';
 import 'package:drplanguageapp/api/gpt.dart';
 
@@ -243,8 +244,18 @@ class _DialoguePageState extends State<DialoguePage> {
             icon: const Icon(Icons.refresh),
           ),
           IconButton(
-            onPressed: () => Navigator.pushNamed(context, '/dashboard'),
-            icon: const Icon(Icons.dashboard),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => SelectionPage(
+                      userID: widget.userID,
+                      language: widget.language,
+                      difficulty: widget.difficulty),
+                ),
+              );
+            },
+            icon: const Icon(Icons.arrow_back_rounded),
           ),
         ],
       ),
@@ -257,6 +268,13 @@ class _DialoguePageState extends State<DialoguePage> {
                 backgroundImage: AssetImage('assets/images/bloom.png'),
                 radius: 50,
               ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.dashboard),
+              title: const Text("Dashboard"),
+              onTap: () {
+                Navigator.pushNamed(context, '/dashboard');
+              },
             ),
             ListTile(
               leading: const Icon(Icons.chat_bubble),

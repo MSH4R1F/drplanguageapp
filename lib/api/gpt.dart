@@ -34,7 +34,7 @@ class TextGenerator {
       } else {
         String? text = await generateText();
         if (text != null) {
-          await docRef.set({'text': text});
+          docRef.set({'text': text});
           return text;
         } else {
           throw Exception('Generated text was null');

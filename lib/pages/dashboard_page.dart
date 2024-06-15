@@ -106,21 +106,20 @@ class DashboardPageState extends State<DashboardPage> {
                   ],
                 )),
             FeatureCard(
-                title: 'Conversation',
-                link: '/dashboard/conversation',
-                userID: userUID),
+              title: 'Conversation',
+              link: '/dashboard/conversation',
+              userID: userUID,
+            ),
             FeatureCard(
-                title: 'Reading Comp',
-                link: '/selection',
-                userID: userUID),
+              title: 'Reading Comp',
+              link: '/selection',
+              userID: userUID,
+            ),
             FeatureCard(
-                title: 'Highlights',
-                link: '/dashboard/highlights',
-                userID: userUID),
-            FeatureCard(
-                title: 'Flashcards',
-                link: '/dashboard/flashcards',
-                userID: userUID),
+              title: 'Flashcards',
+              link: '/dashboard/flashcards',
+              userID: userUID,
+            ),
             // Image.network("https://i.pinimg.com/originals/83/cd/af/83cdaf182b196bad532ca40f761095ca.gif")
           ],
         ),

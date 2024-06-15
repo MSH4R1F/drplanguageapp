@@ -3,21 +3,32 @@ import 'package:flutter/material.dart';
 
 class SelectionPage extends StatefulWidget {
   final String userID;
-  const SelectionPage({super.key, required this.userID});
+  final String? language;
+  final String? difficulty;
+  const SelectionPage(
+      {super.key, required this.userID, this.language, this.difficulty});
 
   @override
   State<StatefulWidget> createState() => _SelectionPageState();
 }
 
 class _SelectionPageState extends State<SelectionPage> {
+  String? selectedLanguage;
+  String? selectedDifficulty;
+
+  @override
+  void initState() {
+    super.initState();
+    selectedLanguage = widget.language;
+    selectedDifficulty = widget.difficulty;
+  }
+
   final List<String> languageOptions = [
     "Arabic",
     "Urdu",
     "Bengali",
   ];
   final List<String> difficulties = ["Beginner", "Intermediate", "Advanced"];
-  String? selectedLanguage;
-  String? selectedDifficulty;
 
   @override
   Widget build(BuildContext context) {
