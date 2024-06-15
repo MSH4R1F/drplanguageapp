@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:drplanguageapp/classes/chat_service.dart';
 import 'package:drplanguageapp/main.dart';
 import 'package:drplanguageapp/pages/flashcard_store.dart';
 import 'package:flutter/material.dart';
@@ -19,7 +20,17 @@ class DialoguePage extends StatefulWidget {
 }
 
 class _DialoguePageState extends State<DialoguePage> {
-  TextGenerator generator = TextGenerator();
+  late TextGenerator generator;
+
+  @override
+  void initState() {
+    super.initState();
+    generator = TextGenerator(
+        userID: widget.userID,
+        language: widget.language,
+        difficulty: widget.difficulty);
+  }
+
   String trialPrompt2 =
       "Translate the following Arabic text into English, focusing on contextual accuracy. Assess whether the highlighted word ^ should be translated independently or as an integral part of the surrounding phrase to preserve its meaning. Provide the translation of this word or phrase first, followed by the translation of the entire sentence ^. Ensure the translations are contextually coherent and present them on separate lines, with no additional text or explanations.";
   String trialPrompt1 =
@@ -79,6 +90,7 @@ class _DialoguePageState extends State<DialoguePage> {
     }
 
     void showDialogueBox(String word, String sentence) {
+      ChatService gpt = ChatService();
       String filteredWord = word.replaceAll(RegExp(r"['،؟۔!.,;:?-]"), '');
       filteredWord = filteredWord.replaceAll(RegExp('"'), '');
 
@@ -93,7 +105,7 @@ class _DialoguePageState extends State<DialoguePage> {
               height: 250,
               width: MediaQuery.of(context).size.width,
               child: FutureBuilder(
-                future: generator.generateText(
+                future: gpt.request(
                     "Translate the sentence '$sentence' from ${widget.language} to English. Then, translate the word '$filteredWord', ensuring the translation is exactly how it was translated in the sentence. Please present both translations individually on separate lines, without any additional text, clarifications or introductions."),
                 builder:
                     (BuildContext context, AsyncSnapshot<String?> snapshot) {
@@ -229,16 +241,10 @@ class _DialoguePageState extends State<DialoguePage> {
         backgroundColor: Colors.amber,
         actions: [
           IconButton(
-            onPressed: () async {
-              generator.regenerateText(
-                  "Give a paragraph of about 200 words in ${widget.language}, using only ${widget.difficulty} level vocab, without any additional text or introduction");
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (_) => DialoguePage(
-                          userID: widget.userID,
-                          language: widget.language!,
-                          difficulty: widget.difficulty!)));
+            onPressed: () {
+              setState(() {
+                generator.regenerateText();
+              });
             },
             icon: const Icon(Icons.refresh),
           ),
@@ -295,8 +301,7 @@ class _DialoguePageState extends State<DialoguePage> {
         ),
       ),
       body: FutureBuilder<String?>(
-        future: generator.getText(
-            "Give a paragraph of about 200 words in ${widget.language}, using only beginner level vocab, without any additional text or introduction"),
+        future: generator.getText(),
         builder: (BuildContext context, AsyncSnapshot<String?> snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             if (snapshot.hasData) {
