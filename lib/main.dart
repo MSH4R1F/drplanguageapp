@@ -1,6 +1,5 @@
 import 'package:drplanguageapp/pages/conversations_list.dart';
 import 'package:drplanguageapp/pages/dashboard_page.dart';
-import 'package:drplanguageapp/pages/dialogue_page.dart';
 import 'package:drplanguageapp/pages/flashcards.dart';
 import 'package:drplanguageapp/pages/highlights.dart';
 import 'package:drplanguageapp/pages/login_page.dart';

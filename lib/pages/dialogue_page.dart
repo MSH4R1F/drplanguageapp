@@ -237,8 +237,8 @@ class _DialoguePageState extends State<DialoguePage> {
                   MaterialPageRoute(
                       builder: (_) => DialoguePage(
                           userID: widget.userID,
-                          language: widget.language!,
-                          difficulty: widget.difficulty!)));
+                          language: widget.language,
+                          difficulty: widget.difficulty)));
             },
             icon: const Icon(Icons.refresh),
           ),
