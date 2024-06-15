@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:drplanguageapp/classes/chat_service.dart';
 import 'package:drplanguageapp/main.dart';
 import 'package:drplanguageapp/pages/flashcard_store.dart';
+import 'package:drplanguageapp/pages/languages.dart';
 import 'package:drplanguageapp/pages/selection_page.dart';
 import 'package:flutter/material.dart';
 import 'package:drplanguageapp/api/gpt.dart';
@@ -22,6 +23,7 @@ class DialoguePage extends StatefulWidget {
 
 class _DialoguePageState extends State<DialoguePage> {
   late TextGenerator generator;
+  Langauge langStore = Langauge();
 
   @override
   void initState() {
@@ -127,7 +129,10 @@ class _DialoguePageState extends State<DialoguePage> {
                                   icon: const Icon(Icons.volume_up),
                                   onPressed: () async {
                                     // todo: make language dynamic ('ar' for Arabic, 'ur' for Arabic, etc.)
-                                    await speak(filteredWord, 'ar');
+                                    await speak(
+                                        filteredWord,
+                                        langStore
+                                            .getSpeechCode(widget.language));
                                   },
                                 ),
                                 IconButton(
@@ -320,7 +325,7 @@ class _DialoguePageState extends State<DialoguePage> {
               return SingleChildScrollView(
                 padding: const EdgeInsets.symmetric(horizontal: 5),
                 child: Directionality(
-                  textDirection: TextDirection.rtl,
+                  textDirection: langStore.getTextDirection(widget.language),
                   child: Column(
                     children: splitSentence(snapshot.data!),
                   ),
