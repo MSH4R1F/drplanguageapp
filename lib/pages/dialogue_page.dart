@@ -61,7 +61,9 @@ class _DialoguePageState extends State<DialoguePage> {
                     var collection = FirebaseFirestore.instance
                         .collection('users')
                         .doc(widget.userID)
-                        .collection('flashcards');
+                        .collection('flashcards')
+                        .doc('language')
+                        .collection(widget.language);
                     try {
                       await collection.add({
                         'word': store.word,

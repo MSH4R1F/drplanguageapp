@@ -26,7 +26,7 @@ class _SelectionPageState extends State<SelectionPage> {
   final List<String> languageOptions = [
     "Arabic",
     "Urdu",
-    "Bengali",
+    "Bangla",
   ];
   final List<String> difficulties = ["Beginner", "Intermediate", "Advanced"];
 

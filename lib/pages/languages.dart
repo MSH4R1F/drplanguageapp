@@ -4,13 +4,13 @@ class Langauge {
   final Map<String, String> tts = {
     "Arabic": "ar",
     "Urdu": "ur",
-    "Bengali": "bn-BD"
+    "Bangla": "bn-BD"
   };
 
   final Map<String, TextDirection> directions = {
     "Arabic": TextDirection.rtl,
     "Urdu": TextDirection.rtl,
-    "Bengali": TextDirection.ltr,
+    "Bangla": TextDirection.ltr,
   };
 
   String getSpeechCode(String language) {
