@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:drplanguageapp/main.dart';
+import 'package:drplanguageapp/pages/languages.dart';
 import 'package:flutter/material.dart';
 
 class Flashcard {
@@ -16,12 +17,14 @@ class Flashcard {
   });
 }
 
-Future<List<Flashcard>> getFlashcards(String userID) async {
+Future<List<Flashcard>> getFlashcards(String userID, String language) async {
   try {
     QuerySnapshot querySnapshot = await FirebaseFirestore.instance
         .collection('users')
         .doc(userID)
         .collection('flashcards')
+        .doc('language')
+        .collection(language)
         .get();
     return querySnapshot.docs.map((doc) {
       return Flashcard(
@@ -36,12 +39,26 @@ Future<List<Flashcard>> getFlashcards(String userID) async {
   }
 }
 
-class WordsListPage extends StatelessWidget {
+class WordsListPage extends StatefulWidget {
   final String userID;
-  final Future<List<Flashcard>> flashcards;
+  final String? language;
 
-  WordsListPage({super.key, required this.userID})
-      : flashcards = getFlashcards(userID);
+  const WordsListPage({super.key, required this.userID, this.language});
+
+  @override
+  WordsListPageState createState() => WordsListPageState();
+}
+
+class WordsListPageState extends State<WordsListPage> {
+  final List<String> languages = ['Arabic', 'Urdu', 'Bangla'];
+  String language = 'Arabic';
+  Future<List<Flashcard>> flashcards = Future<List<Flashcard>>.value([]);
+
+  @override
+  void initState() {
+    super.initState();
+    flashcards = getFlashcards('userID', language);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,15 +68,32 @@ class WordsListPage extends StatelessWidget {
         centerTitle: true,
         backgroundColor: Colors.blueGrey,
         actions: [
+          PopupMenuButton<String>(
+            icon: const Icon(Icons.language),
+            onSelected: (String newLanguage) {
+              setState(() {
+                language = newLanguage;
+                flashcards = getFlashcards('userID', language);
+              });
+            },
+            itemBuilder: (BuildContext context) {
+              return languages.map((String value) {
+                return PopupMenuItem<String>(
+                  value: value,
+                  child: Text(value),
+                );
+              }).toList();
+            },
+          ),
           IconButton(
             onPressed: () {
               Navigator.pushNamedAndRemoveUntil(
                 context,
-                '/loginpage',
+                '/dashboard',
                 (Route<dynamic> route) => false,
               );
             },
-            icon: const Icon(Icons.logout),
+            icon: const Icon(Icons.dashboard),
           ),
         ],
       ),
@@ -131,6 +165,7 @@ class WordsListPage extends StatelessWidget {
                           builder: (context) => FlashcardPage(
                             flashcard: snapshot.data![index],
                             flashcards: snapshot.data!,
+                            langauge: language,
                           ),
                         ),
                       );
@@ -153,9 +188,13 @@ class WordsListPage extends StatelessWidget {
 class FlashcardPage extends StatelessWidget {
   final Flashcard flashcard;
   final List<Flashcard> flashcards;
+  final String langauge;
 
   const FlashcardPage(
-      {super.key, required this.flashcard, required this.flashcards});
+      {super.key,
+      required this.flashcard,
+      required this.flashcards,
+      required this.langauge});
 
   @override
   Widget build(BuildContext context) {
@@ -183,6 +222,7 @@ class FlashcardPage extends StatelessWidget {
         child: SpinWordWidget(
           flashcard: flashcard,
           flashcards: flashcards,
+          language: langauge,
         ),
       ),
     );
@@ -191,12 +231,14 @@ class FlashcardPage extends StatelessWidget {
 
 class SpinWordWidget extends StatefulWidget {
   final Flashcard flashcard;
+  final String language;
   final List<Flashcard> flashcards;
 
   const SpinWordWidget({
     super.key,
     required this.flashcard,
     required this.flashcards,
+    required this.language,
   });
 
   @override
@@ -230,6 +272,7 @@ class SpinWordWidgetState extends State<SpinWordWidget>
 
   @override
   Widget build(BuildContext context) {
+    Langauge langStore = Langauge();
     return Scaffold(
       body: Center(
         child: Column(
@@ -309,14 +352,14 @@ class SpinWordWidgetState extends State<SpinWordWidget>
           ],
         ),
       ),
-      floatingActionButton:
-          FloatingActionButton(
-            onPressed: () async {
-              // todo: make language dynamic ('ar' for Arabic, 'ur' for Urdu, etc.)
-              await speak(widget.flashcard.word, 'ur');
-            },
-            child: const Icon(Icons.volume_up),
-          ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          // todo: make language dynamic ('ar' for Arabic, 'ur' for Urdu, etc.)
+          await speak(
+              widget.flashcard.word, langStore.getSpeechCode(widget.language));
+        },
+        child: const Icon(Icons.volume_up),
+      ),
     );
   }
 
