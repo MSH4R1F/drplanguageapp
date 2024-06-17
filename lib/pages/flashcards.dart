@@ -212,9 +212,9 @@ class FlashcardPage extends StatelessWidget {
         actions: [
           IconButton(
             onPressed: () {
-              Navigator.pushNamed(context, '/loginpage');
+              Navigator.pushNamed(context, '/dashboard');
             },
-            icon: const Icon(Icons.logout),
+            icon: const Icon(Icons.dashboard),
           ),
         ],
       ),
@@ -229,12 +229,14 @@ class FlashcardPage extends StatelessWidget {
   }
 }
 
+
+// ignore: must_be_immutable
 class SpinWordWidget extends StatefulWidget {
-  final Flashcard flashcard;
+  Flashcard flashcard;
   final String language;
   final List<Flashcard> flashcards;
 
-  const SpinWordWidget({
+  SpinWordWidget({
     super.key,
     required this.flashcard,
     required this.flashcards,
@@ -268,6 +270,24 @@ class SpinWordWidgetState extends State<SpinWordWidget>
       _controller.reverse();
     }
     _showWord = !_showWord;
+  }
+
+  void _goToNextFlashcard() {
+    int currentIndex = widget.flashcards.indexOf(widget.flashcard);
+    if (currentIndex < widget.flashcards.length - 1) {
+      setState(() {
+        widget.flashcard = widget.flashcards[currentIndex + 1];
+      });
+    }
+  }
+
+  void _goToPreviousFlashcard() {
+    int currentIndex = widget.flashcards.indexOf(widget.flashcard);
+    if (currentIndex > 0) {
+      setState(() {
+        widget.flashcard = widget.flashcards[currentIndex - 1];
+      });
+    }
   }
 
   @override
@@ -352,14 +372,32 @@ class SpinWordWidgetState extends State<SpinWordWidget>
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          // todo: make language dynamic ('ar' for Arabic, 'ur' for Urdu, etc.)
-          await speak(
-              widget.flashcard.word, langStore.getSpeechCode(widget.language));
-        },
-        child: const Icon(Icons.volume_up),
+      floatingActionButton: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: <Widget>[
+          ElevatedButton(
+            onPressed: widget.flashcards.indexOf(widget.flashcard) > 0
+                ? _goToPreviousFlashcard
+                : null,
+            child: const Icon(Icons.arrow_back),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              await speak(widget.flashcard.word,
+                  langStore.getSpeechCode(widget.language));
+            },
+            child: const Icon(Icons.volume_up),
+          ),
+          ElevatedButton(
+            onPressed: widget.flashcards.indexOf(widget.flashcard) <
+                    widget.flashcards.length - 1
+                ? _goToNextFlashcard
+                : null,
+            child: const Icon(Icons.arrow_forward),
+          ),
+        ],
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 
