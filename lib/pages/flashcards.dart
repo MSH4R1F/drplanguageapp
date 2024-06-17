@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:drplanguageapp/main.dart';
+import 'package:drplanguageapp/pages/dashboard_page.dart';
 import 'package:flutter/material.dart';
 
 class Flashcard {
@@ -77,28 +78,40 @@ class WordsListPage extends StatelessWidget {
               leading: const Icon(Icons.dashboard),
               title: const Text("Dashboard"),
               onTap: () {
-                Navigator.pushNamed(context, '/dashboard');
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => DashboardPage(
+                      userID: userID,
+                    ),
+                  ),
+                );
               },
             ),
             ListTile(
               leading: const Icon(Icons.chat_bubble),
               title: const Text("Conversation"),
               onTap: () {
-                Navigator.pushNamed(context, '/dashboard/conversation');
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.lightbulb),
-              title: const Text("Highlights"),
-              onTap: () {
-                Navigator.pushNamed(context, '/dashboard/highlights');
+                Navigator.pushNamed(
+                  context,
+                  '/dashboard/conversation',
+                  arguments: {'userID': userID},
+                );
               },
             ),
             ListTile(
               leading: const Icon(Icons.auto_stories),
               title: const Text("Comprehension"),
               onTap: () {
-                Navigator.pushNamed(context, '/selection');
+                Navigator.pushNamed(
+                  context,
+                  '/selection',
+                  arguments: {
+                    'userID': userID,
+                    'language': null,
+                    'difficulty': null,
+                  },
+                );
               },
             ),
           ],
@@ -309,14 +322,13 @@ class SpinWordWidgetState extends State<SpinWordWidget>
           ],
         ),
       ),
-      floatingActionButton:
-          FloatingActionButton(
-            onPressed: () async {
-              // todo: make language dynamic ('ar' for Arabic, 'ur' for Urdu, etc.)
-              await speak(widget.flashcard.word, 'ur');
-            },
-            child: const Icon(Icons.volume_up),
-          ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          // todo: make language dynamic ('ar' for Arabic, 'ur' for Urdu, etc.)
+          await speak(widget.flashcard.word, 'ur');
+        },
+        child: const Icon(Icons.volume_up),
+      ),
     );
   }
 

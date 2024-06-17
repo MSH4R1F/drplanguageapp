@@ -1,7 +1,7 @@
 import 'package:drplanguageapp/pages/conversations_list.dart';
 import 'package:drplanguageapp/pages/dashboard_page.dart';
+import 'package:drplanguageapp/pages/dialogue_page.dart';
 import 'package:drplanguageapp/pages/flashcards.dart';
-import 'package:drplanguageapp/pages/highlights.dart';
 import 'package:drplanguageapp/pages/login_page.dart';
 import 'package:drplanguageapp/pages/selection_page.dart';
 import 'package:flutter/material.dart';
@@ -35,28 +35,46 @@ class MyApp extends StatelessWidget {
       onGenerateRoute: (RouteSettings settings) {
         // todo : change userID
         // final userID = settings.arguments as String;
-        final userID = "userID";
+        // final userID = "userID";
 
         // Handling each route
         switch (settings.name) {
           case '/loginpage':
             return MaterialPageRoute(builder: (_) => const LoginScreen());
           case '/dashboard':
-            return MaterialPageRoute(builder: (_) => const DashboardPage());
+            final args = settings.arguments as Map<String, dynamic>?;
+            return MaterialPageRoute(
+              builder: (_) => DashboardPage(
+                userID: args!['userID'],
+              ),
+            );
           case '/dashboard/conversation':
-            // todo : change userID
-            // final userID = settings.arguments as String;
-            const userID = "userID";
+            final args = settings.arguments as Map<String, dynamic>?;
             return MaterialPageRoute(
-                builder: (_) => const ConversationsList(userID: userID));
+                builder: (_) => ConversationsList(userID: args!['userID']));
           case '/selection':
-            const userID = "userID";
+            final args = settings.arguments as Map<String, dynamic>?;
             return MaterialPageRoute(
-                builder: (_) => const SelectionPage(userID: userID));
+              builder: (_) => SelectionPage(
+                userID: args!['userID'],
+                language: args['language'],
+                difficulty: args['difficulty'],
+              ),
+            );
+          case '/dashboard/comprehension':
+            final args = settings.arguments as Map<String, dynamic>?;
+            return MaterialPageRoute(
+              builder: (_) => DialoguePage(
+                userID: args!['userID'],
+                language: args['language'],
+                difficulty: args['difficulty'],
+              ),
+            );
           case '/dashboard/flashcards':
+            final args = settings.arguments as Map<String, dynamic>?;
             return MaterialPageRoute(
                 builder: (_) => WordsListPage(
-                      userID: userID,
+                      userID: args!['userID'],
                     ));
           default:
             return MaterialPageRoute(

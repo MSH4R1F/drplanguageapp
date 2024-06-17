@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:drplanguageapp/classes/chat_service.dart';
 import 'package:drplanguageapp/main.dart';
+import 'package:drplanguageapp/pages/dashboard_page.dart';
 import 'package:drplanguageapp/pages/flashcard_store.dart';
 import 'package:drplanguageapp/pages/languages.dart';
 import 'package:drplanguageapp/pages/selection_page.dart';
@@ -252,14 +253,14 @@ class _DialoguePageState extends State<DialoguePage> {
           ),
           IconButton(
             onPressed: () {
-              Navigator.push(
+              Navigator.pushNamed(
                 context,
-                MaterialPageRoute(
-                  builder: (_) => SelectionPage(
-                      userID: widget.userID,
-                      language: widget.language,
-                      difficulty: widget.difficulty),
-                ),
+                '/selection',
+                arguments: {
+                  'userID': widget.userID,
+                  'language': widget.language,
+                  'difficulty': widget.difficulty,
+                },
               );
             },
             icon: const Icon(Icons.arrow_back_rounded),
@@ -280,28 +281,33 @@ class _DialoguePageState extends State<DialoguePage> {
               leading: const Icon(Icons.dashboard),
               title: const Text("Dashboard"),
               onTap: () {
-                Navigator.pushNamed(context, '/dashboard');
+                Navigator.pushNamed(
+                  context,
+                  '/dashboard',
+                  arguments: {'userID': widget.userID},
+                );
               },
             ),
             ListTile(
               leading: const Icon(Icons.chat_bubble),
               title: const Text("Conversation"),
               onTap: () {
-                Navigator.pushNamed(context, '/dashboard/conversation');
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.lightbulb),
-              title: const Text("Highlights"),
-              onTap: () {
-                Navigator.pushNamed(context, '/dashboard/highlights');
+                Navigator.pushNamed(
+                  context,
+                  '/dashboard/conversation',
+                  arguments: {'userID': widget.userID},
+                );
               },
             ),
             ListTile(
               leading: const Icon(Icons.subtitles),
               title: const Text("Flashcards"),
               onTap: () {
-                Navigator.pushNamed(context, '/dashboard/flashcards');
+                Navigator.pushNamed(
+                  context,
+                  '/dashboard/flashcards',
+                  arguments: {'userID': widget.userID},
+                );
               },
             ),
             const Spacer(),

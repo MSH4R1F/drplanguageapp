@@ -1,8 +1,10 @@
+import 'package:drplanguageapp/pages/leaderboard.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class DashboardPage extends StatefulWidget {
-  const DashboardPage({super.key});
+  final String userID;
+  const DashboardPage({super.key, required this.userID});
 
   @override
   DashboardPageState createState() => DashboardPageState();
@@ -18,7 +20,6 @@ class DashboardPageState extends State<DashboardPage> {
         .where('userUID', isEqualTo: userUID)
         .get();
 
-    // log the querySnapshot using a logging framework but print in red
     if (querySnapshot.docs.isNotEmpty) {
       return querySnapshot.docs.first.get('Name');
     } else {
@@ -52,22 +53,29 @@ class DashboardPageState extends State<DashboardPage> {
           children: <Widget>[
             Padding(
               padding: const EdgeInsets.all(16.0),
-              child: FutureBuilder(
-                future: fetchUserNameByUID(userUID),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.done) {
-                    return Text(
-                      'Welcome Back ${snapshot.data}!',
-                      style: const TextStyle(
-                          fontSize: 24, fontWeight: FontWeight.bold),
-                    );
-                  } else if (snapshot.hasError) {
-                    return Text('Error: ${snapshot.error}');
-                  } else {
-                    return const CircularProgressIndicator();
-                  }
-                },
+              child: Text(
+                'Welcome Back ${widget.userID}!',
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
+              // FutureBuilder(
+              //   future: fetchUserNameByUID(userUID),
+              //   builder: (context, snapshot) {
+              //     if (snapshot.connectionState == ConnectionState.done) {
+              //       return Text(
+              //         'Welcome Back ${widget.userID}!',
+              //         style: const TextStyle(
+              //             fontSize: 24, fontWeight: FontWeight.bold),
+              //       );
+              //     } else if (snapshot.hasError) {
+              //       return Text('Error: ${snapshot.error}');
+              //     } else {
+              //       return const CircularProgressIndicator();
+              //     }
+              //   },
+              // ),
             ),
             const Padding(
                 padding: EdgeInsets.all(8.0),
@@ -108,19 +116,27 @@ class DashboardPageState extends State<DashboardPage> {
             FeatureCard(
               title: 'Conversation',
               link: '/dashboard/conversation',
-              userID: userUID,
+              args: {'userID': widget.userID},
             ),
             FeatureCard(
               title: 'Reading Comp',
               link: '/selection',
-              userID: userUID,
+              args: {
+                'userID': widget.userID,
+                'language': null,
+                'difficulty': null
+              },
             ),
             FeatureCard(
               title: 'Flashcards',
               link: '/dashboard/flashcards',
-              userID: userUID,
+              args: {'userID': widget.userID},
             ),
             // Image.network("https://i.pinimg.com/originals/83/cd/af/83cdaf182b196bad532ca40f761095ca.gif")
+            const SizedBox(
+              height: 40,
+            ),
+            const Leaderboard(),
           ],
         ),
       ),
@@ -131,12 +147,9 @@ class DashboardPageState extends State<DashboardPage> {
 class FeatureCard extends StatelessWidget {
   final String title;
   final String link;
-  final String userID;
+  final Map<String, dynamic> args;
   const FeatureCard(
-      {super.key,
-      required this.title,
-      required this.link,
-      required this.userID});
+      {super.key, required this.title, required this.link, required this.args});
 
   @override
   Widget build(BuildContext context) {
@@ -146,7 +159,7 @@ class FeatureCard extends StatelessWidget {
         title: Text(title),
         trailing: const Icon(Icons.arrow_forward),
         onTap: () {
-          Navigator.pushNamed(context, link, arguments: userID);
+          Navigator.pushNamed(context, link, arguments: args);
         },
       ),
     );
