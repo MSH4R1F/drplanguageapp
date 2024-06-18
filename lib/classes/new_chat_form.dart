@@ -1,3 +1,4 @@
+import 'package:drplanguageapp/classes/mounted_state.dart';
 import 'package:flutter/material.dart';
 
 class LanguageTopicForm extends StatefulWidget {
@@ -7,7 +8,7 @@ class LanguageTopicForm extends StatefulWidget {
   _LanguageTopicFormState createState() => _LanguageTopicFormState();
 }
 
-class _LanguageTopicFormState extends State<LanguageTopicForm> {
+class _LanguageTopicFormState extends MountedState<LanguageTopicForm> {
   String? _selectedLanguage;
   String? _selectedTopic;
   final Map<String, List<String>> topics = {

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:drplanguageapp/classes/chat_message.dart';
 import 'package:drplanguageapp/classes/chat_overlay.dart';
+import 'package:drplanguageapp/classes/mounted_state.dart';
 import 'package:drplanguageapp/pages/chat_page.dart';
 import 'package:flutter/material.dart';
 import 'package:drplanguageapp/classes/chat_service.dart';
@@ -28,7 +29,7 @@ class Conversation extends StatefulWidget {
   State<Conversation> createState() => _ConversationState();
 }
 
-class _ConversationState extends State<Conversation> {
+class _ConversationState extends MountedState<Conversation> {
   final TextEditingController _controller = TextEditingController();
   String userID = "userID";
   var shownOverlay = false;
