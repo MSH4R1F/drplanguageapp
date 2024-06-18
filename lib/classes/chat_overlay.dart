@@ -28,10 +28,12 @@ class ChatOverlay extends StatelessWidget {
     return SingleChildScrollView(
         scrollDirection: Axis.vertical,
         child: Column(children: [
-          Text("Message Content",
-              style: const TextStyle(
-                fontSize: 25,
-              )),
+          const Text(
+            "Message Content",
+            style: TextStyle(
+              fontSize: 25,
+            ),
+          ),
           Container(
             height: 50,
           ),
