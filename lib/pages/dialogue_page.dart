@@ -3,7 +3,6 @@ import 'package:drplanguageapp/classes/chat_service.dart';
 import 'package:drplanguageapp/classes/mounted_state.dart';
 import 'package:drplanguageapp/main.dart';
 import 'package:drplanguageapp/pages/dashboard_page.dart';
-import 'package:drplanguageapp/pages/flashcard_store.dart';
 import 'package:drplanguageapp/pages/flashcards.dart';
 import 'package:drplanguageapp/pages/languages.dart';
 import 'package:drplanguageapp/pages/selection_page.dart';
