@@ -238,7 +238,6 @@ class FlashcardPage extends StatelessWidget {
 
   Future<void> deleteFlashcard(
       String userID, String language, String word) async {
-        print('Deleting flashcard $word from $language, user $userID');
     await FirebaseFirestore.instance
         .collection('users')
         .doc(userID)
@@ -382,15 +381,15 @@ class SpinWordWidgetState extends State<SpinWordWidget>
   @override
   Widget build(BuildContext context) {
     Langauge langStore = Langauge();
-    return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            GestureDetector(
-              onTap: _toggleWord,
-              child: Column(
+    return GestureDetector(
+      onTap: _toggleWord,
+      child: Scaffold(
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   AnimatedBuilder(
@@ -457,36 +456,36 @@ class SpinWordWidgetState extends State<SpinWordWidget>
                   ),
                 ],
               ),
+            ],
+          ),
+        ),
+        floatingActionButton: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: <Widget>[
+            ElevatedButton(
+              onPressed: widget.flashcards.indexOf(widget.flashcard) > 0
+                  ? _goToPreviousFlashcard
+                  : null,
+              child: const Icon(Icons.arrow_back),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                await speak(widget.flashcard.word,
+                    langStore.getSpeechCode(widget.language));
+              },
+              child: const Icon(Icons.volume_up),
+            ),
+            ElevatedButton(
+              onPressed: widget.flashcards.indexOf(widget.flashcard) <
+                      widget.flashcards.length - 1
+                  ? _goToNextFlashcard
+                  : null,
+              child: const Icon(Icons.arrow_forward),
             ),
           ],
         ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       ),
-      floatingActionButton: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: <Widget>[
-          ElevatedButton(
-            onPressed: widget.flashcards.indexOf(widget.flashcard) > 0
-                ? _goToPreviousFlashcard
-                : null,
-            child: const Icon(Icons.arrow_back),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              await speak(widget.flashcard.word,
-                  langStore.getSpeechCode(widget.language));
-            },
-            child: const Icon(Icons.volume_up),
-          ),
-          ElevatedButton(
-            onPressed: widget.flashcards.indexOf(widget.flashcard) <
-                    widget.flashcards.length - 1
-                ? _goToNextFlashcard
-                : null,
-            child: const Icon(Icons.arrow_forward),
-          ),
-        ],
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 
