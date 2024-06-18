@@ -304,7 +304,7 @@ class _DialoguePageState extends MountedState<DialoguePage> {
               },
             ),
             ListTile(
-              leading: const Icon(Icons.subtitles),
+              leading: const Icon(Icons.view_carousel_rounded),
               title: const Text("Flashcards"),
               onTap: () {
                 Navigator.pushNamed(

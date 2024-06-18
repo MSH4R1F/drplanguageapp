@@ -64,7 +64,7 @@ class ChatOverlay extends StatelessWidget {
           Container(
             child: Text(
               chat.suggestion,
-              style: TextStyle(fontSize: 20),
+              style: const TextStyle(fontSize: 20),
             ),
           )
         ]));
