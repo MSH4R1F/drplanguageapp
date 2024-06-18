@@ -28,14 +28,16 @@ class ChatOverlay extends StatelessWidget {
     return SingleChildScrollView(
         scrollDirection: Axis.vertical,
         child: Column(children: [
-          Text("Message Content",
-              style: const TextStyle(
-                fontSize: 25,
-              )),
+          const Text(
+            "Message Content",
+            style: TextStyle(
+              fontSize: 25,
+            ),
+          ),
           Container(
             height: 50,
           ),
-          Text(chat.suggestion, style: const TextStyle(fontSize: 20)),
+          Text(chat.content.data!, style: const TextStyle(fontSize: 20)),
           Container(
             height: 50,
           ),
@@ -54,6 +56,17 @@ class ChatOverlay extends StatelessWidget {
               ),
             ),
           ),
+          Container(
+              child: Text(
+            chat.ai ? "Suggested Response" : "Feedback",
+            style: const TextStyle(fontSize: 25),
+          )),
+          Container(
+            child: Text(
+              chat.suggestion,
+              style: const TextStyle(fontSize: 20),
+            ),
+          )
         ]));
   }
 

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class Langauge {
+class Language {
   final Map<String, String> tts = {
     "Arabic": "ar",
     "Urdu": "ur",

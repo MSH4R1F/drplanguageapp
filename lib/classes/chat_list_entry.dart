@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:drplanguageapp/classes/mounted_state.dart';
 import 'package:drplanguageapp/classes/new_chat_form.dart';
 import 'package:flutter/material.dart';
 
@@ -10,7 +11,7 @@ class ChatListEntry extends StatefulWidget {
   State<ChatListEntry> createState() => _ChatListEntryState();
 }
 
-class _ChatListEntryState extends State<ChatListEntry> {
+class _ChatListEntryState extends MountedState<ChatListEntry> {
   @override
   Widget build(BuildContext context) {
     return Container(
