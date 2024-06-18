@@ -58,27 +58,33 @@ class _DialoguePageState extends State<DialoguePage> {
                 ),
                 TextButton(
                   onPressed: () async {
-                    var collection = FirebaseFirestore.instance
+                    var docRef = FirebaseFirestore.instance
                         .collection('users')
                         .doc(widget.userID)
                         .collection('flashcards')
                         .doc('language')
-                        .collection(widget.language);
-                    try {
-                      await collection.add({
-                        'word': store.word,
-                        'sentence': store.sentence,
-                        'trWord': store.trWord,
-                        'trSentence': store.trSentence
-                      });
-                      if (mounted) {
-                        Navigator.of(context).pop();
+                        .collection(widget.language)
+                        .doc(store.word);
+                    var docSnapshot = await docRef.get();
+                    if (!docSnapshot.exists) {
+                      try {
+                        await docRef.set(
+                          {
+                            'word': store.word,
+                            'sentence': store.sentence,
+                            'trWord': store.trWord,
+                            'trSentence': store.trSentence
+                          },
+                          SetOptions(merge: true),
+                        );
+                      } catch (e) {
+                        print("Error adding data: $e");
                       }
-                    } catch (e) {
-                      print("Error adding data: $e");
-                      if (mounted) {
-                        Navigator.of(context).pop();
-                      }
+                    } else {
+                      print('Word already exists in flashcards!');
+                    }
+                    if (mounted) {
+                      Navigator.of(context).pop();
                     }
                   },
                   child: const Text("Yes"),

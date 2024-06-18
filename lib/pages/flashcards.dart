@@ -203,6 +203,7 @@ class WordsListPageState extends State<WordsListPage> {
                             flashcard: snapshot.data![index],
                             flashcards: snapshot.data!,
                             langauge: language,
+                            userID: widget.userID,
                           ),
                         ),
                       );
@@ -223,6 +224,7 @@ class WordsListPageState extends State<WordsListPage> {
 }
 
 class FlashcardPage extends StatelessWidget {
+  final String userID;
   final Flashcard flashcard;
   final List<Flashcard> flashcards;
   final String langauge;
@@ -231,7 +233,21 @@ class FlashcardPage extends StatelessWidget {
       {super.key,
       required this.flashcard,
       required this.flashcards,
-      required this.langauge});
+      required this.langauge,
+      required this.userID});
+
+  Future<void> deleteFlashcard(
+      String userID, String language, String word) async {
+        print('Deleting flashcard $word from $language, user $userID');
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(userID)
+        .collection('flashcards')
+        .doc('language')
+        .collection(language)
+        .doc(word)
+        .delete();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -255,12 +271,49 @@ class FlashcardPage extends StatelessWidget {
           ),
         ],
       ),
-      body: Center(
-        child: SpinWordWidget(
-          flashcard: flashcard,
-          flashcards: flashcards,
-          language: langauge,
-        ),
+      body: Stack(
+        children: <Widget>[
+          Center(
+            child: SpinWordWidget(
+              flashcard: flashcard,
+              flashcards: flashcards,
+              language: langauge,
+            ),
+          ),
+          Positioned(
+            right: 0,
+            child: IconButton(
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: const Text('Delete Flashcard'),
+                      content: const Text(
+                          'Are you sure you want to delete this flashcard?'),
+                      actions: <Widget>[
+                        TextButton(
+                          child: const Text('Cancel'),
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                        TextButton(
+                          child: const Text('Delete'),
+                          onPressed: () {
+                            deleteFlashcard(userID, langauge, flashcard.word);
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                      ],
+                    );
+                  },
+                );
+              },
+              icon: const Icon(Icons.delete),
+            ),
+          ),
+        ],
       ),
     );
   }
