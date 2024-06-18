@@ -134,7 +134,6 @@ class _DialoguePageState extends MountedState<DialoguePage> {
                                 IconButton(
                                   icon: const Icon(Icons.volume_up),
                                   onPressed: () async {
-                                    // todo: make language dynamic ('ar' for Arabic, 'ur' for Arabic, etc.)
                                     await speak(
                                         filteredWord,
                                         langStore

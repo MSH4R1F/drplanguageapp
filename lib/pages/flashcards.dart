@@ -33,12 +33,14 @@ class Flashcard {
   Flashcard.withTranslation({required this.word, required this.translation, required this.sentence, required this.translatedSentence});
 }
 
-Future<List<Flashcard>> getFlashcards(String userID) async {
+Future<List<Flashcard>> getFlashcards(String userID, String language) async {
   try {
     QuerySnapshot querySnapshot = await FirebaseFirestore.instance
         .collection('users')
         .doc(userID)
         .collection('flashcards')
+        .doc('language')
+        .collection(language)
         .get();
     return querySnapshot.docs.map((doc) {
       return Flashcard.withTranslation(
@@ -53,12 +55,51 @@ Future<List<Flashcard>> getFlashcards(String userID) async {
   }
 }
 
-class WordsListPage extends StatelessWidget {
-  final String userID;
-  final Future<List<Flashcard>> flashcards;
+Future<List<String>> getLanguages(String userID) async {
+  List<String> languages = ['Arabic', 'Urdu', 'Bangla'];
+  List<String> validLanguages = [];
 
-  WordsListPage({super.key, required this.userID})
-      : flashcards = getFlashcards(userID);
+  for (String language in languages) {
+    List<Flashcard> flashcards = await getFlashcards(userID, language);
+    if (flashcards.isNotEmpty) {
+      validLanguages.add(language);
+    }
+  }
+
+  return validLanguages;
+}
+
+class WordsListPage extends StatefulWidget {
+  final String userID;
+  final String? language;
+
+  const WordsListPage({super.key, required this.userID, this.language});
+
+  @override
+  WordsListPageState createState() => WordsListPageState();
+}
+
+class WordsListPageState extends State<WordsListPage> {
+  late Future<List<String>> languages;
+  String language = '';
+  Future<List<Flashcard>> flashcards = Future<List<Flashcard>>.value([]);
+
+  @override
+  void initState() {
+    super.initState();
+    languages = getLanguages(widget.userID);
+    languages.then((list) {
+      setState(() {
+        if (list.isNotEmpty) {
+          language = list[0];
+          flashcards = getFlashcards(widget.userID, language);
+        } else {
+          language = 'null';
+          flashcards = Future<List<Flashcard>>.value([]);
+        }
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -68,15 +109,44 @@ class WordsListPage extends StatelessWidget {
         centerTitle: true,
         backgroundColor: Colors.blueGrey,
         actions: [
+          FutureBuilder<List<String>>(
+            future: languages,
+            builder:
+                (BuildContext context, AsyncSnapshot<List<String>> snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const CircularProgressIndicator();
+              } else if (snapshot.hasError) {
+                return Text('Error: ${snapshot.error}');
+              } else {
+                return PopupMenuButton<String>(
+                  icon: const Icon(Icons.language),
+                  onSelected: (String newLanguage) {
+                    setState(() {
+                      language = newLanguage;
+                      flashcards = getFlashcards('userID', language);
+                    });
+                  },
+                  itemBuilder: (BuildContext context) {
+                    return snapshot.data!.map((String value) {
+                      return PopupMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList();
+                  },
+                );
+              }
+            },
+          ),
           IconButton(
             onPressed: () {
               Navigator.pushNamedAndRemoveUntil(
                 context,
-                '/loginpage',
+                '/dashboard',
                 (Route<dynamic> route) => false,
               );
             },
-            icon: const Icon(Icons.logout),
+            icon: const Icon(Icons.dashboard),
           ),
         ],
       ),
@@ -160,6 +230,7 @@ class WordsListPage extends StatelessWidget {
                           builder: (context) => FlashcardPage(
                             flashcard: snapshot.data![index],
                             flashcards: snapshot.data!,
+                            langauge: language,
                           ),
                         ),
                       );
@@ -182,9 +253,13 @@ class WordsListPage extends StatelessWidget {
 class FlashcardPage extends StatelessWidget {
   final Flashcard flashcard;
   final List<Flashcard> flashcards;
+  final String langauge;
 
   const FlashcardPage(
-      {super.key, required this.flashcard, required this.flashcards});
+      {super.key,
+      required this.flashcard,
+      required this.flashcards,
+      required this.langauge});
 
   @override
   Widget build(BuildContext context) {
@@ -202,9 +277,9 @@ class FlashcardPage extends StatelessWidget {
         actions: [
           IconButton(
             onPressed: () {
-              Navigator.pushNamed(context, '/loginpage');
+              Navigator.pushNamed(context, '/dashboard');
             },
-            icon: const Icon(Icons.logout),
+            icon: const Icon(Icons.dashboard),
           ),
         ],
       ),
@@ -212,20 +287,24 @@ class FlashcardPage extends StatelessWidget {
         child: SpinWordWidget(
           flashcard: flashcard,
           flashcards: flashcards,
+          language: langauge,
         ),
       ),
     );
   }
 }
 
+// ignore: must_be_immutable
 class SpinWordWidget extends StatefulWidget {
-  final Flashcard flashcard;
+  Flashcard flashcard;
+  final String language;
   final List<Flashcard> flashcards;
 
-  const SpinWordWidget({
+  SpinWordWidget({
     super.key,
     required this.flashcard,
     required this.flashcards,
+    required this.language,
   });
 
   @override
@@ -257,8 +336,27 @@ class SpinWordWidgetState extends MountedState<SpinWordWidget>
     _showWord = !_showWord;
   }
 
+  void _goToNextFlashcard() {
+    int currentIndex = widget.flashcards.indexOf(widget.flashcard);
+    if (currentIndex < widget.flashcards.length - 1) {
+      setState(() {
+        widget.flashcard = widget.flashcards[currentIndex + 1];
+      });
+    }
+  }
+
+  void _goToPreviousFlashcard() {
+    int currentIndex = widget.flashcards.indexOf(widget.flashcard);
+    if (currentIndex > 0) {
+      setState(() {
+        widget.flashcard = widget.flashcards[currentIndex - 1];
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    Langauge langStore = Langauge();
     return Scaffold(
       body: Center(
         child: Column(
@@ -345,6 +443,7 @@ class SpinWordWidgetState extends MountedState<SpinWordWidget>
         },
         child: const Icon(Icons.volume_up),
       ),
+
     );
   }
 
