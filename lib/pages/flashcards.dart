@@ -39,6 +39,20 @@ Future<List<Flashcard>> getFlashcards(String userID, String language) async {
   }
 }
 
+Future<List<String>> getLanguages(String userID) async {
+  List<String> languages = ['Arabic', 'Urdu', 'Bangla'];
+  List<String> validLanguages = [];
+
+  for (String language in languages) {
+    List<Flashcard> flashcards = await getFlashcards(userID, language);
+    if (flashcards.isNotEmpty) {
+      validLanguages.add(language);
+    }
+  }
+
+  return validLanguages;
+}
+
 class WordsListPage extends StatefulWidget {
   final String userID;
   final String? language;
@@ -50,14 +64,25 @@ class WordsListPage extends StatefulWidget {
 }
 
 class WordsListPageState extends State<WordsListPage> {
-  final List<String> languages = ['Arabic', 'Urdu', 'Bangla'];
-  String language = 'Arabic';
+  late Future<List<String>> languages;
+  String language = '';
   Future<List<Flashcard>> flashcards = Future<List<Flashcard>>.value([]);
 
   @override
   void initState() {
     super.initState();
-    flashcards = getFlashcards('userID', language);
+    languages = getLanguages(widget.userID);
+    languages.then((list) {
+      setState(() {
+        if (list.isNotEmpty) {
+          language = list[0];
+          flashcards = getFlashcards(widget.userID, language);
+        } else {
+          language = 'null';
+          flashcards = Future<List<Flashcard>>.value([]);
+        }
+      });
+    });
   }
 
   @override
@@ -68,21 +93,33 @@ class WordsListPageState extends State<WordsListPage> {
         centerTitle: true,
         backgroundColor: Colors.blueGrey,
         actions: [
-          PopupMenuButton<String>(
-            icon: const Icon(Icons.language),
-            onSelected: (String newLanguage) {
-              setState(() {
-                language = newLanguage;
-                flashcards = getFlashcards('userID', language);
-              });
-            },
-            itemBuilder: (BuildContext context) {
-              return languages.map((String value) {
-                return PopupMenuItem<String>(
-                  value: value,
-                  child: Text(value),
+          FutureBuilder<List<String>>(
+            future: languages,
+            builder:
+                (BuildContext context, AsyncSnapshot<List<String>> snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const CircularProgressIndicator();
+              } else if (snapshot.hasError) {
+                return Text('Error: ${snapshot.error}');
+              } else {
+                return PopupMenuButton<String>(
+                  icon: const Icon(Icons.language),
+                  onSelected: (String newLanguage) {
+                    setState(() {
+                      language = newLanguage;
+                      flashcards = getFlashcards('userID', language);
+                    });
+                  },
+                  itemBuilder: (BuildContext context) {
+                    return snapshot.data!.map((String value) {
+                      return PopupMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList();
+                  },
                 );
-              }).toList();
+              }
             },
           ),
           IconButton(
@@ -228,7 +265,6 @@ class FlashcardPage extends StatelessWidget {
     );
   }
 }
-
 
 // ignore: must_be_immutable
 class SpinWordWidget extends StatefulWidget {
