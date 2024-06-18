@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:drplanguageapp/classes/mounted_state.dart';
 import 'package:flutter/material.dart';
 
 class Leaderboard extends StatefulWidget {
@@ -8,7 +9,7 @@ class Leaderboard extends StatefulWidget {
   State<Leaderboard> createState() => _LeaderboardState();
 }
 
-class _LeaderboardState extends State<Leaderboard> {
+class _LeaderboardState extends MountedState<Leaderboard> {
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -42,7 +43,6 @@ class _LeaderboardState extends State<Leaderboard> {
               ),
               child: Column(
                 children: snapshot.data!.docs.map((DocumentSnapshot document) {
-                  
                   Map<String, dynamic> data =
                       document.data()! as Map<String, dynamic>;
                   return Padding(
@@ -53,7 +53,8 @@ class _LeaderboardState extends State<Leaderboard> {
                         Text(data['displayName'] ?? 'Anonymous',
                             style:
                                 const TextStyle(fontWeight: FontWeight.bold)),
-                        Text('${data['streak']} days',
+                        Text(
+                            '${data['streak']} ${data['streak'] == 1 ? 'day' : 'days'}',
                             style: const TextStyle(color: Colors.blue)),
                       ],
                     ),

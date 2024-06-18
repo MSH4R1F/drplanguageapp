@@ -1,6 +1,29 @@
+import 'package:drplanguageapp/classes/mounted_state.dart';
 import 'package:drplanguageapp/pages/leaderboard.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+
+class Streak {
+  final String userID;
+  int? currStreak;
+  int? maxStreak;
+
+  Future<void> initStreaks() async {
+    if (currStreak == null || maxStreak == null) {
+      var snapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userID)
+          .get();
+      currStreak = snapshot.data()!['streak'];
+      maxStreak = snapshot.data()!['maxStreak'];
+    }
+    print(currStreak);
+  }
+
+  Streak({required this.userID}) {
+    initStreaks();
+  }
+}
 
 class DashboardPage extends StatefulWidget {
   final String userID;
@@ -10,7 +33,7 @@ class DashboardPage extends StatefulWidget {
   DashboardPageState createState() => DashboardPageState();
 }
 
-class DashboardPageState extends State<DashboardPage> {
+class DashboardPageState extends MountedState<DashboardPage> {
   final String userUID = 'Bmoy5vB0vYQQekDx7V87IqIZz043';
 
   Future<String> fetchUserNameByUID(String userUID) async {
@@ -77,21 +100,54 @@ class DashboardPageState extends State<DashboardPage> {
               //   },
               // ),
             ),
-            const Padding(
-                padding: EdgeInsets.all(8.0),
+            Padding(
+                padding: const EdgeInsets.all(8.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     Expanded(
                       child: Card(
                           child: Padding(
-                        padding: EdgeInsets.all(16.0),
+                        padding: const EdgeInsets.all(16.0),
                         child: Column(
                           children: [
-                            Text('Current Streak',
-                                style: TextStyle(
-                                    fontSize: 20, fontWeight: FontWeight.bold)),
-                            Text('5 days', style: TextStyle(fontSize: 16))
+                            const Text(
+                              'Current Streak',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            StreamBuilder(
+                              stream: FirebaseFirestore.instance
+                                  .collection('users')
+                                  .doc(widget.userID)
+                                  .snapshots(),
+                              builder: (context, snapshot) {
+                                if (snapshot.hasError) {
+                                  return const Text('Something went wrong');
+                                }
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return const Center(
+                                      child: CircularProgressIndicator());
+                                }
+                                var data = snapshot.data;
+                                int streak = data!['streak'];
+                                return Text(
+                                  '$streak ${streak == 1 ? 'day' : 'days'}',
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                  ),
+                                );
+                              },
+                            ),
+                            // Text(
+                            //   '${widget.streak!.currStreak} ${widget.streak!.currStreak == 1 ? 'day' : 'days'}',
+                            //   style: const TextStyle(
+                            //     fontSize: 16,
+                            //   ),
+                            // ),
                           ],
                         ),
                       )),
@@ -100,13 +156,46 @@ class DashboardPageState extends State<DashboardPage> {
                     Expanded(
                       child: Card(
                           child: Padding(
-                        padding: EdgeInsets.all(16.0),
+                        padding: const EdgeInsets.all(16.0),
                         child: Column(
                           children: [
-                            Text('Max Streak',
-                                style: TextStyle(
-                                    fontSize: 20, fontWeight: FontWeight.bold)),
-                            Text('10 days', style: TextStyle(fontSize: 16))
+                            const Text(
+                              'Max Streak',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            StreamBuilder(
+                              stream: FirebaseFirestore.instance
+                                  .collection('users')
+                                  .doc(widget.userID)
+                                  .snapshots(),
+                              builder: (context, snapshot) {
+                                if (snapshot.hasError) {
+                                  return const Text('Something went wrong');
+                                }
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return const Center(
+                                      child: CircularProgressIndicator());
+                                }
+                                var data = snapshot.data;
+                                int maxStreak = data!['maxStreak'];
+                                return Text(
+                                  '$maxStreak ${maxStreak == 1 ? 'day' : 'days'}',
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                  ),
+                                );
+                              },
+                            ),
+                            // Text(
+                            //   '${streak!.maxStreak} ${streak!.maxStreak == 1 ? 'day' : 'days'}',
+                            //   style: const TextStyle(
+                            //     fontSize: 16,
+                            //   ),
+                            // ),
                           ],
                         ),
                       )),

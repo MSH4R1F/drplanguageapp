@@ -1,20 +1,36 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:drplanguageapp/classes/chat_service.dart';
+import 'package:drplanguageapp/classes/mounted_state.dart';
 import 'package:drplanguageapp/main.dart';
 import 'package:drplanguageapp/pages/dashboard_page.dart';
 import 'package:flutter/material.dart';
 
 class Flashcard {
   final String word;
-  final String translation;
+  late String translation;
   final String sentence;
-  final String translatedSentence;
+  late String translatedSentence;
+
+  Future<Flashcard> translate() async {
+    ChatService wordTranslator = ChatService();
+    ChatService sentenceTranslator = ChatService();
+    Future<String?> wordTranslation = wordTranslator.request(
+        "Translate the word $word into English, as it's used in the context of this sentence: $sentence. Only give the translation without any additional text, clarifications or introductions.");
+    Future<String?> sentenceTranslation = sentenceTranslator.request(
+        "Translate the following sentence into English: $sentence. Only give the translation without any additional text, clarifications or introductions.");
+    List<String?> translations =
+        await Future.wait([wordTranslation, sentenceTranslation]);
+    translation = translations[0] ?? 'Failed translation';
+    translatedSentence = translations[1] ?? 'Failed translation';
+    return this;
+  }
 
   Flashcard({
     required this.word,
-    required this.translation,
     required this.sentence,
-    required this.translatedSentence,
   });
+
+  Flashcard.withTranslation({required this.word, required this.translation, required this.sentence, required this.translatedSentence});
 }
 
 Future<List<Flashcard>> getFlashcards(String userID) async {
@@ -25,7 +41,7 @@ Future<List<Flashcard>> getFlashcards(String userID) async {
         .collection('flashcards')
         .get();
     return querySnapshot.docs.map((doc) {
-      return Flashcard(
+      return Flashcard.withTranslation(
         word: doc['word'],
         translation: doc['trWord'],
         sentence: doc['sentence'],
@@ -216,7 +232,7 @@ class SpinWordWidget extends StatefulWidget {
   SpinWordWidgetState createState() => SpinWordWidgetState();
 }
 
-class SpinWordWidgetState extends State<SpinWordWidget>
+class SpinWordWidgetState extends MountedState<SpinWordWidget>
     with TickerProviderStateMixin {
   bool _showWord = true;
   late AnimationController _controller;

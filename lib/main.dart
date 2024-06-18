@@ -1,3 +1,4 @@
+import 'package:drplanguageapp/classes/mounted_state.dart';
 import 'package:drplanguageapp/pages/conversations_list.dart';
 import 'package:drplanguageapp/pages/dashboard_page.dart';
 import 'package:drplanguageapp/pages/dialogue_page.dart';
@@ -93,7 +94,7 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MyHomePageState extends MountedState<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return const Scaffold(

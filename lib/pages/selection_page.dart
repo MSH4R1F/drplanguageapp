@@ -1,5 +1,5 @@
-import 'package:drplanguageapp/pages/dashboard_page.dart';
-import 'package:drplanguageapp/pages/dialogue_page.dart';
+import 'package:drplanguageapp/classes/mounted_state.dart';
+
 import 'package:flutter/material.dart';
 
 class SelectionPage extends StatefulWidget {
@@ -13,7 +13,7 @@ class SelectionPage extends StatefulWidget {
   State<StatefulWidget> createState() => _SelectionPageState();
 }
 
-class _SelectionPageState extends State<SelectionPage> {
+class _SelectionPageState extends MountedState<SelectionPage> {
   String? selectedLanguage;
   String? selectedDifficulty;
 

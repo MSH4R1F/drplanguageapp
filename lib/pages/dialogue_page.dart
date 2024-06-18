@@ -1,8 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:drplanguageapp/classes/chat_service.dart';
+import 'package:drplanguageapp/classes/mounted_state.dart';
 import 'package:drplanguageapp/main.dart';
 import 'package:drplanguageapp/pages/dashboard_page.dart';
 import 'package:drplanguageapp/pages/flashcard_store.dart';
+import 'package:drplanguageapp/pages/flashcards.dart';
 import 'package:drplanguageapp/pages/languages.dart';
 import 'package:drplanguageapp/pages/selection_page.dart';
 import 'package:flutter/material.dart';
@@ -22,7 +24,7 @@ class DialoguePage extends StatefulWidget {
   State<DialoguePage> createState() => _DialoguePageState();
 }
 
-class _DialoguePageState extends State<DialoguePage> {
+class _DialoguePageState extends MountedState<DialoguePage> {
   late TextGenerator generator;
   Langauge langStore = Langauge();
 
@@ -37,7 +39,7 @@ class _DialoguePageState extends State<DialoguePage> {
 
   @override
   Widget build(BuildContext context) {
-    void showFlashcardDialogue(BuildContext context, FlashcardStore store) {
+    void showFlashcardDialogue(BuildContext context, Flashcard flashcard) {
       showDialog(
           context: context,
           builder: (BuildContext context) {
@@ -59,18 +61,19 @@ class _DialoguePageState extends State<DialoguePage> {
                 ),
                 TextButton(
                   onPressed: () async {
-                    var collection = FirebaseFirestore.instance
+                    var docRef = FirebaseFirestore.instance
                         .collection('users')
                         .doc(widget.userID)
                         .collection('flashcards')
                         .doc('language')
-                        .collection(widget.language);
+                        .collection(widget.language)
+                        .doc(flashcard.word);
                     try {
-                      await collection.add({
-                        'word': store.word,
-                        'sentence': store.sentence,
-                        'trWord': store.trWord,
-                        'trSentence': store.trSentence
+                      await docRef.set({
+                        'word': flashcard.word,
+                        'sentence': flashcard.sentence,
+                        'trWord': flashcard.translation,
+                        'trSentence': flashcard.translatedSentence,
                       });
                       if (mounted) {
                         Navigator.of(context).pop();
@@ -90,9 +93,9 @@ class _DialoguePageState extends State<DialoguePage> {
     }
 
     void showDialogueBox(String word, String sentence) {
-      ChatService gpt = ChatService();
       String filteredWord = word.replaceAll(RegExp(r"['،؟۔!.,;:?-]"), '');
       filteredWord = filteredWord.replaceAll(RegExp('"'), '');
+      Flashcard flashcard = Flashcard(word: filteredWord, sentence: sentence);
 
       showDialog(
         context: context,
@@ -105,22 +108,23 @@ class _DialoguePageState extends State<DialoguePage> {
               height: 250,
               width: MediaQuery.of(context).size.width,
               child: FutureBuilder(
-                future: gpt.request(
-                    "Translate the sentence '$sentence' from ${widget.language} to English. Then, translate the word '$filteredWord', ensuring the translation is exactly how it was translated in the sentence. Please present both translations individually on separate lines, without any additional text, clarifications or introductions."),
+                // future: gpt.request(
+                //     "Translate the sentence '$sentence' from ${widget.language} to English. Then, translate the word '$filteredWord', ensuring the translation is exactly how it was translated in the sentence. Please present both translations individually on separate lines, without any additional text, clarifications or introductions."),
+                future: flashcard.translate(),
                 builder:
-                    (BuildContext context, AsyncSnapshot<String?> snapshot) {
+                    (BuildContext context, AsyncSnapshot<Flashcard> snapshot) {
                   if (snapshot.connectionState == ConnectionState.done) {
                     if (snapshot.hasData) {
-                      List<String> translations = snapshot.data!.split('\n');
-                      String trSentence =
-                          translations[0].replaceAll(RegExp(r"-"), '');
-                      String word = translations[translations.length - 1]
-                          .replaceAll(RegExp(r"[^A-Za-z ]"), '');
-                      FlashcardStore store = FlashcardStore(
-                          word: filteredWord,
-                          trWord: word,
-                          sentence: sentence,
-                          trSentence: trSentence);
+                      // List<String> translations = snapshot.data!.split('\n');
+                      // String trSentence =
+                      //     translations[0].replaceAll(RegExp(r"-"), '');
+                      // String word = translations[translations.length - 1]
+                      //     .replaceAll(RegExp(r"[^A-Za-z ]"), '');
+                      // Flashcard store = Flashcard(
+                      //     word: filteredWord,
+                      //     translation: word,
+                      //     sentence: sentence,
+                      //     translatedSentence: trSentence);
                       return Column(
                         children: [
                           Padding(
@@ -141,7 +145,7 @@ class _DialoguePageState extends State<DialoguePage> {
                                 IconButton(
                                   icon: const Icon(Icons.copy),
                                   onPressed: () =>
-                                      showFlashcardDialogue(context, store),
+                                      showFlashcardDialogue(context, flashcard),
                                 ),
                               ],
                             ),
@@ -158,7 +162,7 @@ class _DialoguePageState extends State<DialoguePage> {
                                       const SizedBox(
                                         height: 10,
                                       ),
-                                      Text(word.toLowerCase()),
+                                      Text(flashcard.translation.toLowerCase()),
                                       const SizedBox(
                                         height: 10,
                                       ),
@@ -171,7 +175,7 @@ class _DialoguePageState extends State<DialoguePage> {
                                         height: 10,
                                       ),
                                       Text(
-                                        trSentence,
+                                        flashcard.translatedSentence,
                                         textAlign: TextAlign.center,
                                       ),
                                     ],

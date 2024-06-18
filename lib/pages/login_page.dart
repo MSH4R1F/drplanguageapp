@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:drplanguageapp/pages/dashboard_page.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -17,16 +19,15 @@ class LoginScreen extends StatelessWidget {
     DateTime startOfToday = DateTime(today.year, today.month, today.day);
     DateTime yesterday = startOfToday.subtract(const Duration(days: 1));
 
-    int streak;
+    int streak = 1;
     if (lastActive.isAtSameMomentAs(yesterday) ||
         lastActive.isAfter(yesterday) && lastActive.isBefore(startOfToday)) {
       streak = data['streak'] + 1;
-    } else {
-      streak = 1;
     }
 
     await userRef.set({
       'streak': streak,
+      'maxStreak': max<int>(streak, data['maxStreak'] ?? 0),
       'displayName': userID,
       'lastActive': FieldValue.serverTimestamp(),
     }, SetOptions(merge: true));
