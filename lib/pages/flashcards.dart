@@ -1,20 +1,40 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:drplanguageapp/classes/chat_service.dart';
+import 'package:drplanguageapp/classes/mounted_state.dart';
 import 'package:drplanguageapp/main.dart';
 import 'package:drplanguageapp/pages/languages.dart';
 import 'package:flutter/material.dart';
 
 class Flashcard {
   final String word;
-  final String translation;
+  late String translation;
   final String sentence;
-  final String translatedSentence;
+  late String translatedSentence;
+
+  Future<Flashcard> translate() async {
+    ChatService wordTranslator = ChatService();
+    ChatService sentenceTranslator = ChatService();
+    Future<String?> wordTranslation = wordTranslator.request(
+        "Translate the word $word into English, as it's used in the context of this sentence: $sentence. Only give the translation without any additional text, clarifications or introductions.");
+    Future<String?> sentenceTranslation = sentenceTranslator.request(
+        "Translate the following sentence into English: $sentence. Only give the translation without any additional text, clarifications or introductions.");
+    List<String?> translations =
+        await Future.wait([wordTranslation, sentenceTranslation]);
+    translation = translations[0] ?? 'Failed translation';
+    translatedSentence = translations[1] ?? 'Failed translation';
+    return this;
+  }
 
   Flashcard({
     required this.word,
-    required this.translation,
     required this.sentence,
-    required this.translatedSentence,
   });
+
+  Flashcard.withTranslation(
+      {required this.word,
+      required this.translation,
+      required this.sentence,
+      required this.translatedSentence});
 }
 
 Future<List<Flashcard>> getFlashcards(String userID, String language) async {
@@ -27,7 +47,7 @@ Future<List<Flashcard>> getFlashcards(String userID, String language) async {
         .collection(language)
         .get();
     return querySnapshot.docs.map((doc) {
-      return Flashcard(
+      return Flashcard.withTranslation(
         word: doc['word'],
         translation: doc['trWord'],
         sentence: doc['sentence'],
@@ -107,7 +127,7 @@ class WordsListPageState extends State<WordsListPage> {
                   onSelected: (String newLanguage) {
                     setState(() {
                       language = newLanguage;
-                      flashcards = getFlashcards('userID', language);
+                      flashcards = getFlashcards(widget.userID, language);
                     });
                   },
                   itemBuilder: (BuildContext context) {
@@ -124,10 +144,10 @@ class WordsListPageState extends State<WordsListPage> {
           ),
           IconButton(
             onPressed: () {
-              Navigator.pushNamedAndRemoveUntil(
+              Navigator.pushNamed(
                 context,
                 '/dashboard',
-                (Route<dynamic> route) => false,
+                arguments: {'userID': widget.userID},
               );
             },
             icon: const Icon(Icons.dashboard),
@@ -148,28 +168,34 @@ class WordsListPageState extends State<WordsListPage> {
               leading: const Icon(Icons.dashboard),
               title: const Text("Dashboard"),
               onTap: () {
-                Navigator.pushNamed(context, '/dashboard');
+                Navigator.pushNamed(
+                  context,
+                  '/dashboard',
+                  arguments: {'userID': widget.userID},
+                );
               },
             ),
             ListTile(
               leading: const Icon(Icons.chat_bubble),
               title: const Text("Conversation"),
               onTap: () {
-                Navigator.pushNamed(context, '/dashboard/conversation');
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.lightbulb),
-              title: const Text("Highlights"),
-              onTap: () {
-                Navigator.pushNamed(context, '/dashboard/highlights');
+                Navigator.pushNamed(context, '/dashboard/conversation',
+                    arguments: {'userID': widget.userID});
               },
             ),
             ListTile(
               leading: const Icon(Icons.auto_stories),
               title: const Text("Comprehension"),
               onTap: () {
-                Navigator.pushNamed(context, '/selection');
+                Navigator.pushNamed(
+                  context,
+                  '/selection',
+                  arguments: {
+                    'userID': widget.userID,
+                    'language': null,
+                    'difficulty': null,
+                  },
+                );
               },
             ),
           ],
@@ -335,7 +361,7 @@ class SpinWordWidget extends StatefulWidget {
   SpinWordWidgetState createState() => SpinWordWidgetState();
 }
 
-class SpinWordWidgetState extends State<SpinWordWidget>
+class SpinWordWidgetState extends MountedState<SpinWordWidget>
     with TickerProviderStateMixin {
   bool _showWord = true;
   late AnimationController _controller;
@@ -380,7 +406,7 @@ class SpinWordWidgetState extends State<SpinWordWidget>
 
   @override
   Widget build(BuildContext context) {
-    Langauge langStore = Langauge();
+    Language langStore = Language();
     return GestureDetector(
       onTap: _toggleWord,
       child: Scaffold(

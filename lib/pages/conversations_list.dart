@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:drplanguageapp/classes/chat_list_entry.dart';
+import 'package:drplanguageapp/classes/mounted_state.dart';
 import 'package:drplanguageapp/classes/new_chat_form.dart';
 import 'package:drplanguageapp/pages/conversation.dart';
 import 'package:flutter/material.dart';
@@ -12,7 +13,7 @@ class ConversationsList extends StatefulWidget {
   State<ConversationsList> createState() => _ConversationsListState();
 }
 
-class _ConversationsListState extends State<ConversationsList> {
+class _ConversationsListState extends MountedState<ConversationsList> {
   List<ChatEntry> chats = [];
   @override
   void initState() {
@@ -121,8 +122,8 @@ class _ConversationsListState extends State<ConversationsList> {
                       );
                       if (result != null) {
                         addToChats(result);
-                      };
-                      
+                      }
+                      ;
                     },
                     child: Container(
                       constraints: const BoxConstraints(minHeight: 140),
@@ -146,7 +147,9 @@ class _ConversationsListState extends State<ConversationsList> {
                             chats[index].getReference(), index);
                       });
                     },
-                    child: ChatListEntry(chatEntry: chats[index]));
+                    child: Container(
+                        color: Colors.transparent,
+                        child: ChatListEntry(chatEntry: chats[index])));
               })),
     );
   }

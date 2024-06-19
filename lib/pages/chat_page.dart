@@ -1,4 +1,4 @@
-import 'package:drplanguageapp/classes/text_suggestions.dart';
+import 'package:drplanguageapp/classes/mounted_state.dart';
 import 'package:flutter/material.dart';
 
 class ChatPage extends StatefulWidget {
@@ -15,7 +15,7 @@ class ChatPage extends StatefulWidget {
   State<ChatPage> createState() => _ChatPageState();
 }
 
-class _ChatPageState extends State<ChatPage> {
+class _ChatPageState extends MountedState<ChatPage> {
   @override
   Widget build(BuildContext context) {
     return Column(

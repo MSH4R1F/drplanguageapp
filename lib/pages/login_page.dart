@@ -1,7 +1,37 @@
+import 'dart:math';
+
+import 'package:drplanguageapp/pages/dashboard_page.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
+
+  Future<void> updateStreak(String userID) async {
+    var userRef = FirebaseFirestore.instance.collection('users').doc(userID);
+    var snapshot = await userRef.get();
+    var data = snapshot.data() as Map<String, dynamic>;
+
+    DateTime today = DateTime.now();
+    DateTime lastActive = data['lastActive'] == null
+        ? today
+        : (data['lastActive'] as Timestamp).toDate();
+    DateTime startOfToday = DateTime(today.year, today.month, today.day);
+    DateTime yesterday = startOfToday.subtract(const Duration(days: 1));
+
+    int streak = 1;
+    if (lastActive.isAtSameMomentAs(yesterday) ||
+        lastActive.isAfter(yesterday) && lastActive.isBefore(startOfToday)) {
+      streak = data['streak'] + 1;
+    }
+
+    await userRef.set({
+      'streak': streak,
+      'maxStreak': max<int>(streak, data['maxStreak'] ?? 0),
+      'displayName': userID,
+      'lastActive': FieldValue.serverTimestamp(),
+    }, SetOptions(merge: true));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,22 +67,37 @@ class LoginScreen extends StatelessWidget {
             const Padding(padding: EdgeInsets.symmetric(horizontal: 40)),
             ElevatedButton(
               onPressed: () {
-                // Navigate to homepage
-                Navigator.pushReplacementNamed(context, '/dashboard');
+                updateStreak('Mahdi');
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const DashboardPage(
+                      userID: 'Mahdi',
+                    ),
+                  ),
+                );
               },
-              child: const Text('Login'),
+              child: const Text('Mahdi'),
             ),
             // Register Button
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                // Respond to button press
+                updateStreak('Humza');
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const DashboardPage(
+                      userID: 'Humza',
+                    ),
+                  ),
+                );
               },
-              child: const Text('Register'),
+              child: const Text('Humza'),
             ),
           ],
         ),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      ),
     );
   }
 }

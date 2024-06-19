@@ -1,4 +1,5 @@
-import 'package:drplanguageapp/pages/dialogue_page.dart';
+import 'package:drplanguageapp/classes/mounted_state.dart';
+
 import 'package:flutter/material.dart';
 
 class SelectionPage extends StatefulWidget {
@@ -12,7 +13,7 @@ class SelectionPage extends StatefulWidget {
   State<StatefulWidget> createState() => _SelectionPageState();
 }
 
-class _SelectionPageState extends State<SelectionPage> {
+class _SelectionPageState extends MountedState<SelectionPage> {
   String? selectedLanguage;
   String? selectedDifficulty;
 
@@ -39,7 +40,11 @@ class _SelectionPageState extends State<SelectionPage> {
         backgroundColor: Colors.amber,
         actions: [
           IconButton(
-            onPressed: () => Navigator.pushNamed(context, '/dashboard'),
+            onPressed: () => Navigator.pushNamed(
+              context,
+              '/dashboard',
+              arguments: {'userID': widget.userID},
+            ),
             icon: const Icon(Icons.dashboard),
           ),
         ],
@@ -58,21 +63,22 @@ class _SelectionPageState extends State<SelectionPage> {
               leading: const Icon(Icons.chat_bubble),
               title: const Text("Conversation"),
               onTap: () {
-                Navigator.pushNamed(context, '/dashboard/conversation');
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.lightbulb),
-              title: const Text("Highlights"),
-              onTap: () {
-                Navigator.pushNamed(context, '/dashboard/highlights');
+                Navigator.pushNamed(
+                  context,
+                  '/dashboard/conversation',
+                  arguments: {'userID': widget.userID},
+                );
               },
             ),
             ListTile(
               leading: const Icon(Icons.subtitles),
               title: const Text("Flashcards"),
               onTap: () {
-                Navigator.pushNamed(context, '/dashboard/flashcards');
+                Navigator.pushNamed(
+                  context,
+                  '/dashboard/flashcards',
+                  arguments: {'userID': widget.userID},
+                );
               },
             ),
             const Spacer(),
@@ -147,13 +153,15 @@ class _SelectionPageState extends State<SelectionPage> {
                     ),
                   );
                 } else {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (_) => DialoguePage(
-                              userID: widget.userID,
-                              language: selectedLanguage!,
-                              difficulty: selectedDifficulty!)));
+                  Navigator.pushNamed(
+                    context,
+                    '/dashboard/comprehension',
+                    arguments: {
+                      'userID': widget.userID,
+                      'language': selectedLanguage,
+                      'difficulty': selectedDifficulty,
+                    },
+                  );
                 }
               },
               child: const Text("Submit"),
