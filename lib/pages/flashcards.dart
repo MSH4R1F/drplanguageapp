@@ -391,6 +391,8 @@ class SpinWordWidgetState extends MountedState<SpinWordWidget>
     if (currentIndex < widget.flashcards.length - 1) {
       setState(() {
         widget.flashcard = widget.flashcards[currentIndex + 1];
+        _showWord = true;
+        _controller.reset();
       });
     }
   }
@@ -400,6 +402,8 @@ class SpinWordWidgetState extends MountedState<SpinWordWidget>
     if (currentIndex > 0) {
       setState(() {
         widget.flashcard = widget.flashcards[currentIndex - 1];
+        _showWord = true;
+        _controller.reset();
       });
     }
   }
