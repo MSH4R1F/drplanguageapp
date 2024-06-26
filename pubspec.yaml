@@ -44,6 +44,7 @@ dependencies:
   permission_handler: ^11.3.1
   speech_to_text: ^6.6.0
   flutter_tts: ^3.2.0
+  flutter_dotenv: ^5.1.0
 
 dev_dependencies:
   flutter_test:
