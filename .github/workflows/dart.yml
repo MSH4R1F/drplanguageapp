@@ -28,7 +28,8 @@ jobs:
           distribution: 'zulu'
           java-version: '11'
       - run: flutter --version
-
+        env:
+          OPENAI_KEY: ${{ secrets.OPEN_AI_KEY }}
       
       # Fetches proj dependencies from pub
       - name: Install dependencies
